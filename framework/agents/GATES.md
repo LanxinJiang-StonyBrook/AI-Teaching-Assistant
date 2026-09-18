@@ -55,7 +55,19 @@ node framework/ledger/gate.mjs close spec.json --agent 3   # validate, diff, rec
 node framework/ledger/gate.mjs report spec.json            # the yield ledger
 ```
 
-`close` exits non-zero on an unaccepted ERROR, so a gate can hold a commit or a CI run.
+`close` exits non-zero — and so holds a commit or a CI run — on any of three things:
+
+1. **An unaccepted validator ERROR** in the agent's own profile.
+2. **A write to a field the agent was denied at its gate.** That means the agent read
+   around the information hiding, and the yield measurement for the build is void until
+   the change is reverted or re-attributed.
+3. **A write to a field owned by another agent** without a `causedByCheckId` naming the
+   check that forced it. "One owner per field" has to bite at the gate, not only in the
+   final report: an unattributed change is one the ledger cannot interpret.
+
+The diff is taken against the **full pre-gate spec**, not against the redacted view the
+agent worked from. Diffing against the view would report every hidden field as changed
+and quietly inflate the one number the pipeline claim rests on.
 
 ## The ablation this is built to support
 

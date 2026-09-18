@@ -74,7 +74,9 @@ export function openGate(spec, agent) {
     if (p === 'knowledge.params' && view.knowledge)
       view.knowledge.params = manifestOf(spec.knowledge?.params);
   return {
-    agent, openedHash: specHash(spec), view,
+    agent, openedHash: specHash(spec),
+    view,                         // what the agent is allowed to work from
+    full: clone(spec),            // what the spec actually was, for diffing
     hiddenFrom: HIDDEN[agent] ?? [],
     manifestOnly: MANIFEST_ONLY[agent] ?? [],
     fieldPathsPresent: Object.keys(view).filter((k) => k !== 'provenance'),
@@ -101,9 +103,19 @@ export function closeGate(spec, agent, snapshot, { baseline = null } = {}) {
   const accepted = (f) => (baseline?.accepted ?? []).some((b) => f.check.startsWith(b.check) && f.target === b.target);
   const errors = report.findings.filter((f) => f.severity === 'ERROR' && !accepted(f));
 
-  const deltas = diffPaths(snapshot?.view ?? {}, spec).map((d) => ({
+  const base = snapshot?.full ?? snapshot?.view ?? {};
+  const hidden = [...(snapshot?.hiddenFrom ?? []), ...(snapshot?.manifestOnly ?? [])];
+  const wasHidden = (p) => hidden.some((h) => p === h || p.startsWith(h + '.'));
+  const deltas = diffPaths(base, spec).map((d) => ({
     ...d, byAgent: agent, atGate: agent, ownerAgent: ownerOf(d.fieldPath) ?? undefined,
   }));
+  // A change to a path this agent could not see is a real violation, not a delta:
+  // it means the agent read around the hiding, and the measurement is void.
+  const blind = deltas.filter((d) => wasHidden(d.fieldPath));
+  // "One owner per field" has to bite AT THE GATE, not only in the final report.
+  // A field edited by a non-owner without a check to point at is an unattributed
+  // change, and the yield ledger cannot interpret it.
+  const foreign = deltas.filter((d) => d.ownerAgent && d.ownerAgent !== agent && !d.causedByCheckId);
 
   const findings = report.findings
     .filter((f) => f.severity !== 'INFO')
@@ -132,7 +144,8 @@ export function closeGate(spec, agent, snapshot, { baseline = null } = {}) {
   }]).sort((a, b) => a.agent - b.agent);
   spec.provenance.deltas = (spec.provenance.deltas ?? []).concat(deltas);
   spec.provenance.findings = (spec.provenance.findings ?? []).concat(findings);
-  return { ok: errors.length === 0, errors, deltas, findings, report };
+  return { ok: errors.length === 0 && blind.length === 0 && foreign.length === 0,
+    errors, deltas, blind, foreign, findings, report };
 }
 
 export function yieldLedger(spec) {
@@ -189,10 +202,17 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     writeFileSync(file, JSON.stringify(spec, null, 2) + '\n');
     console.log(`gate ${agent} ${res.ok ? 'CLOSED' : 'REFUSED'} — ${res.errors.length} unaccepted error(s)`);
     console.log(`  fields changed under this gate: ${res.deltas.length}`);
-    const foreign = res.deltas.filter((d) => d.ownerAgent && d.ownerAgent !== agent);
-    if (foreign.length) {
-      console.log(`  ${foreign.length} of them belong to ANOTHER agent:`);
-      for (const d of foreign.slice(0, 8)) console.log(`    ${d.fieldPath} (owned by agent ${d.ownerAgent})`);
+    if (res.blind.length) {
+      console.log(`  ${res.blind.length} change(s) to fields this agent was DENIED at its gate:`);
+      for (const d of res.blind.slice(0, 8)) console.log(`    ${d.fieldPath}`);
+      console.log('  The agent read around the information hiding. The yield measurement');
+      console.log('  for this build is void until the change is reverted or re-attributed.');
+    }
+    if (res.foreign.length) {
+      console.log(`  ${res.foreign.length} change(s) to fields owned by ANOTHER agent:`);
+      for (const d of res.foreign.slice(0, 8)) console.log(`    ${d.fieldPath} (owned by agent ${d.ownerAgent})`);
+      console.log('  Revert them and raise a provenance.revisionRequests entry instead, or');
+      console.log('  attach a causedByCheckId naming the check that forced the change.');
     }
     const cross = res.findings.filter((f) => f.againstAgent !== agent);
     console.log(`  findings raised: ${res.findings.length}, of which cross-agent: ${cross.length}`);
