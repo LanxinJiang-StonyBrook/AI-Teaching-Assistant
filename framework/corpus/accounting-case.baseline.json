@@ -1,0 +1,33 @@
+{
+  "about": "framework/corpus/accounting-case.baseline.json",
+  "fixture": "accounting-case.spec.json",
+  "reverseEngineeredFrom": "src/data/cases/month-end-close/",
+  "note": "This fixture reverse-engineers the one game agent56-pilot already audits, so it is the direct test of whether GameSpec generalises the pilot's findings. It does: the pilot's flagship defect reappears from a spec the pilot has never seen, and the pilot's eleven hand-written arithmetic closures reduce to five portable assertions that all pass.",
+  "accepted": [
+    { "check": "S5 perfect-run-reaches-max", "target": "flow.steps/stage-review",
+      "reason": "REAL DEFECT. stages.ts:16 pays 15 against the cap implied by stages.ts:37 (weight 0.2 x maxScore 100 = 20).", "arity": 1, "raisedBy": 4, "against": 4 },
+    { "check": "S5 perfect-run-reaches-max", "target": "flow.steps/stage-accruals",
+      "reason": "REAL DEFECT. Best option pays 20 against a cap of 25 (weight 0.25).", "arity": 1, "raisedBy": 4, "against": 4 },
+    { "check": "S5 perfect-run-reaches-max", "target": "flow.steps/stage-prepaid",
+      "reason": "REAL DEFECT. Best option pays 20 against a cap of 25 (weight 0.25).", "arity": 1, "raisedBy": 4, "against": 4 },
+    { "check": "S5 perfect-run-reaches-max", "target": "flow.steps/stage-deferred",
+      "reason": "REAL DEFECT and the worst of the four. Best option pays 20 against a cap of 30 (weight 0.3). The pilot's synthetic cohort shows the consequence: 67% of students answered item 4 correctly but the item returned only 44% of its points.", "arity": 1, "raisedBy": 4, "against": 4 },
+    { "check": "S5 perfect-run-reaches-max", "target": "scoring",
+      "reason": "REAL DEFECT, independently rediscovered. A flawless run scores 75/100 against a passingScore of 70, while README.md:64 advertises 'perfect run = 100%'. agent56-pilot found this first; this validator finds it again from a spec that has never seen the pilot's code. NOTE THE ARITY: every field this check reads belongs to agent 4, so it is the mechanics author's own lint, NOT an independent audit. The pilot's framing of it as an Agent 5 catch overstates the claim.", "arity": 1, "raisedBy": 4, "against": 4 },
+    { "check": "P2 objective-assessed", "target": "objectives/spot-adjustments",
+      "reason": "REAL DEFECT, and one the pilot could not see because the artifact declares no objectives at all. 'Identify which balances require adjustment' is the only analyze-level objective in the case and it is assessed by a single 3-option item. agent56-pilot/agent6/records/ rates objective alignment FAIL for exactly this reason: 'An item cannot be QA'd against an objective that was never written down.' This is a genuine arity-2 cross-author finding — agent 1's objective against agent 4's flow.", "arity": 2, "raisedBy": 1, "against": 4 }
+  ],
+  "acceptedWarnings": [
+    { "check": "S6 pass-headroom",
+      "reason": "The same defect from the other side: 5 points of headroom over passingScore 70. A student who books all three journal entries correctly but softs the opening review scores 65 and fails." },
+    { "check": "S10 dead-fields-declared",
+      "reason": "REAL DEFECT. case.ts:27 declares triggersEventId and the data authors it on 5 choices across the five cases, but useGame.ts dispatches only trigger.type === 'on-stage-enter', so option-triggered events never fire. The fixture declares interrupts: inert, which is what the runtime actually does, and S10 then reports the 1 authored beat as content students will never see. This is why S10 is a WARN and not an ERROR: an ERROR would make the repo's cleanest game unexpressible and useless as a fixture." },
+    { "check": "A5 human-attestation",
+      "reason": "Correct and deliberate. A reverse-pass fixture has no credentialed signer, and the framework refuses to fake one. agent5/records/ likewise ends in an unsigned human attestation." }
+  ],
+  "portedFromPilot": {
+    "claim": "The pilot's eleven arithmetic identities were closures hand-keyed to case ids in agent56-pilot/agent5/numeric-checks.mjs. Under GameSpec they become five declarative assertions over knowledge.params, and check N1 evaluates them generically.",
+    "assertions": ["ME-1 prepaid catch-up 24000-2000", "ME-2 deferred earned 3x(15000/12)", "ME-3 parked balance ties to contracts x annual value", "ME-4 accrued invoice amount appears in the graded entry", "ME-5 remaining coverage is about one month of premium"],
+    "result": "All five pass. No N1 findings appear in the report, which reproduces the pilot's conclusion that the accounting content is correct while the score partition is not."
+  }
+}

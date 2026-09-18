@@ -1,0 +1,1524 @@
+{
+  "gamespec": "1.0",
+  "emitter": {
+    "runtime": "^1.0",
+    "widgetRegistry": "^1.0"
+  },
+  "meta": {
+    "id": "decision-tree-game",
+    "title": "Decision Tree Builder Lab",
+    "subtitle": "Guided walkthrough of how a decision tree is grown and applied",
+    "description": "Reverse-engineered GameSpec fixture for public/decision-tree-game/index.html. This is the corpus BOUNDARY CASE: the artifact contains no accounting, auditing or AIS content whatsoever, so assurance.domain is none and notApplicable is declared rather than a citation being fabricated.",
+    "course": "ACC 214 / analytics module",
+    "chapter": "Decision trees (lecture slides 18-28)",
+    "audience": "undergraduate students revising a lecture on decision-tree classification",
+    "estimatedMinutes": 20,
+    "language": "en",
+    "offline": true,
+    "singleFile": true,
+    "sources": [
+      {
+        "id": "lecture-deck",
+        "kind": "slide-deck",
+        "citation": "Decision tree lecture slides 18-28",
+        "version": "unpinned-in-original",
+        "archivedAt": "NOT ARCHIVED — the original game cites \"slide 19\" with no pinned copy. Recorded here so the gap is visible rather than implied."
+      }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "identify-parts",
+      "statement": "Distinguish a decision node, a branch and a leaf in a decision tree.",
+      "bloom": "understand",
+      "minGradedItems": 2,
+      "taughtBy": [
+        "intro-teach"
+      ]
+    },
+    {
+      "id": "identify-label",
+      "statement": "Distinguish the class label from the feature columns in a training set.",
+      "bloom": "understand",
+      "minGradedItems": 1,
+      "taughtBy": [
+        "data-teach",
+        "training-table"
+      ]
+    },
+    {
+      "id": "choose-split",
+      "statement": "Choose the split that produces the purer branches, and justify the choice by purity.",
+      "bloom": "analyze",
+      "minGradedItems": 2,
+      "taughtBy": [
+        "split-teach",
+        "split-cards"
+      ]
+    },
+    {
+      "id": "grow-tree",
+      "statement": "Extend a partially grown tree by adding a question only where a branch is still mixed.",
+      "bloom": "analyze",
+      "minGradedItems": 4,
+      "maxChanceScore": 0.1,
+      "taughtBy": [
+        "grow-teach"
+      ]
+    },
+    {
+      "id": "apply-tree",
+      "statement": "Classify an unseen record by traversing the tree from root to leaf.",
+      "bloom": "apply",
+      "minGradedItems": 5,
+      "taughtBy": [
+        "apply-teach"
+      ]
+    }
+  ],
+  "taxonomy": [
+    {
+      "id": "decision-node",
+      "label": "Decision node",
+      "shortLabel": "Node",
+      "definition": "Asks a question about one feature and splits the data.",
+      "objectiveIds": [
+        "identify-parts"
+      ]
+    },
+    {
+      "id": "branch",
+      "label": "Branch",
+      "definition": "One possible answer to a decision node question.",
+      "objectiveIds": [
+        "identify-parts"
+      ]
+    },
+    {
+      "id": "leaf",
+      "label": "Leaf",
+      "definition": "The end of a path; holds the predicted class label.",
+      "objectiveIds": [
+        "identify-parts"
+      ]
+    }
+  ],
+  "knowledge": {
+    "params": {
+      "incomeThresholdK": 100,
+      "trainingRows": 10,
+      "futureRows": 5,
+      "checkpoints": 13
+    },
+    "thresholds": [
+      {
+        "name": "income_threshold",
+        "value": 100,
+        "kind": "design-constant",
+        "inclusive": true,
+        "sourceId": "lecture-deck",
+        "note": "Rule 3 reads \"100K or below\", so the low branch is inclusive at 100."
+      }
+    ],
+    "datasets": [
+      {
+        "id": "training",
+        "title": "Training set from slide 19",
+        "provenance": {
+          "sourceId": "lecture-deck"
+        },
+        "role": "training",
+        "labelColumn": "carType",
+        "columns": [
+          {
+            "key": "id",
+            "label": "ID",
+            "type": "number"
+          },
+          {
+            "key": "maritalStatus",
+            "label": "Marital Status",
+            "type": "category"
+          },
+          {
+            "key": "gender",
+            "label": "Gender",
+            "type": "category"
+          },
+          {
+            "key": "annualIncome",
+            "label": "Annual Income",
+            "type": "number",
+            "unit": "K"
+          },
+          {
+            "key": "carType",
+            "label": "Car Type",
+            "type": "category"
+          }
+        ],
+        "rows": [
+          {
+            "id": 1,
+            "maritalStatus": "Single",
+            "gender": "Male",
+            "annualIncome": 90,
+            "carType": "Sports Car"
+          },
+          {
+            "id": 2,
+            "maritalStatus": "Married",
+            "gender": "Male",
+            "annualIncome": 300,
+            "carType": "Sports Car"
+          },
+          {
+            "id": 3,
+            "maritalStatus": "Married",
+            "gender": "Male",
+            "annualIncome": 180,
+            "carType": "Sports Car"
+          },
+          {
+            "id": 4,
+            "maritalStatus": "Married",
+            "gender": "Male",
+            "annualIncome": 90,
+            "carType": "Family Car"
+          },
+          {
+            "id": 5,
+            "maritalStatus": "Married",
+            "gender": "Female",
+            "annualIncome": 50,
+            "carType": "Family Car"
+          },
+          {
+            "id": 6,
+            "maritalStatus": "Married",
+            "gender": "Male",
+            "annualIncome": 70,
+            "carType": "Family Car"
+          },
+          {
+            "id": 7,
+            "maritalStatus": "Single",
+            "gender": "Female",
+            "annualIncome": 80,
+            "carType": "Sports Car"
+          },
+          {
+            "id": 8,
+            "maritalStatus": "Single",
+            "gender": "Male",
+            "annualIncome": 130,
+            "carType": "Sports Car"
+          },
+          {
+            "id": 9,
+            "maritalStatus": "Married",
+            "gender": "Female",
+            "annualIncome": 100,
+            "carType": "Family Car"
+          },
+          {
+            "id": 10,
+            "maritalStatus": "Single",
+            "gender": "Female",
+            "annualIncome": 110,
+            "carType": "Sports Car"
+          }
+        ],
+        "invariants": [
+          {
+            "kind": "rowCount",
+            "target": 10
+          }
+        ]
+      },
+      {
+        "id": "future",
+        "title": "Clients 11-15 to classify",
+        "provenance": {
+          "sourceId": "lecture-deck"
+        },
+        "role": "holdout",
+        "labelColumn": null,
+        "columns": [
+          {
+            "key": "id",
+            "label": "ID",
+            "type": "number"
+          },
+          {
+            "key": "maritalStatus",
+            "label": "Marital Status",
+            "type": "category"
+          },
+          {
+            "key": "gender",
+            "label": "Gender",
+            "type": "category"
+          },
+          {
+            "key": "annualIncome",
+            "label": "Annual Income",
+            "type": "number",
+            "unit": "K"
+          }
+        ],
+        "rows": [
+          {
+            "id": 11,
+            "maritalStatus": "Married",
+            "gender": "Male",
+            "annualIncome": 170
+          },
+          {
+            "id": 12,
+            "maritalStatus": "Married",
+            "gender": "Female",
+            "annualIncome": 95
+          },
+          {
+            "id": 13,
+            "maritalStatus": "Single",
+            "gender": "Female",
+            "annualIncome": 100
+          },
+          {
+            "id": 14,
+            "maritalStatus": "Married",
+            "gender": "Male",
+            "annualIncome": 80
+          },
+          {
+            "id": 15,
+            "maritalStatus": "Single",
+            "gender": "Female",
+            "annualIncome": 150
+          }
+        ],
+        "invariants": [
+          {
+            "kind": "rowCount",
+            "target": 5
+          }
+        ]
+      },
+      {
+        "id": "split-candidates",
+        "title": "Purity of the two candidate root splits",
+        "role": "illustrative",
+        "provenance": {
+          "sourceId": "lecture-deck",
+          "note": "Aggregate counts shown on the split cards."
+        },
+        "notDerivedFrom": [
+          "training"
+        ],
+        "provenanceLabel": "Illustrative slide figures — NOT counts of the 10-row training table above",
+        "labelColumn": null,
+        "columns": [
+          {
+            "key": "feature",
+            "label": "Feature",
+            "type": "category"
+          },
+          {
+            "key": "branch",
+            "label": "Branch",
+            "type": "category"
+          },
+          {
+            "key": "sports",
+            "label": "Sports Car",
+            "type": "number"
+          },
+          {
+            "key": "family",
+            "label": "Family Car",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          {
+            "feature": "maritalStatus",
+            "branch": "Single",
+            "sports": 15,
+            "family": 3
+          },
+          {
+            "feature": "maritalStatus",
+            "branch": "Married",
+            "sports": 5,
+            "family": 17
+          },
+          {
+            "feature": "gender",
+            "branch": "Male",
+            "sports": 12,
+            "family": 10
+          },
+          {
+            "feature": "gender",
+            "branch": "Female",
+            "sports": 8,
+            "family": 10
+          }
+        ]
+      }
+    ],
+    "derivations": [
+      {
+        "id": "marital-purity",
+        "datasetId": "split-candidates",
+        "format": "percent",
+        "expr": "(15 + 17) / (15 + 3 + 5 + 17)",
+        "describe": "Share of observations landing on the majority class after splitting on Marital Status"
+      },
+      {
+        "id": "gender-purity",
+        "datasetId": "split-candidates",
+        "format": "percent",
+        "expr": "(12 + 10) / (12 + 10 + 8 + 10)",
+        "describe": "Share of observations landing on the majority class after splitting on Gender"
+      },
+      {
+        "id": "training-sports-share",
+        "datasetId": "training",
+        "format": "percent",
+        "expr": "count(ds.training.__rows.filter(r => r.carType === \"Sports Car\")) / count(ds.training.id)",
+        "describe": "Share of training buyers who chose a sports car"
+      }
+    ],
+    "artifacts": [
+      {
+        "id": "training-table",
+        "title": "Training set (slide 19)",
+        "kind": "dataset-view",
+        "datasetId": "training",
+        "objectiveIds": [
+          "identify-label"
+        ]
+      },
+      {
+        "id": "future-table",
+        "title": "Clients 11-15",
+        "kind": "dataset-view",
+        "datasetId": "future",
+        "objectiveIds": [
+          "apply-tree"
+        ]
+      },
+      {
+        "id": "split-cards",
+        "title": "Candidate split purity",
+        "kind": "dataset-view",
+        "datasetId": "split-candidates",
+        "objectiveIds": [
+          "choose-split",
+          "grow-tree"
+        ]
+      }
+    ]
+  },
+  "scenario": {
+    "framing": "none",
+    "beats": [
+      {
+        "id": "intro-teach-beat",
+        "kind": "scene",
+        "attachTo": {
+          "target": "step",
+          "id": "intro-teach"
+        },
+        "lines": [
+          {
+            "who": "narrator",
+            "text": "A decision node asks a question. A branch is an answer. A leaf is a prediction."
+          }
+        ]
+      },
+      {
+        "id": "data-teach-beat",
+        "kind": "scene",
+        "attachTo": {
+          "target": "step",
+          "id": "data-teach"
+        },
+        "lines": [
+          {
+            "who": "narrator",
+            "text": "One column is what you predict. The rest are what you may ask about."
+          }
+        ]
+      },
+      {
+        "id": "split-teach-beat",
+        "kind": "scene",
+        "attachTo": {
+          "target": "step",
+          "id": "split-teach"
+        },
+        "lines": [
+          {
+            "who": "narrator",
+            "text": "You do not need formulas here. Compare how mixed each branch looks."
+          }
+        ]
+      },
+      {
+        "id": "grow-teach-beat",
+        "kind": "scene",
+        "attachTo": {
+          "target": "step",
+          "id": "grow-teach"
+        },
+        "lines": [
+          {
+            "who": "narrator",
+            "text": "Split where the branch is still mixed. Stop where it is already pure."
+          }
+        ]
+      },
+      {
+        "id": "apply-teach-beat",
+        "kind": "scene",
+        "attachTo": {
+          "target": "step",
+          "id": "apply-teach"
+        },
+        "lines": [
+          {
+            "who": "narrator",
+            "text": "Start at the root. Follow the branch that matches the client. Stop at a leaf."
+          }
+        ]
+      },
+      {
+        "id": "wrap-teach-beat",
+        "kind": "outcome",
+        "attachTo": {
+          "target": "step",
+          "id": "wrap-teach"
+        },
+        "stamp": "RULES REVIEW",
+        "blocks": [
+          {
+            "kind": "row",
+            "label": "Rule 1",
+            "value": "If marital status is Single, predict Sports Car."
+          },
+          {
+            "kind": "row",
+            "label": "Rule 2",
+            "value": "If marital status is Married and gender is Female, predict Family Car."
+          },
+          {
+            "kind": "row",
+            "label": "Rule 3",
+            "value": "If Married, Male, and income is 100K or below, predict Family Car."
+          },
+          {
+            "kind": "row",
+            "label": "Rule 4",
+            "value": "If Married, Male, and income is above 100K, predict Sports Car."
+          }
+        ]
+      }
+    ]
+  },
+  "tree": [
+    {
+      "id": "lecture-tree",
+      "rootNodeId": "root-marital",
+      "nodes": [
+        {
+          "id": "root-marital",
+          "kind": "decision",
+          "label": "Marital status?",
+          "feature": "maritalStatus"
+        },
+        {
+          "id": "leaf-single",
+          "kind": "leaf",
+          "label": "Sports Car",
+          "prediction": "Sports Car"
+        },
+        {
+          "id": "node-gender",
+          "kind": "decision",
+          "label": "Gender?",
+          "feature": "gender"
+        },
+        {
+          "id": "leaf-female",
+          "kind": "leaf",
+          "label": "Family Car",
+          "prediction": "Family Car"
+        },
+        {
+          "id": "node-income",
+          "kind": "decision",
+          "label": "Annual income?",
+          "feature": "annualIncome"
+        },
+        {
+          "id": "leaf-low",
+          "kind": "leaf",
+          "label": "Family Car",
+          "prediction": "Family Car"
+        },
+        {
+          "id": "leaf-high",
+          "kind": "leaf",
+          "label": "Sports Car",
+          "prediction": "Sports Car"
+        }
+      ],
+      "branches": [
+        {
+          "id": "b-single",
+          "from": "root-marital",
+          "to": "leaf-single",
+          "label": "Single",
+          "predicate": {
+            "feature": "maritalStatus",
+            "op": "eq",
+            "value": "Single"
+          }
+        },
+        {
+          "id": "b-married",
+          "from": "root-marital",
+          "to": "node-gender",
+          "label": "Married",
+          "predicate": {
+            "feature": "maritalStatus",
+            "op": "eq",
+            "value": "Married"
+          }
+        },
+        {
+          "id": "b-female",
+          "from": "node-gender",
+          "to": "leaf-female",
+          "label": "Female",
+          "predicate": {
+            "feature": "gender",
+            "op": "eq",
+            "value": "Female"
+          }
+        },
+        {
+          "id": "b-male",
+          "from": "node-gender",
+          "to": "node-income",
+          "label": "Male",
+          "predicate": {
+            "feature": "gender",
+            "op": "eq",
+            "value": "Male"
+          }
+        },
+        {
+          "id": "b-low",
+          "from": "node-income",
+          "to": "leaf-low",
+          "label": "<= 100K",
+          "predicate": {
+            "feature": "annualIncome",
+            "op": "lte",
+            "value": 100
+          }
+        },
+        {
+          "id": "b-high",
+          "from": "node-income",
+          "to": "leaf-high",
+          "label": "> 100K",
+          "predicate": {
+            "feature": "annualIncome",
+            "op": "gt",
+            "value": 100
+          }
+        }
+      ]
+    }
+  ],
+  "flow": {
+    "progression": "unlock-plus-one",
+    "segments": [
+      {
+        "id": "intro",
+        "title": "Spot the Parts",
+        "order": 0,
+        "objectiveIds": [
+          "identify-parts"
+        ],
+        "sourceRef": "lecture-deck",
+        "unlockRule": "always",
+        "debriefId": "final"
+      },
+      {
+        "id": "learn-from-data",
+        "title": "Learn From Data",
+        "order": 1,
+        "objectiveIds": [
+          "identify-label"
+        ],
+        "sourceRef": "lecture-deck",
+        "debriefId": "final"
+      },
+      {
+        "id": "pick-the-best-split",
+        "title": "Pick the Best Split",
+        "order": 2,
+        "objectiveIds": [
+          "choose-split"
+        ],
+        "sourceRef": "lecture-deck",
+        "debriefId": "final"
+      },
+      {
+        "id": "grow-the-tree",
+        "title": "Grow the Tree",
+        "order": 3,
+        "objectiveIds": [
+          "grow-tree"
+        ],
+        "sourceRef": "lecture-deck",
+        "debriefId": "final"
+      },
+      {
+        "id": "apply-the-tree",
+        "title": "Apply the Tree",
+        "order": 4,
+        "objectiveIds": [
+          "apply-tree"
+        ],
+        "sourceRef": "lecture-deck",
+        "debriefId": "final"
+      },
+      {
+        "id": "wrap-up",
+        "title": "Wrap-Up",
+        "order": 5,
+        "objectiveIds": [
+          "apply-tree"
+        ],
+        "sourceRef": "lecture-deck",
+        "debriefId": "final"
+      }
+    ],
+    "steps": [
+      {
+        "id": "intro-teach",
+        "segmentId": "intro",
+        "order": 0,
+        "graded": false,
+        "objectiveIds": [
+          "identify-parts"
+        ],
+        "prompt": "A decision tree has three parts. A **decision node** asks a question about one feature. A **branch** is one answer to that question. A **leaf** holds the predicted class label.",
+        "interaction": {
+          "type": "narrative",
+          "beatId": "intro-teach-beat"
+        }
+      },
+      {
+        "id": "intro-node",
+        "segmentId": "intro",
+        "graded": true,
+        "objectiveIds": [
+          "identify-parts"
+        ],
+        "bloomDemand": "understand",
+        "title": "Spot the parts",
+        "prompt": "Which of these belongs in a decision node — the part of the tree that asks a question?",
+        "taxonomyId": "decision-node",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": false,
+          "options": [
+            {
+              "id": "marital",
+              "label": "Marital Status",
+              "detail": "A question about one feature.",
+              "correct": true,
+              "feedback": "Decision nodes ask questions that split the data."
+            },
+            {
+              "id": "sports",
+              "label": "Sports Car",
+              "detail": "An outcome.",
+              "correct": false,
+              "feedback": "Sports Car is an outcome, not a question. A decision node asks something like \"What is the marital status?\""
+            },
+            {
+              "id": "family",
+              "label": "Family Car",
+              "detail": "An outcome.",
+              "correct": false,
+              "feedback": "Family Car is an outcome, not a question. A decision node asks something like \"What is the marital status?\""
+            },
+            {
+              "id": "leafword",
+              "label": "Leaf",
+              "detail": "The name of a tree part, not a feature.",
+              "correct": false,
+              "feedback": "A leaf is where the tree stops and states a prediction; it is not itself a question."
+            }
+          ]
+        },
+        "award": {
+          "base": 1
+        },
+        "why": "Decision nodes ask questions that split the data.",
+        "order": 1
+      },
+      {
+        "id": "intro-leaf",
+        "segmentId": "intro",
+        "graded": true,
+        "objectiveIds": [
+          "identify-parts"
+        ],
+        "bloomDemand": "understand",
+        "title": "Find a leaf",
+        "prompt": "Now identify a leaf — the part of the tree that stores the predicted class label.",
+        "taxonomyId": "leaf",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": false,
+          "options": [
+            {
+              "id": "family",
+              "label": "Family Car",
+              "detail": "An end result.",
+              "correct": true,
+              "feedback": "A leaf is an end result like Family Car or Sports Car."
+            },
+            {
+              "id": "income",
+              "label": "Annual Income",
+              "detail": "Still a question point.",
+              "correct": false,
+              "feedback": "Annual Income is still a question point, not an end result."
+            },
+            {
+              "id": "gender",
+              "label": "Gender",
+              "detail": "Still a question point.",
+              "correct": false,
+              "feedback": "Gender is still a question point, not an end result."
+            }
+          ]
+        },
+        "award": {
+          "base": 1
+        },
+        "why": "Leaves hold the predicted class label.",
+        "order": 2,
+        "terminal": true
+      },
+      {
+        "id": "data-teach",
+        "segmentId": "learn-from-data",
+        "order": 3,
+        "graded": false,
+        "objectiveIds": [
+          "identify-label"
+        ],
+        "prompt": "A supervised learner needs a **class label** — the column it is learning to predict — and **features**, the columns it is allowed to ask questions about.",
+        "interaction": {
+          "type": "narrative",
+          "beatId": "data-teach-beat"
+        }
+      },
+      {
+        "id": "data-label",
+        "segmentId": "learn-from-data",
+        "graded": true,
+        "objectiveIds": [
+          "identify-label"
+        ],
+        "bloomDemand": "understand",
+        "title": "Which column is the label?",
+        "prompt": "In this training set, which column is the class label the tree is learning to predict?",
+        "artifactIds": [
+          "training-table"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": false,
+          "options": [
+            {
+              "id": "carType",
+              "label": "Car Type",
+              "detail": "The prediction target.",
+              "correct": true,
+              "feedback": "Car type is the class label. The other columns act as features the tree uses to sort buyers."
+            },
+            {
+              "id": "gender",
+              "label": "Gender",
+              "detail": "An input.",
+              "correct": false,
+              "feedback": "Gender is an input feature. The tree is learning to predict the final car type label."
+            },
+            {
+              "id": "maritalStatus",
+              "label": "Marital Status",
+              "detail": "An input.",
+              "correct": false,
+              "feedback": "Marital status is an input feature. The tree is learning to predict the final car type label."
+            },
+            {
+              "id": "annualIncome",
+              "label": "Annual Income",
+              "detail": "An input.",
+              "correct": false,
+              "feedback": "Annual income is an input feature. The tree is learning to predict the final car type label."
+            }
+          ]
+        },
+        "award": {
+          "base": 1
+        },
+        "why": "Car type is the class label; the rest are features.",
+        "order": 4,
+        "terminal": true
+      },
+      {
+        "id": "split-teach",
+        "segmentId": "pick-the-best-split",
+        "order": 5,
+        "graded": false,
+        "objectiveIds": [
+          "choose-split"
+        ],
+        "prompt": "A split is better when it makes its branches **purer** — closer to holding only one class. Compare the candidates before choosing the root question.",
+        "interaction": {
+          "type": "narrative",
+          "beatId": "split-teach-beat"
+        }
+      },
+      {
+        "id": "split-root",
+        "segmentId": "pick-the-best-split",
+        "graded": true,
+        "objectiveIds": [
+          "choose-split"
+        ],
+        "bloomDemand": "analyze",
+        "title": "Pick the root split",
+        "prompt": "Which feature makes the cleaner first split — the one whose branches are closest to pure?",
+        "artifactIds": [
+          "split-cards"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": false,
+          "options": [
+            {
+              "id": "maritalStatus",
+              "label": "Marital Status",
+              "detail": "One mostly-sports branch and one mostly-family branch.",
+              "correct": true,
+              "feedback": "Marital Status creates cleaner groups than Gender, so it is the stronger root question in this lecture example."
+            },
+            {
+              "id": "gender",
+              "label": "Gender",
+              "detail": "Both branches stay mixed.",
+              "correct": false,
+              "feedback": "Gender leaves both branches mixed with sports-car and family-car buyers. Marital Status gets much closer to pure leaves."
+            }
+          ]
+        },
+        "award": {
+          "base": 1
+        },
+        "why": "The best split reduces mixing and increases purity.",
+        "order": 6,
+        "terminal": true
+      },
+      {
+        "id": "grow-teach",
+        "segmentId": "grow-the-tree",
+        "order": 7,
+        "graded": false,
+        "objectiveIds": [
+          "grow-tree"
+        ],
+        "prompt": "Keep splitting only where a branch is still mixed. A branch that is already pure needs no further question.",
+        "interaction": {
+          "type": "narrative",
+          "beatId": "grow-teach-beat"
+        }
+      },
+      {
+        "id": "grow-married-branch",
+        "segmentId": "grow-the-tree",
+        "graded": true,
+        "objectiveIds": [
+          "grow-tree"
+        ],
+        "bloomDemand": "analyze",
+        "title": "Checkpoint 5: which branch still needs another question?",
+        "prompt": "After splitting on Marital Status, which branch stays uncertain enough that the tree should keep growing?",
+        "artifactIds": [
+          "split-cards"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": false,
+          "options": [
+            {
+              "id": "married",
+              "label": "The Married branch",
+              "detail": "Still holds both classes.",
+              "correct": true,
+              "feedback": "The Married branch still mixes sports-car and family-car buyers, so it needs another question."
+            },
+            {
+              "id": "single",
+              "label": "The Single branch",
+              "detail": "Nearly pure already.",
+              "correct": false,
+              "feedback": "The Single branch is already close to pure — almost every Single buyer picks a sports car."
+            }
+          ]
+        },
+        "award": {
+          "base": 1
+        },
+        "why": "Keep splitting only where a branch still mixes the classes.",
+        "order": 8
+      },
+      {
+        "id": "grow-gender-node",
+        "segmentId": "grow-the-tree",
+        "graded": true,
+        "objectiveIds": [
+          "grow-tree"
+        ],
+        "bloomDemand": "analyze",
+        "title": "Checkpoint 6: place the next decision node",
+        "prompt": "What question belongs under the Married branch in the lecture tree?",
+        "artifactIds": [
+          "split-cards"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": false,
+          "options": [
+            {
+              "id": "gender",
+              "label": "Gender",
+              "detail": "Splits Married into Male and Female.",
+              "correct": true,
+              "feedback": "Gender is the next question under Married: the Female branch becomes pure immediately."
+            },
+            {
+              "id": "income",
+              "label": "Annual Income",
+              "detail": "Comes later, under Married + Male.",
+              "correct": false,
+              "feedback": "Income is the LAST question in this tree, not the next one. It only matters after Gender has been asked."
+            }
+          ]
+        },
+        "award": {
+          "base": 1
+        },
+        "why": "Keep splitting only where a branch still mixes the classes.",
+        "order": 9
+      },
+      {
+        "id": "grow-male-branch",
+        "segmentId": "grow-the-tree",
+        "graded": true,
+        "objectiveIds": [
+          "grow-tree"
+        ],
+        "bloomDemand": "analyze",
+        "title": "Checkpoint 7: which Gender branch stays mixed?",
+        "prompt": "Once Gender is placed, which branch still needs another split?",
+        "artifactIds": [
+          "split-cards"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": false,
+          "options": [
+            {
+              "id": "male",
+              "label": "The Male branch",
+              "detail": "Still mixed.",
+              "correct": true,
+              "feedback": "Married + Male still mixes both car types, so it needs one more question."
+            },
+            {
+              "id": "female",
+              "label": "The Female branch",
+              "detail": "Already pure.",
+              "correct": false,
+              "feedback": "Every Married + Female buyer in the training set picks a family car — that branch is already a leaf."
+            }
+          ]
+        },
+        "award": {
+          "base": 1
+        },
+        "why": "Keep splitting only where a branch still mixes the classes.",
+        "order": 10
+      },
+      {
+        "id": "grow-income-node",
+        "segmentId": "grow-the-tree",
+        "graded": true,
+        "objectiveIds": [
+          "grow-tree"
+        ],
+        "bloomDemand": "analyze",
+        "title": "Checkpoint 8: add the final decision",
+        "prompt": "What question separates the Married + Male branch into the last two leaves?",
+        "artifactIds": [
+          "split-cards"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": false,
+          "options": [
+            {
+              "id": "income",
+              "label": "Annual Income at 100K",
+              "detail": "Splits into <= 100K and > 100K.",
+              "correct": true,
+              "feedback": "Annual Income at the 100K threshold separates the last two leaves."
+            },
+            {
+              "id": "marital",
+              "label": "Marital Status again",
+              "detail": "Already used above.",
+              "correct": false,
+              "feedback": "Marital Status was already asked at the root; asking it again cannot split this branch further."
+            }
+          ]
+        },
+        "award": {
+          "base": 1
+        },
+        "why": "Keep splitting only where a branch still mixes the classes.",
+        "order": 11,
+        "terminal": true
+      },
+      {
+        "id": "apply-teach",
+        "segmentId": "apply-the-tree",
+        "order": 12,
+        "graded": false,
+        "objectiveIds": [
+          "apply-tree"
+        ],
+        "prompt": "To classify an unseen record, start at the root and follow the branch that matches the record until you reach a leaf.",
+        "interaction": {
+          "type": "narrative",
+          "beatId": "apply-teach-beat"
+        }
+      },
+      {
+        "id": "apply-11",
+        "segmentId": "apply-the-tree",
+        "graded": true,
+        "objectiveIds": [
+          "apply-tree"
+        ],
+        "bloomDemand": "apply",
+        "title": "Client 11",
+        "prompt": "Client 11 is Married, Male, earning 170K. Follow the tree from the root to a leaf.",
+        "artifactIds": [
+          "future-table"
+        ],
+        "interaction": {
+          "type": "traverse",
+          "treeId": "lecture-tree",
+          "datasetId": "future",
+          "recordOrder": [
+            "11"
+          ],
+          "promptTemplate": "Which branch does this client follow?"
+        },
+        "award": {
+          "base": 1
+        },
+        "why": "Each client follows exactly one root-to-leaf path, and that leaf is the prediction.",
+        "order": 13
+      },
+      {
+        "id": "apply-12",
+        "segmentId": "apply-the-tree",
+        "graded": true,
+        "objectiveIds": [
+          "apply-tree"
+        ],
+        "bloomDemand": "apply",
+        "title": "Client 12",
+        "prompt": "Client 12 is Married, Female, earning 95K. Follow the tree from the root to a leaf.",
+        "artifactIds": [
+          "future-table"
+        ],
+        "interaction": {
+          "type": "traverse",
+          "treeId": "lecture-tree",
+          "datasetId": "future",
+          "recordOrder": [
+            "12"
+          ],
+          "promptTemplate": "Which branch does this client follow?"
+        },
+        "award": {
+          "base": 1
+        },
+        "why": "Each client follows exactly one root-to-leaf path, and that leaf is the prediction.",
+        "order": 14
+      },
+      {
+        "id": "apply-13",
+        "segmentId": "apply-the-tree",
+        "graded": true,
+        "objectiveIds": [
+          "apply-tree"
+        ],
+        "bloomDemand": "apply",
+        "title": "Client 13",
+        "prompt": "Client 13 is Single, Female, earning 100K. Follow the tree from the root to a leaf.",
+        "artifactIds": [
+          "future-table"
+        ],
+        "interaction": {
+          "type": "traverse",
+          "treeId": "lecture-tree",
+          "datasetId": "future",
+          "recordOrder": [
+            "13"
+          ],
+          "promptTemplate": "Which branch does this client follow?"
+        },
+        "award": {
+          "base": 1
+        },
+        "why": "Each client follows exactly one root-to-leaf path, and that leaf is the prediction.",
+        "order": 15
+      },
+      {
+        "id": "apply-14",
+        "segmentId": "apply-the-tree",
+        "graded": true,
+        "objectiveIds": [
+          "apply-tree"
+        ],
+        "bloomDemand": "apply",
+        "title": "Client 14",
+        "prompt": "Client 14 is Married, Male, earning 80K. Follow the tree from the root to a leaf.",
+        "artifactIds": [
+          "future-table"
+        ],
+        "interaction": {
+          "type": "traverse",
+          "treeId": "lecture-tree",
+          "datasetId": "future",
+          "recordOrder": [
+            "14"
+          ],
+          "promptTemplate": "Which branch does this client follow?"
+        },
+        "award": {
+          "base": 1
+        },
+        "why": "Each client follows exactly one root-to-leaf path, and that leaf is the prediction.",
+        "order": 16
+      },
+      {
+        "id": "apply-15",
+        "segmentId": "apply-the-tree",
+        "graded": true,
+        "objectiveIds": [
+          "apply-tree"
+        ],
+        "bloomDemand": "apply",
+        "title": "Client 15",
+        "prompt": "Client 15 is Single, Female, earning 150K. Follow the tree from the root to a leaf.",
+        "artifactIds": [
+          "future-table"
+        ],
+        "interaction": {
+          "type": "traverse",
+          "treeId": "lecture-tree",
+          "datasetId": "future",
+          "recordOrder": [
+            "15"
+          ],
+          "promptTemplate": "Which branch does this client follow?"
+        },
+        "award": {
+          "base": 1
+        },
+        "why": "Each client follows exactly one root-to-leaf path, and that leaf is the prediction.",
+        "order": 17,
+        "terminal": true
+      },
+      {
+        "id": "wrap-teach",
+        "segmentId": "wrap-up",
+        "order": 18,
+        "graded": false,
+        "objectiveIds": [
+          "apply-tree"
+        ],
+        "prompt": "The finished tree is a set of rules. Every root-to-leaf path is one rule you can state in a sentence.",
+        "interaction": {
+          "type": "narrative",
+          "beatId": "wrap-teach-beat"
+        },
+        "terminal": true
+      }
+    ],
+    "runtimeSemantics": {
+      "interrupts": "inert",
+      "optionBranching": "inert",
+      "distractorArtifacts": "inert",
+      "revealRules": "active",
+      "personaRestriction": "inert",
+      "eventsAffectFinalScore": false
+    }
+  },
+  "scoring": {
+    "model": "checkpoint-binary",
+    "params": {
+      "denominator": 13
+    },
+    "meters": [
+      {
+        "id": "mastery",
+        "label": "Mastery tracker",
+        "initial": 0,
+        "floor": 0,
+        "ceiling": 13,
+        "resetScope": "per-run",
+        "affectsFinalGrade": true,
+        "deltas": {
+          "correct": 1,
+          "incorrect": 0
+        }
+      }
+    ],
+    "retryPolicy": "until-correct-free",
+    "recordsAttempts": true,
+    "replay": {
+      "resets": [
+        "apply"
+      ],
+      "idempotentAwards": true
+    }
+  },
+  "feedback": {
+    "content": {
+      "correctPrefix": "Correct",
+      "incorrectPrefix": "Try again",
+      "summaryPassed": "Checkpoints collected.",
+      "summaryFailed": "Keep going."
+    },
+    "policy": {
+      "timing": "immediate",
+      "targeting": "per-option",
+      "showPointDelta": false,
+      "requireMisconceptionTag": false
+    }
+  },
+  "scaffolding": {
+    "hints": [
+      {
+        "id": "hint-split",
+        "stepId": "split-root",
+        "personaId": "*",
+        "text": "Look at which candidate leaves both of its branches mixed."
+      },
+      {
+        "id": "hint-grow-income",
+        "stepId": "grow-income-node",
+        "personaId": "*",
+        "text": "Which feature has not been asked yet on this path?"
+      }
+    ],
+    "referencePanels": [
+      {
+        "id": "purity-panel",
+        "artifactId": "split-cards",
+        "persistent": false,
+        "shownAtSteps": [
+          "split-root",
+          "grow-married-branch",
+          "grow-gender-node",
+          "grow-male-branch",
+          "grow-income-node"
+        ]
+      }
+    ],
+    "cognitiveLoad": {
+      "maxConcurrentItems": 6,
+      "maxOptionsPerStep": 4
+    },
+    "navigation": {
+      "toc": true,
+      "tocGranularity": "segment"
+    },
+    "difficultyRamp": {
+      "intro": "none",
+      "grow-the-tree": "within-segment",
+      "apply-the-tree": "within-segment"
+    }
+  },
+  "assurance": {
+    "domain": "none",
+    "notApplicable": {
+      "declared": true,
+      "justification": "The artifact contains no accounting, auditing or AIS content. Its subject is decision-tree classification over a car-buyer dataset. Forcing an accounting authority onto it would be the fabricated-precision failure Agent 5 exists to prevent."
+    },
+    "assertions": [
+      {
+        "id": "dt-1",
+        "kind": "identity",
+        "expr": "count(ds.training.id) === 10",
+        "describe": "Training set holds exactly the 10 rows of slide 19",
+        "writtenAtGate": 5
+      },
+      {
+        "id": "dt-2",
+        "kind": "identity",
+        "expr": "d.marital_purity > d.gender_purity",
+        "describe": "Marital Status must actually be the purer split, or the taught answer is wrong",
+        "writtenAtGate": 5
+      }
+    ]
+  },
+  "telemetry": {
+    "route": "completion-code",
+    "completionCode": {
+      "prefix": "DTB1",
+      "fields": [
+        "stepId",
+        "correct",
+        "attempts",
+        "hintUsed",
+        "ms"
+      ],
+      "maxChars": 120
+    },
+    "itemAnalysis": {
+      "pBand": [
+        0.25,
+        0.95
+      ],
+      "discriminationBand": [
+        0.2,
+        1
+      ],
+      "reportBy": "both"
+    }
+  },
+  "presentation": {
+    "target": "dom",
+    "motion": {
+      "reducedMotionRespected": true
+    },
+    "a11y": {
+      "liveRegion": true,
+      "ariaCurrentStep": true,
+      "colorRedundant": true,
+      "focusOrder": "dom",
+      "reducedMotion": true
+    }
+  },
+  "debrief": [
+    {
+      "id": "final",
+      "segmentId": "final",
+      "headline": "Decision tree rules to remember",
+      "body": "Every root-to-leaf path is one rule.",
+      "takeaways": [
+        "A decision node asks a question about a feature.",
+        "The best split reduces mixing and increases purity.",
+        "Stop splitting a branch once it is pure.",
+        "Classifying means walking the tree from root to leaf."
+      ],
+      "earnedNotes": true
+    }
+  ],
+  "provenance": {
+    "gates": [
+      {
+        "agent": 1,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "meta",
+          "objectives",
+          "taxonomy"
+        ],
+        "hiddenFrom": [
+          "flow.steps",
+          "scoring"
+        ],
+        "note": "REVERSE PASS: objectives did not exist in the original artifact and were reconstructed from its wrap-up checklist. This is the fixture recording that Agent 1 never ran."
+      },
+      {
+        "agent": 2,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "knowledge",
+          "tree"
+        ]
+      },
+      {
+        "agent": 3,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "scenario",
+          "debrief"
+        ]
+      },
+      {
+        "agent": 4,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "flow",
+          "scoring",
+          "presentation"
+        ]
+      },
+      {
+        "agent": 5,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "assurance"
+        ],
+        "hiddenFrom": [
+          "flow.steps"
+        ]
+      },
+      {
+        "agent": 6,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "scaffolding",
+          "telemetry"
+        ]
+      }
+    ],
+    "deltas": [],
+    "findings": []
+  }
+}

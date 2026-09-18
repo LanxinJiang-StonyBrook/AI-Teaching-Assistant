@@ -1,0 +1,792 @@
+{
+  "gamespec": "1.0",
+  "emitter": {
+    "runtime": "^1.0",
+    "widgetRegistry": "^1.0"
+  },
+  "meta": {
+    "id": "accounting-case-month-end-close",
+    "title": "Accounting Case Game — Month-End Close: Missing Accruals",
+    "subtitle": "Branching, document-driven case simulation",
+    "description": "Reverse-engineered GameSpec fixture for the month-end-close case of the Next.js Accounting Case Game (src/data/cases/month-end-close/). This is the game agent56-pilot already audits, so the fixture is the direct test of whether GameSpec generalises the pilot's eleven hand-written arithmetic closures into portable assertions.",
+    "course": "Intermediate financial accounting",
+    "chapter": "Period-end adjusting entries",
+    "audience": "undergraduate accounting students who have already had the lecture on accruals, prepaids and deferred revenue",
+    "estimatedMinutes": 20,
+    "language": "en",
+    "offline": true,
+    "singleFile": true,
+    "sources": [
+      {
+        "id": "fasb-codification",
+        "kind": "standard-set",
+        "citation": "FASB Accounting Standards Codification",
+        "edition": "as of 2026-09"
+      },
+      {
+        "id": "course-lecture",
+        "kind": "course-material",
+        "citation": "Course lecture on period-end adjustments"
+      }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "spot-adjustments",
+      "statement": "Identify, from an unadjusted trial balance and its supporting schedules, which balances require a period-end adjustment.",
+      "bloom": "analyze",
+      "assumesPriorInstruction": true,
+      "priorInstructionJustification": "The case is a post-lecture application exercise; no in-game instruction precedes the first graded decision. Agent 6 rated this \"Weak — fine as review, unsuitable as first contact\" in agent56-pilot/agent6/records/."
+    },
+    {
+      "id": "accrue-expense",
+      "statement": "Record an accrued expense in the period the service was received rather than the period of payment.",
+      "bloom": "apply",
+      "assumesPriorInstruction": true,
+      "priorInstructionJustification": "Post-lecture application exercise; see spot-adjustments."
+    },
+    {
+      "id": "amortize-prepaid",
+      "statement": "Compute and record catch-up amortisation by reconciling a general-ledger prepaid balance to its supporting schedule.",
+      "bloom": "apply",
+      "assumesPriorInstruction": true,
+      "priorInstructionJustification": "Post-lecture application exercise; see spot-adjustments."
+    },
+    {
+      "id": "recognize-deferred",
+      "statement": "Recognise the earned portion of deferred revenue for the service delivered to date.",
+      "bloom": "apply",
+      "assumesPriorInstruction": true,
+      "priorInstructionJustification": "Post-lecture application exercise; see spot-adjustments."
+    }
+  ],
+  "knowledge": {
+    "params": {
+      "prepaidGlBalance": 24000,
+      "prepaidRemainingCoverage": 2000,
+      "accrualInvoiceAmount": 14200,
+      "accrualInvoiceNumber": 4821,
+      "contractCount": 3,
+      "contractAnnualValue": 15000,
+      "contractMonths": 12,
+      "deferredTotalParked": 45000
+    },
+    "thresholds": [],
+    "datasets": [],
+    "derivations": [
+      {
+        "id": "prepaid-catchup",
+        "format": "usd",
+        "expr": "p.prepaidGlBalance - p.prepaidRemainingCoverage",
+        "describe": "Prepaid D&O catch-up = GL balance less remaining coverage",
+        "objectiveIds": [
+          "amortize-prepaid"
+        ]
+      },
+      {
+        "id": "deferred-earned",
+        "format": "usd",
+        "expr": "p.contractCount * (p.contractAnnualValue / p.contractMonths)",
+        "describe": "Deferred revenue earned = 3 contracts x ($15,000 / 12 months)",
+        "objectiveIds": [
+          "recognize-deferred"
+        ]
+      },
+      {
+        "id": "deferred-parked",
+        "format": "usd",
+        "expr": "p.contractCount * p.contractAnnualValue",
+        "describe": "Total parked in deferred revenue at renewal",
+        "objectiveIds": [
+          "recognize-deferred"
+        ]
+      }
+    ],
+    "artifacts": [
+      {
+        "id": "doc-trial-balance",
+        "title": "Unadjusted Trial Balance — Nov 30",
+        "kind": "markdown-doc",
+        "objectiveIds": [
+          "spot-adjustments"
+        ],
+        "content": "Unadjusted trial balance at November 30. Prepaid Expenses $24,000. Accrued Liabilities understated. Deferred Revenue $45,000."
+      },
+      {
+        "id": "doc-vendor-invoice",
+        "title": "Vendor Invoice #4821 — IT Services",
+        "kind": "invoice",
+        "objectiveIds": [
+          "accrue-expense"
+        ],
+        "content": "Apex IT Solutions, Invoice #4821, $14,200 for cloud infrastructure. Service period November. Received November 28. Not yet approved for payment."
+      },
+      {
+        "id": "doc-prepaid-schedule",
+        "title": "Prepaid Expense Amortization Schedule",
+        "kind": "table",
+        "objectiveIds": [
+          "amortize-prepaid"
+        ],
+        "content": "D&O Insurance. GL balance $24,000. Remaining coverage at Nov 30: one month, $2,000. Amortisation recorded year to date: none."
+      },
+      {
+        "id": "doc-deferred-revenue-memo",
+        "title": "Deferred Revenue Memo — Annual Contracts",
+        "kind": "memo",
+        "objectiveIds": [
+          "recognize-deferred"
+        ],
+        "content": "Three annual contracts renewed November 1 at $15,000 each. Full $45,000 parked in Deferred Revenue."
+      },
+      {
+        "id": "doc-red-herring-memo",
+        "title": "Capital Expenditure Approval — Server Rack",
+        "kind": "memo",
+        "isDistractor": true,
+        "objectiveIds": [
+          "spot-adjustments"
+        ],
+        "content": "Server rack capex approval. Already capitalised and depreciating; no period-end adjustment required."
+      }
+    ]
+  },
+  "scenario": {
+    "framing": "workplace-case",
+    "entityNoun": "Northwind Corp",
+    "company": {
+      "name": "Northwind Corp",
+      "industry": "multi",
+      "contextualModifiers": {}
+    },
+    "cast": [
+      {
+        "id": "controller",
+        "displayName": "The Controller",
+        "role": "Controller",
+        "voice": "terse, deadline-driven"
+      }
+    ],
+    "personas": [
+      {
+        "id": "junior-accountant",
+        "label": "Junior Accountant",
+        "seniorityLevel": 1,
+        "selectionEffect": "difficulty-gate",
+        "mission": "Close the month without a restatement."
+      },
+      {
+        "id": "audit-associate",
+        "label": "Audit Associate",
+        "seniorityLevel": 2,
+        "selectionEffect": "difficulty-gate",
+        "mission": "Tie every balance to its supporting schedule."
+      },
+      {
+        "id": "controller-role",
+        "label": "Controller",
+        "seniorityLevel": 3,
+        "selectionEffect": "difficulty-gate",
+        "mission": "Sign the close."
+      }
+    ],
+    "beats": [
+      {
+        "id": "event-audit-flag",
+        "kind": "interrupt",
+        "attachTo": {
+          "target": "option",
+          "id": "choice-skip-deferred",
+          "when": "always"
+        },
+        "label": "Audit Flag",
+        "lines": [
+          {
+            "who": "controller",
+            "text": "The auditor pulled the deferred revenue rollforward. November revenue is understated. Fix it before the file goes out."
+          }
+        ]
+      }
+    ]
+  },
+  "flow": {
+    "progression": "linear",
+    "segments": [
+      {
+        "id": "seg-review",
+        "title": "Review the Trial Balance",
+        "order": 0,
+        "objectiveIds": [
+          "spot-adjustments"
+        ],
+        "scoringWeight": 0.2,
+        "personaScope": [
+          "junior-accountant",
+          "audit-associate",
+          "controller-role"
+        ],
+        "debriefId": "final"
+      },
+      {
+        "id": "seg-accruals",
+        "title": "Record the Missing Accrual",
+        "order": 1,
+        "objectiveIds": [
+          "accrue-expense"
+        ],
+        "scoringWeight": 0.25,
+        "debriefId": "final"
+      },
+      {
+        "id": "seg-prepaid",
+        "title": "Amortize the Prepaid Expense",
+        "order": 2,
+        "objectiveIds": [
+          "amortize-prepaid"
+        ],
+        "scoringWeight": 0.25,
+        "debriefId": "final"
+      },
+      {
+        "id": "seg-deferred",
+        "title": "Recognize Deferred Revenue",
+        "order": 3,
+        "objectiveIds": [
+          "recognize-deferred"
+        ],
+        "scoringWeight": 0.3,
+        "debriefId": "final"
+      }
+    ],
+    "steps": [
+      {
+        "id": "stage-review",
+        "segmentId": "seg-review",
+        "order": 0,
+        "graded": true,
+        "objectiveIds": [
+          "spot-adjustments"
+        ],
+        "bloomDemand": "analyze",
+        "title": "Review the Trial Balance",
+        "prompt": "It's 4:47 PM on November 30. The office is quiet — most of the team left early. You pull up the unadjusted trial balance on your monitor. The controller's sticky note is on your keyboard: \"Close by EOD. Don't miss anything.\" You scan the numbers. Something feels off.",
+        "artifactIds": [
+          "doc-trial-balance"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "choice-review-correct",
+              "label": "The Accrued Liabilities balance looks low and Prepaid Expenses may be overstated.",
+              "correct": true,
+              "award": 15,
+              "feedback": "Sharp eye. Both items will need investigation. You advance to the accruals stage.",
+              "authority": {
+                "kind": "gaap-principle",
+                "note": "No citable Codification topic. Identifying which balances require period-end adjustment rests on the accrual basis itself, which the Codification assumes rather than states. Naming the honest case is deliberate: forcing an ASC number onto it would be the fabricated-precision failure Agent 5 exists to prevent."
+              }
+            },
+            {
+              "id": "choice-review-partial",
+              "label": "Only the Accrued Liabilities balance looks off.",
+              "correct": false,
+              "award": 5,
+              "feedback": "You caught one issue but missed the Prepaid overage. Review the prepaid schedule too.",
+              "misconceptionTag": "partial-scan"
+            },
+            {
+              "id": "choice-review-wrong",
+              "label": "Everything looks fine — the trial balance is clean.",
+              "correct": false,
+              "award": 0,
+              "feedback": "Not quite. The Accrued Liabilities are understated and Prepaids aren't amortized. Let's dig in.",
+              "misconceptionTag": "no-adjustment-needed"
+            }
+          ]
+        },
+        "award": {
+          "base": 15
+        },
+        "terminal": true,
+        "why": "Two accounts are out of line: Accrued Liabilities is understated and Prepaid Expenses was never amortized."
+      },
+      {
+        "id": "stage-accruals",
+        "segmentId": "seg-accruals",
+        "order": 1,
+        "graded": true,
+        "objectiveIds": [
+          "accrue-expense"
+        ],
+        "bloomDemand": "apply",
+        "title": "Record the Missing Accrual",
+        "prompt": "You dig into the AP inbox and find it — Invoice #4821 from Apex IT Solutions, $14,200 for cloud infrastructure. Received November 28. Not in the GL. The service happened in November, so the expense belongs here. Your fingers hover over the keyboard. What's the entry?",
+        "artifactIds": [
+          "doc-vendor-invoice"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "choice-accrual-correct",
+              "label": "Dr. IT Services Expense $14,200 / Cr. Accrued Liabilities $14,200",
+              "correct": true,
+              "award": 20,
+              "feedback": "Correct. The expense belongs in November (period of service). Accrued Liabilities increases.",
+              "authority": {
+                "kind": "gaap-principle",
+                "note": "No citable Codification topic. Expense recognition in the period of service rests on the accrual basis itself, which the Codification assumes rather than states. Naming the honest case is deliberate: forcing an ASC number onto it would be the fabricated-precision failure Agent 5 exists to prevent."
+              }
+            },
+            {
+              "id": "choice-accrual-ap",
+              "label": "Dr. IT Services Expense $14,200 / Cr. Accounts Payable $14,200",
+              "correct": false,
+              "award": 8,
+              "feedback": "Close — but since the invoice isn't approved for payment yet, Accrued Liabilities is the correct credit, not AP.",
+              "misconceptionTag": "accrual-vs-payable"
+            },
+            {
+              "id": "choice-accrual-skip",
+              "label": "Record it in December when the invoice is paid.",
+              "correct": false,
+              "award": 0,
+              "feedback": "Matching principle: the service was received in November, so the expense is recognized in November.",
+              "misconceptionTag": "cash-basis"
+            }
+          ]
+        },
+        "award": {
+          "base": 20
+        },
+        "terminal": true,
+        "why": "The service was received in November, so the expense is recognised in November."
+      },
+      {
+        "id": "stage-prepaid",
+        "segmentId": "seg-prepaid",
+        "order": 2,
+        "graded": true,
+        "objectiveIds": [
+          "amortize-prepaid"
+        ],
+        "bloomDemand": "apply",
+        "title": "Amortize the Prepaid Expense",
+        "prompt": "You open the prepaid schedule and your stomach drops. The D&O Insurance hasn't been amortized all year. The GL still shows $24,000 — but only one month of coverage is left. The server rack memo is also in the pile, but a quick check shows that capex is already handled. Focus. What do you adjust?",
+        "artifactIds": [
+          "doc-prepaid-schedule",
+          "doc-red-herring-memo"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "choice-prepaid-correct",
+              "label": "Dr. Insurance Expense $22,000 / Cr. Prepaid Insurance $22,000",
+              "correct": true,
+              "award": 20,
+              "feedback": "Exactly right. $24,000 - $2,000 = $22,000 to recognize. The server rack memo was a red herring — that's already handled.",
+              "authority": {
+                "kind": "gaap-principle",
+                "note": "No citable Codification topic. Systematic allocation of a prepaid cost over the periods benefited rests on the accrual basis itself, which the Codification assumes rather than states. Naming the honest case is deliberate: forcing an ASC number onto it would be the fabricated-precision failure Agent 5 exists to prevent."
+              }
+            },
+            {
+              "id": "choice-prepaid-monthly",
+              "label": "Dr. Insurance Expense $2,000 / Cr. Prepaid Insurance $2,000",
+              "correct": false,
+              "award": 5,
+              "feedback": "That's only one month's amortization. The schedule shows no amortization was recorded all year — you need to catch up $22,000.",
+              "misconceptionTag": "one-month-only",
+              "misconceptionFormula": "p.prepaidRemainingCoverage"
+            },
+            {
+              "id": "choice-prepaid-nothing",
+              "label": "No adjustment needed — prepaids look fine.",
+              "correct": false,
+              "award": 0,
+              "feedback": "The GL balance of $24,000 vs. a correct balance of $2,000 means $22,000 was never expensed.",
+              "misconceptionTag": "no-adjustment-needed"
+            }
+          ]
+        },
+        "award": {
+          "base": 20
+        },
+        "terminal": true,
+        "why": "The GL balance less the remaining coverage is the catch-up amortisation."
+      },
+      {
+        "id": "stage-deferred",
+        "segmentId": "seg-deferred",
+        "order": 3,
+        "graded": true,
+        "objectiveIds": [
+          "recognize-deferred"
+        ],
+        "bloomDemand": "apply",
+        "title": "Recognize Deferred Revenue",
+        "prompt": "One last item. The deferred revenue memo is sitting in your inbox — three annual contracts renewed November 1, $15,000 each. The full $45,000 is still parked in Deferred Revenue. But November is over. One month of service has been delivered. The auditor's already flagging this account. What do you do?",
+        "artifactIds": [
+          "doc-deferred-revenue-memo"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "choice-deferred-correct",
+              "label": "Dr. Deferred Revenue $3,750 / Cr. Revenue $3,750",
+              "correct": true,
+              "award": 20,
+              "feedback": "3 contracts x ($15,000 / 12) = $3,750 for one month of service delivered. Perfect.",
+              "authority": {
+                "kind": "fasb-asc",
+                "ref": "ASC 606-10-25-27",
+                "sourceId": "fasb-codification",
+                "note": "Revenue from a stand-ready service obligation is recognised over time as the service is delivered."
+              }
+            },
+            {
+              "id": "choice-deferred-full",
+              "label": "Dr. Deferred Revenue $45,000 / Cr. Revenue $45,000",
+              "correct": false,
+              "award": 0,
+              "feedback": "Only one month of service has been delivered. Recognizing the full amount violates the revenue recognition principle.",
+              "misconceptionTag": "recognize-upfront",
+              "misconceptionFormula": "p.contractCount * p.contractAnnualValue"
+            },
+            {
+              "id": "choice-skip-deferred",
+              "label": "Leave Deferred Revenue as-is — it will unwind automatically.",
+              "correct": false,
+              "award": 0,
+              "feedback": "Deferred revenue requires a manual entry each period. Skipping it understates November revenue.",
+              "misconceptionTag": "no-adjustment-needed"
+            }
+          ]
+        },
+        "award": {
+          "base": 20
+        },
+        "terminal": true,
+        "why": "One month of a twelve-month obligation has been satisfied on each of three contracts."
+      }
+    ],
+    "runtimeSemantics": {
+      "interrupts": "inert",
+      "optionBranching": "inert",
+      "distractorArtifacts": "active",
+      "revealRules": "inert",
+      "personaRestriction": "active",
+      "eventsAffectFinalScore": false
+    }
+  },
+  "scoring": {
+    "model": "weighted-cap",
+    "params": {
+      "maxScore": 100,
+      "passingScore": 70,
+      "minHeadroom": 15,
+      "capFn": "round(max*weight)",
+      "clampNegative": true
+    },
+    "meters": [
+      {
+        "id": "score",
+        "label": "Score",
+        "initial": 0,
+        "floor": 0,
+        "ceiling": 100,
+        "resetScope": "per-run",
+        "affectsFinalGrade": true,
+        "deltas": {
+          "correct": 0,
+          "incorrect": 0
+        }
+      }
+    ],
+    "retryPolicy": "lock-after-select",
+    "replay": {
+      "resets": [
+        "score"
+      ],
+      "idempotentAwards": false
+    }
+  },
+  "feedback": {
+    "content": {
+      "correctPrefix": "Correct",
+      "incorrectPrefix": "Not quite",
+      "summaryPassed": "Great work — the books are closed and your adjustments were accurate.",
+      "summaryFailed": "The close had some issues. Review the stage breakdown to see where adjustments were missed."
+    },
+    "policy": {
+      "timing": "immediate",
+      "targeting": "per-option",
+      "showPointDelta": true,
+      "requireMisconceptionTag": true
+    }
+  },
+  "scaffolding": {
+    "hints": [
+      {
+        "id": "h-review-ja",
+        "stepId": "stage-review",
+        "personaId": "junior-accountant",
+        "text": "Compare the Accrued Liabilities balance to prior months. Does anything seem unusually low?"
+      },
+      {
+        "id": "h-review-aa",
+        "stepId": "stage-review",
+        "personaId": "audit-associate",
+        "text": "Check the prepaid balance against the amortization schedule — does it tie?"
+      },
+      {
+        "id": "h-accrual-ja",
+        "stepId": "stage-accruals",
+        "personaId": "junior-accountant",
+        "text": "Remember the matching principle: record expenses in the period the service was received."
+      },
+      {
+        "id": "h-prepaid-ja",
+        "stepId": "stage-prepaid",
+        "personaId": "junior-accountant",
+        "text": "The amortization schedule shows what the balance SHOULD be. Subtract from the GL balance to get your adjustment."
+      },
+      {
+        "id": "h-prepaid-aa",
+        "stepId": "stage-prepaid",
+        "personaId": "audit-associate",
+        "text": "Always reconcile GL balances to supporting schedules — the difference is your adjustment."
+      },
+      {
+        "id": "h-deferred-ja",
+        "stepId": "stage-deferred",
+        "personaId": "junior-accountant",
+        "text": "Each contract is $15,000/year. How much revenue is earned in a single month?"
+      },
+      {
+        "id": "h-deferred-aa",
+        "stepId": "stage-deferred",
+        "personaId": "audit-associate",
+        "text": "Check the memo: three contracts x monthly rate. Only service delivered to date can be recognized."
+      },
+      {
+        "id": "h-controller",
+        "stepId": "stage-review",
+        "personaId": "controller-role",
+        "text": "No hint. At this seniority the judgement is yours."
+      }
+    ],
+    "cognitiveLoad": {
+      "maxConcurrentItems": 5,
+      "maxOptionsPerStep": 4
+    },
+    "navigation": {
+      "toc": false
+    },
+    "difficultyRamp": {
+      "seg-review": "none",
+      "seg-accruals": "none",
+      "seg-prepaid": "none",
+      "seg-deferred": "none"
+    }
+  },
+  "assurance": {
+    "domain": "financial-accounting",
+    "authorityPolicy": {
+      "allowedKinds": [
+        "fasb-asc",
+        "gaap-principle"
+      ],
+      "requireOnCorrect": true,
+      "refPatterns": {
+        "fasb-asc": "^ASC\\s\\d{3}-\\d{2}(-\\d{2})?(-\\d+)?$"
+      }
+    },
+    "assertions": [
+      {
+        "id": "ME-1",
+        "kind": "must-appear",
+        "expr": "p.prepaidGlBalance - p.prepaidRemainingCoverage",
+        "writtenAtGate": 5,
+        "describe": "Prepaid D&O catch-up = GL balance - remaining coverage ($24,000 - $2,000)",
+        "corpus": [
+          "stage-prepaid"
+        ],
+        "objectiveIds": [
+          "amortize-prepaid"
+        ]
+      },
+      {
+        "id": "ME-2",
+        "kind": "must-appear",
+        "expr": "p.contractCount * (p.contractAnnualValue / p.contractMonths)",
+        "writtenAtGate": 5,
+        "describe": "Deferred revenue earned = 3 contracts x ($15,000 / 12 months)",
+        "corpus": [
+          "stage-deferred"
+        ],
+        "objectiveIds": [
+          "recognize-deferred"
+        ]
+      },
+      {
+        "id": "ME-3",
+        "kind": "identity",
+        "expr": "p.contractCount * p.contractAnnualValue === p.deferredTotalParked",
+        "writtenAtGate": 5,
+        "describe": "The parked deferred-revenue balance must tie to contracts x annual value"
+      },
+      {
+        "id": "ME-4",
+        "kind": "must-appear",
+        "expr": "p.accrualInvoiceAmount",
+        "writtenAtGate": 5,
+        "describe": "The accrued invoice amount must appear in the entry the student is graded on",
+        "corpus": [
+          "stage-accruals"
+        ],
+        "objectiveIds": [
+          "accrue-expense"
+        ]
+      },
+      {
+        "id": "ME-5",
+        "kind": "range",
+        "expr": "p.prepaidRemainingCoverage / (p.prepaidGlBalance / 12)",
+        "expected": [
+          0.9,
+          1.1
+        ],
+        "writtenAtGate": 5,
+        "describe": "Remaining coverage must be about one month of the annual premium, or the story does not hold together"
+      }
+    ],
+    "attestation": {
+      "humanReviewer": "UNSIGNED — reverse-pass fixture",
+      "credential": "n/a",
+      "standardsEdition": "FASB ASC as of 2026-09",
+      "signed": false
+    }
+  },
+  "telemetry": {
+    "route": "completion-code",
+    "completionCode": {
+      "prefix": "ACG1",
+      "fields": [
+        "stepId",
+        "correct",
+        "attempts",
+        "hintUsed",
+        "ms",
+        "optionId"
+      ],
+      "maxChars": 120
+    },
+    "itemAnalysis": {
+      "pBand": [
+        0.25,
+        0.95
+      ],
+      "discriminationBand": [
+        0.2,
+        1
+      ],
+      "reportBy": "both"
+    }
+  },
+  "presentation": {
+    "target": "dom",
+    "motion": {
+      "reducedMotionRespected": true
+    },
+    "a11y": {
+      "liveRegion": true,
+      "ariaCurrentStep": true,
+      "colorRedundant": true,
+      "focusOrder": "dom",
+      "reducedMotion": true
+    }
+  },
+  "debrief": [
+    {
+      "id": "final",
+      "segmentId": "final",
+      "headline": "Close complete",
+      "body": "Four adjustments, four decisions. Review where the points went.",
+      "takeaways": [
+        "An expense belongs to the period of service, not the period of payment.",
+        "A GL balance that does not tie to its schedule is the adjustment.",
+        "Deferred revenue unwinds by manual entry, one period at a time."
+      ],
+      "earnedNotes": true
+    }
+  ],
+  "provenance": {
+    "gates": [
+      {
+        "agent": 1,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "meta",
+          "objectives"
+        ],
+        "hiddenFrom": [
+          "flow.steps",
+          "scoring"
+        ],
+        "note": "REVERSE PASS: the artifact declares no objectives. These four were reconstructed from the stage titles and the pilot Agent 6 record, which rated objective alignment FAIL for exactly this reason."
+      },
+      {
+        "agent": 2,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "knowledge"
+        ]
+      },
+      {
+        "agent": 3,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "scenario",
+          "debrief"
+        ]
+      },
+      {
+        "agent": 4,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "flow",
+          "scoring",
+          "presentation"
+        ]
+      },
+      {
+        "agent": 5,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "assurance"
+        ],
+        "hiddenFrom": [
+          "flow.steps"
+        ]
+      },
+      {
+        "agent": 6,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "scaffolding",
+          "telemetry"
+        ]
+      }
+    ],
+    "deltas": [],
+    "findings": []
+  }
+}

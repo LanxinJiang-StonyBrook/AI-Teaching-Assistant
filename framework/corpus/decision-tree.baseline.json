@@ -1,0 +1,31 @@
+{
+  "about": "framework/corpus/decision-tree.baseline.json",
+  "fixture": "decision-tree.spec.json",
+  "reverseEngineeredFrom": "public/decision-tree-game/index.html",
+  "note": "A corpus fixture is a reverse-engineered EXISTING game, so it carries that game's real defects. Each finding below is accepted with a reason; anything NOT listed here is a regression in the fixture or the validator. These are findings ABOUT THE ORIGINAL ARTIFACT — they are the yield of the reverse pass, not excuses.",
+  "accepted": [
+    {
+      "check": "P2 objective-assessed",
+      "target": "objectives/choose-split",
+      "reason": "REAL DEFECT OF THE ORIGINAL. 'Pick the best split' is the one genuinely analytical judgement in the game and it is assessed by a single checkpoint (index.html:1724 handleSplitChoice). The framework default for bloom >= analyze is 2 graded items. Fix in a forward build: add a second split comparison, e.g. after the Gender node is placed.",
+      "arity": 2,
+      "raisedBy": 1,
+      "against": 4
+    },
+    {
+      "check": "P6 chance-score-budget",
+      "target": "objectives/choose-split",
+      "reason": "REAL DEFECT OF THE ORIGINAL, and the sharper half of the same problem. SPLIT_CANDIDATES (index.html:1397) offers exactly two options, so a student who understands nothing collects this checkpoint half the time. A 50% guessing baseline on the only analyze-level item in the game is not an assessment. Fix: three candidate splits, or pair it with a justification item.",
+      "arity": 2,
+      "raisedBy": 1,
+      "against": 4
+    }
+  ],
+  "fixedByRoundTrip": [
+    {
+      "defect": "SPLIT_CANDIDATES (index.html:1397-1416) shows branch counts totalling 40 observations directly beneath a training table of 10 rows (index.html:1376-1387), with nothing on screen saying the figures are illustrative. A student who tries to reconcile 15 Single/Sports against the table cannot.",
+      "howTheSpecFixesIt": "knowledge.datasets.role = 'illustrative' triggers check N4, which REFUSES the spec unless it also declares notDerivedFrom: ['training'] and a provenanceLabel that the emitter renders on screen. Verified: removing either field produces two N4 errors.",
+      "consequence": "Round-tripping this fixture through the emitter produces a game that is strictly better than the original at the point where the original silently misleads."
+    }
+  ]
+}

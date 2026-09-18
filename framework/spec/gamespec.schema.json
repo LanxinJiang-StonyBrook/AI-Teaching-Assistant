@@ -1,0 +1,3072 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/LanxinJiang-StonyBrook/AI-Teaching-Assistant/framework/spec/gamespec.schema.json",
+  "title": "GameSpec v1.0",
+  "description": "The hand-off contract of the MAAEGDE six-agent accounting educational game design pipeline. Every field carries x-agent: the single agent that owns it. Derived fields (x-derived: true) are computed by the validator and MUST NOT be authored.",
+  "type": "object",
+  "required": [
+    "gamespec",
+    "meta",
+    "objectives",
+    "knowledge",
+    "flow",
+    "scoring",
+    "feedback",
+    "assurance",
+    "presentation",
+    "provenance"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "gamespec": {
+      "const": "1.0"
+    },
+    "emitter": {
+      "x-agent": 4,
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "runtime": {
+          "type": "string",
+          "description": "semver range of framework/emit/runtime"
+        },
+        "widgetRegistry": {
+          "type": "string"
+        }
+      }
+    },
+    "meta": {
+      "x-agent": 1,
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "course",
+        "audience",
+        "sources"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 3
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "course": {
+          "type": "string",
+          "description": "e.g. ACC 214"
+        },
+        "chapter": {
+          "type": "string"
+        },
+        "audience": {
+          "type": "string",
+          "description": "named learner level, e.g. 'undergraduate managerial accounting, post-lecture'"
+        },
+        "estimatedMinutes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "language": {
+          "type": "string",
+          "default": "en"
+        },
+        "offline": {
+          "type": "boolean",
+          "default": true
+        },
+        "singleFile": {
+          "type": "boolean",
+          "default": true
+        },
+        "outOfScope": {
+          "type": "object",
+          "description": "The framework states in its own data what it does not cover. Used to keep coverage claims honest.",
+          "additionalProperties": false,
+          "required": [
+            "declared",
+            "reason"
+          ],
+          "properties": {
+            "declared": {
+              "type": "boolean"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 20
+            }
+          }
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Every authority.ref and every dataset.provenance must resolve to an id here.",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "kind",
+              "citation"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "kind": {
+                "enum": [
+                  "slide-deck",
+                  "textbook",
+                  "standard-set",
+                  "dataset",
+                  "paper",
+                  "course-material"
+                ]
+              },
+              "citation": {
+                "type": "string"
+              },
+              "edition": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              },
+              "archivedAt": {
+                "type": "string",
+                "description": "path or URL of the pinned copy"
+              }
+            }
+          }
+        }
+      }
+    },
+    "objectives": {
+      "x-agent": 1,
+      "type": "array",
+      "minItems": 1,
+      "description": "THE SPINE. Every graded step references at least one objective id; the validator derives assessedBy and refuses a spec that authors it.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "statement",
+          "bloom"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/slug"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 10,
+            "description": "verb-first, one sentence"
+          },
+          "bloom": {
+            "enum": [
+              "remember",
+              "understand",
+              "apply",
+              "analyze",
+              "evaluate",
+              "create"
+            ]
+          },
+          "kind": {
+            "enum": [
+              "knowledge",
+              "procedure",
+              "professional-judgement",
+              "ethics"
+            ],
+            "default": "knowledge",
+            "description": "ethics / professional-judgement objectives are exempt from authority.ref patterns; see assurance.authorityPolicy."
+          },
+          "minGradedItems": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "default 1; default 2 when bloom >= analyze"
+          },
+          "maxChanceScore": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.34,
+            "description": "guessing budget across this objective's assessing steps"
+          },
+          "assumesPriorInstruction": {
+            "type": "boolean",
+            "default": false
+          },
+          "priorInstructionJustification": {
+            "type": "string"
+          },
+          "prerequisiteObjectiveIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/slug"
+            }
+          },
+          "taughtBy": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/slug"
+            },
+            "description": "non-graded stepIds / artifactIds that INSTRUCT"
+          },
+          "assessedBy": {
+            "x-derived": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/slug"
+            }
+          },
+          "competencyRef": {
+            "type": "string",
+            "description": "optional external map: AACSB / CPA blueprint / course LO code"
+          }
+        }
+      }
+    },
+    "taxonomy": {
+      "x-agent": 1,
+      "type": "array",
+      "description": "Optional: a checklist the game teaches as a SET (the six internal-control activities; the three regression-validity criteria). Drives checklist UI and debrief rollup.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "definition"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/slug"
+          },
+          "label": {
+            "type": "string"
+          },
+          "shortLabel": {
+            "type": "string"
+          },
+          "definition": {
+            "type": "string"
+          },
+          "colorRole": {
+            "$ref": "#/$defs/colorRole"
+          },
+          "objectiveIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/slug"
+            }
+          }
+        }
+      }
+    },
+    "modes": {
+      "x-agent": 4,
+      "type": "array",
+      "description": "Cross-cutting play modes (solo vs class-competition). A first-class construct because mode is not a local override: in acc214-cost-estimation it touches four agents' field sets at 13 sites.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "label"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/slug"
+          },
+          "label": {
+            "type": "string"
+          },
+          "default": {
+            "type": "boolean",
+            "default": false
+          },
+          "teams": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "min": {
+                "type": "integer"
+              },
+              "max": {
+                "type": "integer"
+              },
+              "rotation": {
+                "enum": [
+                  "per-step",
+                  "per-segment",
+                  "none"
+                ]
+              }
+            }
+          },
+          "affects": {
+            "type": "array",
+            "description": "Every field path this mode changes. The validator cross-checks that each path exists and that its owning agent is recorded in provenance.",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "knowledge": {
+      "x-agent": 2,
+      "type": "object",
+      "required": [
+        "params"
+      ],
+      "additionalProperties": false,
+      "description": "THE CHOKEPOINT. Every number a student is graded against enters the spec exactly once, here, owned by one agent. Agents 3 and 4 may only reference it. This single rule is what makes Agent 5 arithmetic checks portable to any game instead of eleven hand-written closures keyed to case ids.",
+      "properties": {
+        "params": {
+          "type": "object",
+          "description": "Named numeric/string primitives. Referenced from prose as {{p.name}}.",
+          "additionalProperties": {
+            "type": [
+              "number",
+              "string",
+              "array"
+            ]
+          }
+        },
+        "thresholds": {
+          "type": "array",
+          "description": "Every constant used in a gating, scoring or correctness expression. Undeclared magic numbers are an ERROR (check N6).",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "value",
+              "kind"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "$ref": "#/$defs/slug"
+              },
+              "value": {
+                "type": "number"
+              },
+              "kind": {
+                "enum": [
+                  "standard",
+                  "rule-of-thumb",
+                  "design-constant"
+                ]
+              },
+              "sourceId": {
+                "$ref": "#/$defs/slug"
+              },
+              "inclusive": {
+                "type": "boolean",
+                "description": "whether comparisons against it are >= / <= (true) or > / < (false). Check N8 enforces one answer per threshold."
+              },
+              "note": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "datasets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "columns",
+              "rows",
+              "role"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "title": {
+                "type": "string"
+              },
+              "provenance": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "sourceId": {
+                    "$ref": "#/$defs/slug"
+                  },
+                  "note": {
+                    "type": "string"
+                  }
+                }
+              },
+              "columns": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "key",
+                    "label",
+                    "type"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "$ref": "#/$defs/slug"
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "enum": [
+                        "number",
+                        "string",
+                        "currency",
+                        "percent",
+                        "category",
+                        "date"
+                      ]
+                    },
+                    "unit": {
+                      "type": "string"
+                    },
+                    "displayKey": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "rows": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "labelColumn": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "role": {
+                "enum": [
+                  "training",
+                  "holdout",
+                  "illustrative",
+                  "reference"
+                ]
+              },
+              "notDerivedFrom": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/slug"
+                },
+                "description": "REQUIRED when role is 'illustrative'. Names the dataset this one must NOT be read as a summary of. Closes the loophole where SPLIT_CANDIDATES totalling 40 observations sits next to a 10-row training table."
+              },
+              "provenanceLabel": {
+                "type": "string",
+                "description": "REQUIRED when role is 'illustrative'. Rendered on screen so a student sees it is not derived from the table just shown."
+              },
+              "invariants": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "target"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "sumTo",
+                        "rowCount",
+                        "footTo",
+                        "debitsEqualCredits",
+                        "probabilityVector"
+                      ]
+                    },
+                    "column": {
+                      "type": "string"
+                    },
+                    "target": {
+                      "type": [
+                        "number",
+                        "string"
+                      ]
+                    },
+                    "tol": {
+                      "type": "number",
+                      "default": 0.01
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "derivations": {
+          "type": "array",
+          "description": "Named pure functions over declared datasets/params. Every displayed statistic must be reproducible by one of these (check N4).",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "expr",
+              "describe"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "datasetId": {
+                "$ref": "#/$defs/slug"
+              },
+              "expr": {
+                "$ref": "#/$defs/expr"
+              },
+              "describe": {
+                "type": "string"
+              },
+              "unit": {
+                "type": "string"
+              },
+              "format": {
+                "enum": [
+                  "usd",
+                  "percent",
+                  "number",
+                  "integer"
+                ],
+                "default": "number"
+              },
+              "objectiveIds": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/slug"
+                }
+              }
+            }
+          }
+        },
+        "artifacts": {
+          "type": "array",
+          "description": "The evidence a student reads to answer. Unifies Document (markdown), ref/BILL_REF (invoice HTML), mini-ledger records, TRAINING_ROWS tables.",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "title",
+              "kind"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "title": {
+                "type": "string"
+              },
+              "kind": {
+                "enum": [
+                  "markdown-doc",
+                  "table",
+                  "invoice",
+                  "memo",
+                  "contract",
+                  "policy",
+                  "exhibit-image",
+                  "code-output",
+                  "dataset-view"
+                ]
+              },
+              "content": {
+                "type": "string",
+                "description": "markdown for markdown-doc / invoice / code-output"
+              },
+              "datasetId": {
+                "$ref": "#/$defs/slug"
+              },
+              "assetId": {
+                "$ref": "#/$defs/slug"
+              },
+              "objectiveIds": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/slug"
+                }
+              },
+              "isDistractor": {
+                "type": "boolean",
+                "default": false,
+                "description": "the red-herring flag, promoted to a first-class checked field"
+              },
+              "revealedAtSteps": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/slug"
+                }
+              },
+              "textAlternative": {
+                "type": "string",
+                "description": "REQUIRED for exhibit-image. For a data-bearing image, also supply a machine-readable transcription so Agent 5 has something to check."
+              },
+              "transcription": {
+                "type": "object",
+                "description": "machine-readable content of a data-bearing exhibit-image"
+              }
+            }
+          }
+        }
+      }
+    },
+    "scenario": {
+      "x-agent": 3,
+      "type": "object",
+      "description": "ENTIRELY OPTIONAL. Decision Tree Builder Lab has no scenario and no persona; that is a design choice, not an omission, and the schema must be able to say so via framing: none.",
+      "additionalProperties": false,
+      "properties": {
+        "framing": {
+          "enum": [
+            "workplace-case",
+            "consulting-engagement",
+            "lab",
+            "lecture-replay",
+            "none"
+          ]
+        },
+        "entityNoun": {
+          "type": "string"
+        },
+        "company": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "industry": {
+              "type": "string"
+            },
+            "contextualModifiers": {
+              "type": "object",
+              "description": "objectiveId -> sentence",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "cast": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "displayName"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "displayName": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
+              },
+              "emoji": {
+                "type": "string"
+              },
+              "assetId": {
+                "$ref": "#/$defs/slug"
+              },
+              "colorRole": {
+                "$ref": "#/$defs/colorRole"
+              },
+              "voice": {
+                "type": "string",
+                "description": "one line on how this character speaks; constrains generated dialogue"
+              }
+            }
+          }
+        },
+        "personas": {
+          "type": "array",
+          "description": "Playable identity. selectionEffect names what choosing it actually does — the Case Game roles gate hints only, Cash Receipts roles are a replay matrix.",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "label",
+              "selectionEffect"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "label": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "seniorityLevel": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "assetId": {
+                "$ref": "#/$defs/slug"
+              },
+              "colorRole": {
+                "$ref": "#/$defs/colorRole"
+              },
+              "selectionEffect": {
+                "enum": [
+                  "difficulty-gate",
+                  "replay-perspective",
+                  "cosmetic"
+                ]
+              },
+              "mission": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "settings": {
+          "type": "array",
+          "description": "Industry skin. contextualModifiers keyed by objectiveId.",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "label"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "label": {
+                "type": "string"
+              },
+              "assetId": {
+                "$ref": "#/$defs/slug"
+              },
+              "colorRole": {
+                "$ref": "#/$defs/colorRole"
+              },
+              "contextualModifiers": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "beats": {
+          "type": "array",
+          "description": "Narrative units. The Case Game BranchingEvent, Cost Estimation scene/outcome/simFail and Cash Receipts consequence interstitial all land here. CONSTRAINT (check C2): a beat may not introduce a number absent from knowledge.params or a declared derivation, unless flagged narrative:true — and a narrative:true quantifier carries an assertion obligation.",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "kind",
+              "attachTo"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "kind": {
+                "enum": [
+                  "scene",
+                  "outcome",
+                  "interrupt",
+                  "quip",
+                  "consequence-preview"
+                ]
+              },
+              "attachTo": {
+                "type": "object",
+                "required": [
+                  "target",
+                  "id"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "target": {
+                    "enum": [
+                      "step",
+                      "segment",
+                      "option",
+                      "score-below"
+                    ]
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "when": {
+                    "enum": [
+                      "enter",
+                      "exit",
+                      "correct",
+                      "incorrect",
+                      "always"
+                    ],
+                    "default": "enter"
+                  }
+                }
+              },
+              "label": {
+                "type": "string"
+              },
+              "cta": {
+                "type": "string"
+              },
+              "stamp": {
+                "type": "string"
+              },
+              "lines": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "who",
+                    "text"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "who": {
+                      "type": "string",
+                      "description": "cast id, \"you\", or \"narrator\""
+                    },
+                    "text": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "blocks": {
+                "type": "array",
+                "description": "Typed rows, NOT pre-baked HTML. The corpus bakes HTML at author time via oRow(); the spec makes the emitter render it.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "paragraph",
+                        "row",
+                        "quip"
+                      ]
+                    },
+                    "text": {
+                      "type": "string"
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "aux": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    },
+                    "who": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "narrativeNumbers": {
+                "type": "array",
+                "description": "Numbers in this beat that are deliberately not derived from knowledge. Each must declare a relation to the derived quantity sharing its unit.",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "token",
+                    "relation"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "relation": {
+                      "enum": [
+                        "equals",
+                        "approximately",
+                        "independent"
+                      ]
+                    },
+                    "ofDerivation": {
+                      "$ref": "#/$defs/slug"
+                    },
+                    "tol": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "revealMs": {
+                "type": "integer"
+              },
+              "skippable": {
+                "type": "boolean",
+                "default": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "flow": {
+      "x-agent": 4,
+      "type": "object",
+      "required": [
+        "progression",
+        "segments",
+        "steps",
+        "runtimeSemantics"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "progression": {
+          "enum": [
+            "linear",
+            "linear-with-jumps",
+            "toc-free",
+            "unlock-plus-one",
+            "mastery-gate"
+          ]
+        },
+        "segments": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "title",
+              "order",
+              "objectiveIds"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "title": {
+                "type": "string"
+              },
+              "subtitle": {
+                "type": "string"
+              },
+              "objectiveIds": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "#/$defs/slug"
+                }
+              },
+              "order": {
+                "type": "integer"
+              },
+              "unlockRule": {
+                "enum": [
+                  "always",
+                  "previous-complete",
+                  "previous-passed"
+                ],
+                "default": "previous-complete"
+              },
+              "sourceRef": {
+                "$ref": "#/$defs/slug"
+              },
+              "personaScope": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/slug"
+                }
+              },
+              "settingScope": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/slug"
+                }
+              },
+              "scoringWeight": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "debriefId": {
+                "$ref": "#/$defs/slug"
+              }
+            }
+          }
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "segmentId",
+              "order",
+              "graded",
+              "prompt",
+              "interaction"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "segmentId": {
+                "$ref": "#/$defs/slug"
+              },
+              "order": {
+                "type": "integer"
+              },
+              "graded": {
+                "type": "boolean"
+              },
+              "objectiveIds": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/slug"
+                },
+                "description": "REQUIRED non-empty when graded is true (check P1)"
+              },
+              "bloomDemand": {
+                "enum": [
+                  "remember",
+                  "understand",
+                  "apply",
+                  "analyze",
+                  "evaluate",
+                  "create"
+                ]
+              },
+              "title": {
+                "type": "string"
+              },
+              "prompt": {
+                "type": "string"
+              },
+              "caption": {
+                "type": "string"
+              },
+              "artifactIds": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/slug"
+                }
+              },
+              "taxonomyId": {
+                "$ref": "#/$defs/slug",
+                "description": "which taxonomy entry this step exercises"
+              },
+              "interaction": {
+                "$ref": "#/$defs/interaction"
+              },
+              "award": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "base": {
+                    "type": "number"
+                  },
+                  "cap": {
+                    "type": "number"
+                  },
+                  "meterDeltas": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "number"
+                    }
+                  }
+                }
+              },
+              "why": {
+                "type": "string",
+                "description": "the reasoning shown after a correct answer"
+              },
+              "hintIds": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/slug"
+                }
+              },
+              "edges": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "to"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "to": {
+                      "type": "string"
+                    },
+                    "when": {
+                      "type": "string",
+                      "description": "always | option:<id> | correct | incorrect | meter:<name><op><n>"
+                    },
+                    "precondition": {
+                      "$ref": "#/$defs/expr"
+                    }
+                  }
+                }
+              },
+              "terminal": {
+                "type": "boolean",
+                "default": false
+              },
+              "modeScope": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/slug"
+                }
+              }
+            }
+          }
+        },
+        "runtimeSemantics": {
+          "type": "object",
+          "description": "Every optional mechanic declares active or inert. Authoring a field belonging to an inert mechanic is a WARN, not an ERROR: the Accounting Case Game ships 5 triggersEventId values, isRedHerring and roleRestriction that no code reads, and a schema that made that unexpressible could not use it as a fixture.",
+          "required": [
+            "interrupts",
+            "optionBranching",
+            "distractorArtifacts",
+            "revealRules",
+            "eventsAffectFinalScore"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "interrupts": {
+              "enum": [
+                "active",
+                "inert"
+              ]
+            },
+            "optionBranching": {
+              "enum": [
+                "active",
+                "inert"
+              ]
+            },
+            "distractorArtifacts": {
+              "enum": [
+                "active",
+                "inert"
+              ]
+            },
+            "revealRules": {
+              "enum": [
+                "active",
+                "inert"
+              ]
+            },
+            "personaRestriction": {
+              "enum": [
+                "active",
+                "inert"
+              ]
+            },
+            "eventsAffectFinalScore": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "tree": {
+      "x-agent": 2,
+      "type": "array",
+      "description": "Optional logical rule set, reused by traverse steps AND by assurance assertions. Exactly ONE executable definition; prose restatements are generated from it (check N7).",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "rootNodeId",
+          "nodes",
+          "branches"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/slug"
+          },
+          "rootNodeId": {
+            "$ref": "#/$defs/slug"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "kind"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "$ref": "#/$defs/slug"
+                },
+                "kind": {
+                  "enum": [
+                    "decision",
+                    "leaf"
+                  ]
+                },
+                "label": {
+                  "type": "string"
+                },
+                "feature": {
+                  "type": "string"
+                },
+                "prediction": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "branches": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "from",
+                "to"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "$ref": "#/$defs/slug"
+                },
+                "from": {
+                  "$ref": "#/$defs/slug"
+                },
+                "to": {
+                  "$ref": "#/$defs/slug"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "predicate": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "feature": {
+                      "type": "string"
+                    },
+                    "op": {
+                      "enum": [
+                        "eq",
+                        "ne",
+                        "lt",
+                        "lte",
+                        "gt",
+                        "gte"
+                      ]
+                    },
+                    "value": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "scoring": {
+      "x-agent": 4,
+      "x-constrained-by": 6,
+      "type": "object",
+      "required": [
+        "model",
+        "params",
+        "retryPolicy"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "enum": [
+            "weighted-cap",
+            "base-streak-speed",
+            "flat-per-item",
+            "flat-penalty",
+            "checkpoint-binary"
+          ],
+          "description": "Five genuinely different strategies exist in the corpus, so this is a tagged union, not a number."
+        },
+        "params": {
+          "type": "object",
+          "description": "shape depends on model; validated by check S12",
+          "additionalProperties": true
+        },
+        "meters": {
+          "type": "array",
+          "description": "A named non-score resource. trust (Cost Estimation 100->floor 20), risk (Cash Receipts start 22, clamp 0-100), streak, mastery. Score itself is just the distinguished meter.",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "label",
+              "initial"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "label": {
+                "type": "string"
+              },
+              "icon": {
+                "type": "string"
+              },
+              "initial": {
+                "type": "number"
+              },
+              "floor": {
+                "type": "number"
+              },
+              "ceiling": {
+                "type": "number"
+              },
+              "resetScope": {
+                "enum": [
+                  "never",
+                  "per-segment",
+                  "per-run"
+                ]
+              },
+              "deltas": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "description": "keys: correct | incorrect | hint | softWrong"
+              },
+              "payout": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "when": {
+                    "enum": [
+                      "segment-end",
+                      "run-end",
+                      "never"
+                    ]
+                  },
+                  "modeScope": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/slug"
+                    }
+                  },
+                  "rate": {
+                    "type": "number"
+                  }
+                }
+              },
+              "tiers": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "max": {
+                      "type": "number"
+                    },
+                    "colorRole": {
+                      "$ref": "#/$defs/colorRole"
+                    }
+                  }
+                }
+              },
+              "affectsFinalGrade": {
+                "type": "boolean",
+                "description": "REQUIRED by check S11. No defaults: the Case Game runs two different formulas over the same event (gameStore.ts:73 live HUD, uncapped; scoring.ts:10 grade, capped)."
+              }
+            }
+          }
+        },
+        "retryPolicy": {
+          "enum": [
+            "lock-after-select",
+            "until-correct-free",
+            "until-correct-penalized"
+          ]
+        },
+        "recordsAttempts": {
+          "type": "boolean",
+          "description": "REQUIRED true when retryPolicy is until-correct-free, else the item statistics are uninterpretable (check Q3)"
+        },
+        "replay": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resets": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "idempotentAwards": {
+              "type": "boolean"
+            }
+          }
+        },
+        "derivedCeilings": {
+          "x-derived": true,
+          "type": "object",
+          "description": "perfect-run score and perfect-run meter values, computed by the validator"
+        }
+      }
+    },
+    "feedback": {
+      "type": "object",
+      "required": [
+        "content",
+        "policy"
+      ],
+      "additionalProperties": false,
+      "description": "Split into two objects so ownership is literally true. Gate order is POLICY BEFORE CONTENT: otherwise Agent 6 can only appeal after the fact.",
+      "properties": {
+        "content": {
+          "x-agent": 4,
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "correctPrefix": {
+              "type": "string"
+            },
+            "incorrectPrefix": {
+              "type": "string"
+            },
+            "softWrongByInteraction": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "summaryPassed": {
+              "type": "string"
+            },
+            "summaryFailed": {
+              "type": "string"
+            }
+          }
+        },
+        "policy": {
+          "x-agent": 6,
+          "type": "object",
+          "required": [
+            "timing",
+            "targeting"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "timing": {
+              "oneOf": [
+                {
+                  "enum": [
+                    "immediate",
+                    "deferred-to-debrief"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "correct",
+                    "incorrect"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "correct": {
+                      "enum": [
+                        "immediate",
+                        "deferred-to-debrief"
+                      ]
+                    },
+                    "incorrect": {
+                      "enum": [
+                        "immediate",
+                        "interstitial"
+                      ]
+                    }
+                  },
+                  "description": "Cash Receipts: deferred-on-correct + interstitial-on-wrong, the most interesting timing in the corpus."
+                }
+              ]
+            },
+            "targeting": {
+              "enum": [
+                "per-option",
+                "per-step"
+              ]
+            },
+            "perStepJustification": {
+              "type": "string",
+              "description": "REQUIRED when targeting is per-step"
+            },
+            "showPointDelta": {
+              "type": "boolean",
+              "default": true
+            },
+            "suppressAtZero": {
+              "type": "boolean",
+              "default": false
+            },
+            "requireMisconceptionTag": {
+              "type": "boolean",
+              "default": false
+            },
+            "consequencePreview": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "tag": {
+                  "type": "string"
+                },
+                "rewindLine": {
+                  "type": "string"
+                },
+                "oncePerStep": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "scaffolding": {
+      "x-agent": 6,
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "stepId",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "stepId": {
+                "$ref": "#/$defs/slug"
+              },
+              "personaId": {
+                "type": "string",
+                "description": "persona id or \"*\""
+              },
+              "text": {
+                "type": "string"
+              },
+              "cost": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "meterId": {
+                    "$ref": "#/$defs/slug"
+                  },
+                  "amount": {
+                    "type": "number"
+                  },
+                  "awardFactor": {
+                    "type": "number"
+                  }
+                }
+              },
+              "announceCost": {
+                "type": "boolean",
+                "description": "Cost Estimation appends \"(-half points)\" only in competition mode, so solo players are never told the hint costs anything."
+              },
+              "oneShot": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "referencePanels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "artifactId": {
+                "$ref": "#/$defs/slug"
+              },
+              "derivationIds": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/slug"
+                }
+              },
+              "persistent": {
+                "type": "boolean"
+              },
+              "shownAtSteps": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/slug"
+                }
+              }
+            }
+          }
+        },
+        "cognitiveLoad": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "maxConcurrentItems": {
+              "type": "integer"
+            },
+            "maxOptionsPerStep": {
+              "type": "integer"
+            }
+          }
+        },
+        "navigation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "toc": {
+              "type": "boolean"
+            },
+            "tocGranularity": {
+              "enum": [
+                "segment",
+                "step"
+              ]
+            },
+            "jumpResets": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "mistakeLog": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "persistKey": {
+              "type": "string"
+            },
+            "dedupeBy": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "clickToRetry": {
+              "type": "boolean"
+            }
+          }
+        },
+        "difficultyRamp": {
+          "type": "object",
+          "description": "segmentId -> none|within-segment|across-segments",
+          "additionalProperties": {
+            "enum": [
+              "none",
+              "within-segment",
+              "across-segments"
+            ]
+          }
+        }
+      }
+    },
+    "assurance": {
+      "x-agent": 5,
+      "type": "object",
+      "required": [
+        "domain"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "domain": {
+          "enum": [
+            "financial-accounting",
+            "audit-assurance",
+            "managerial-cost",
+            "tax",
+            "data-analytics",
+            "information-systems",
+            "machine-learning",
+            "statistics",
+            "none"
+          ]
+        },
+        "authorityPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "allowedKinds": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "requireOnCorrect": {
+              "type": "boolean",
+              "default": true
+            },
+            "refPatterns": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "assertions": {
+          "type": "array",
+          "description": "AUTHORED BEFORE READING flow/interaction — the audit program is written before the sample is drawn (gate order, mechanism C). Otherwise N1 is satisfiable by writing assertions the existing numbers already satisfy.",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "kind",
+              "describe"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "kind": {
+                "enum": [
+                  "must-appear",
+                  "identity",
+                  "range",
+                  "dataset-invariant",
+                  "prose-quantifier"
+                ]
+              },
+              "expr": {
+                "$ref": "#/$defs/expr"
+              },
+              "expected": {},
+              "tol": {
+                "type": "number"
+              },
+              "corpus": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "which text fields the recomputed value must appear in"
+              },
+              "severity": {
+                "enum": [
+                  "ERROR",
+                  "WARN"
+                ],
+                "default": "ERROR"
+              },
+              "describe": {
+                "type": "string"
+              },
+              "objectiveIds": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/slug"
+                }
+              },
+              "writtenAtGate": {
+                "type": "integer",
+                "description": "the gate at which this assertion was authored; check N1b refuses assertions written after gate 5 opened the flow"
+              }
+            }
+          }
+        },
+        "attestation": {
+          "type": "object",
+          "description": "Deliberately unautomatable. The validator proves internal consistency; only a person can confirm that a cited standard says what the answer claims.",
+          "additionalProperties": false,
+          "properties": {
+            "humanReviewer": {
+              "type": "string"
+            },
+            "credential": {
+              "type": "string"
+            },
+            "standardsEdition": {
+              "type": "string"
+            },
+            "specHash": {
+              "type": "string"
+            },
+            "date": {
+              "type": "string"
+            },
+            "signed": {
+              "type": "boolean",
+              "default": false
+            },
+            "exceptions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "findingId": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "notApplicable": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Decision Tree Builder Lab uses this. An honest \"no accounting content here\" beats a fabricated ASC citation.",
+          "properties": {
+            "declared": {
+              "type": "boolean"
+            },
+            "justification": {
+              "type": "string",
+              "minLength": 20
+            }
+          }
+        }
+      }
+    },
+    "telemetry": {
+      "x-agent": 6,
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "route": {
+          "enum": [
+            "completion-code",
+            "endpoint",
+            "none"
+          ]
+        },
+        "completionCode": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "prefix": {
+              "type": "string"
+            },
+            "fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "maxChars": {
+              "type": "integer"
+            }
+          }
+        },
+        "itemAnalysis": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pBand": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "discriminationBand": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "reportBy": {
+              "enum": [
+                "objective",
+                "step",
+                "both"
+              ],
+              "default": "both"
+            }
+          }
+        },
+        "retention": {
+          "type": "string"
+        },
+        "irbStatus": {
+          "type": "string"
+        }
+      }
+    },
+    "presentation": {
+      "x-agent": 4,
+      "type": "object",
+      "required": [
+        "target"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "target": {
+          "const": "dom",
+          "description": "Pinned to dom for v1.0. Two independent extractions concluded a DOM target fixes real shipped defects for free: silently clipped chart bars, no per-button focus, hit-rects drifting from draw calls."
+        },
+        "theme": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "projectorMode": {
+          "type": "boolean"
+        },
+        "motion": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "reducedMotionRespected": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        "controls": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "a11y": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "liveRegion": {
+              "type": "boolean"
+            },
+            "ariaCurrentStep": {
+              "type": "boolean"
+            },
+            "colorRedundant": {
+              "type": "boolean"
+            },
+            "focusOrder": {
+              "type": "string"
+            },
+            "reducedMotion": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "extensions": {
+      "x-agent": 4,
+      "x-reviewed-by": 6,
+      "type": "array",
+      "description": "THE ESCAPE HATCH. Design rule: the RENDERING may be opaque, the PEDAGOGY never is. A widget can hide how it draws; it cannot hide what it assesses, what it awards, or whether a student can be judged by it.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "widget",
+          "fidelity",
+          "fallback",
+          "pedagogy",
+          "textAlternative"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/slug"
+          },
+          "widget": {
+            "type": "string"
+          },
+          "widgetVersion": {
+            "type": "string"
+          },
+          "fidelity": {
+            "enum": [
+              "registry-exact",
+              "registry-approximate",
+              "degraded-fallback",
+              "bespoke-pending-generalisation"
+            ],
+            "description": "A widget used by exactly one game is bespoke-pending-generalisation, NOT registry-exact. Under the current corpus that is every widget: measured reuse factor is 1.0."
+          },
+          "usedBy": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/slug"
+            },
+            "description": "game ids. Printed as a reuse factor in the build report so the registry claim stays falsifiable."
+          },
+          "params": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "assets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/slug"
+            }
+          },
+          "layout": {
+            "type": "object",
+            "description": "opaque coordinate blob. Authored prose is FORBIDDEN here (check X5), which forces every authored string into an addressable content field."
+          },
+          "textAlternative": {
+            "type": "string"
+          },
+          "fallback": {
+            "type": "object",
+            "required": [
+              "interaction"
+            ],
+            "additionalProperties": false,
+            "description": "MANDATORY and must itself be a fully valid generatable step. If the registry lacks the widget the emitter renders this and the build report says so. There is no silent drop.",
+            "properties": {
+              "interaction": {
+                "$ref": "#/$defs/interaction"
+              },
+              "prompt": {
+                "type": "string"
+              }
+            }
+          },
+          "pedagogy": {
+            "type": "object",
+            "required": [
+              "objectiveIds",
+              "bloomDemand"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "objectiveIds": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "#/$defs/slug"
+                }
+              },
+              "bloomDemand": {
+                "type": "string"
+              },
+              "award": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "successCriterion": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "feedback": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "assets": {
+      "x-agent": 2,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "textAlternative"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/slug"
+          },
+          "kind": {
+            "enum": [
+              "image",
+              "font",
+              "svg"
+            ]
+          },
+          "src": {
+            "type": "string"
+          },
+          "dataUri": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "textAlternative": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "debrief": {
+      "x-agent": 3,
+      "x-rollup-by": 6,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "headline"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/slug"
+          },
+          "segmentId": {
+            "type": "string",
+            "description": "segment id or \"final\""
+          },
+          "headline": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "processMap": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "colorRole": {
+                  "$ref": "#/$defs/colorRole"
+                }
+              }
+            }
+          },
+          "objectiveRollup": {
+            "x-derived": true,
+            "type": "array"
+          },
+          "earnedNotes": {
+            "type": "boolean",
+            "description": "replay the feedback strings the student actually earned (the Cash Receipts debrief pattern)"
+          },
+          "takeaways": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "action": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "gates"
+      ],
+      "additionalProperties": false,
+      "description": "RECORDS STATE, NOT SIGNATURES. A trail whose error field is constrained to zero can never evidence that any agent caught anything, and six signatures on one final document is exactly what a single author would emit.",
+      "properties": {
+        "profile": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "The genre profile is an explicit INPUT, recorded here, so profile-set fields are never attributed to an agent judgment.",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "fixes": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "overrides": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "gates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "agent",
+              "specHash",
+              "fieldPathsPresent"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "agent": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 6
+              },
+              "specHash": {
+                "type": "string"
+              },
+              "snapshotRef": {
+                "type": "string",
+                "description": "path under framework/ledger/gates/"
+              },
+              "fieldPathsPresent": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "errors": {
+                "type": "integer"
+              },
+              "warnings": {
+                "type": "integer"
+              },
+              "hiddenFrom": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "field paths deliberately withheld from this agent (mechanism C: information hiding)"
+              },
+              "timestamp": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "deltas": {
+          "type": "array",
+          "description": "Every change to a field after its owner gate closed. The printed count of these IS the measurement of whether the sequence is load-bearing.",
+          "items": {
+            "type": "object",
+            "required": [
+              "fieldPath",
+              "op",
+              "byAgent",
+              "atGate"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "fieldPath": {
+                "type": "string"
+              },
+              "op": {
+                "enum": [
+                  "add",
+                  "change",
+                  "remove"
+                ]
+              },
+              "byAgent": {
+                "type": "integer"
+              },
+              "atGate": {
+                "type": "integer"
+              },
+              "causedByCheckId": {
+                "type": "string"
+              },
+              "ownerAgent": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "findings": {
+          "type": "array",
+          "description": "Cross-agent catches as first-class objects. raisedBy != against is the only kind that evidences the pipeline.",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "raisedByAgent",
+              "againstAgent",
+              "checkId",
+              "resolution"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "raisedByAgent": {
+                "type": "integer"
+              },
+              "againstAgent": {
+                "type": "integer"
+              },
+              "fieldPath": {
+                "type": "string"
+              },
+              "checkId": {
+                "type": "string"
+              },
+              "arity": {
+                "type": "integer"
+              },
+              "severity": {
+                "enum": [
+                  "ERROR",
+                  "WARN",
+                  "INFO"
+                ]
+              },
+              "describe": {
+                "type": "string"
+              },
+              "specHashBefore": {
+                "type": "string"
+              },
+              "specHashAfter": {
+                "type": "string"
+              },
+              "resolution": {
+                "enum": [
+                  "fixed",
+                  "justified",
+                  "rejected",
+                  "open"
+                ]
+              }
+            }
+          }
+        },
+        "revisionRequests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "fromAgent",
+              "toAgent",
+              "fieldPath",
+              "ask"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "fromAgent": {
+                "type": "integer"
+              },
+              "toAgent": {
+                "type": "integer"
+              },
+              "fieldPath": {
+                "type": "string"
+              },
+              "ask": {
+                "type": "string"
+              },
+              "outcome": {
+                "enum": [
+                  "accepted",
+                  "declined",
+                  "open"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9]([A-Za-z0-9_-]*[A-Za-z0-9])?$",
+      "maxLength": 64,
+      "description": "Identifier unique within its collection. camelCase is allowed because dataset column keys mirror the source data field names."
+    },
+    "colorRole": {
+      "enum": [
+        "expected",
+        "observed",
+        "correct",
+        "incorrect",
+        "caution",
+        "neutral",
+        "accent"
+      ]
+    },
+    "expr": {
+      "type": "string",
+      "description": "restricted expression over knowledge.params, knowledge.derivations and step results. No function calls outside the declared derivation set."
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "fasb-asc",
+            "aicpa-aus",
+            "gaap-principle",
+            "technical",
+            "mathematical",
+            "statistical",
+            "course-material",
+            "professional-judgement"
+          ]
+        },
+        "ref": {
+          "type": "string"
+        },
+        "sourceId": {
+          "$ref": "#/$defs/slug"
+        },
+        "quote": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string",
+          "description": "REQUIRED for gaap-principle and professional-judgement: these have no citable Codification topic, and forcing an ASC number onto them is exactly the fabricated-precision failure Agent 5 exists to prevent."
+        }
+      }
+    },
+    "interaction": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "options"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "mcq"
+            },
+            "options": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/slug"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "detail": {
+                    "type": "string"
+                  },
+                  "correct": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "feedback": {
+                    "type": "string"
+                  },
+                  "consequence": {
+                    "type": "string",
+                    "description": "Interstitial shown on a wrong pick. Check S3 is satisfied by feedback OR consequence: Cash Receipts deliberately ships \"\" feedback plus a real consequence string, and that is a design, not a defect."
+                  },
+                  "misconceptionTag": {
+                    "$ref": "#/$defs/slug"
+                  },
+                  "misconceptionFormula": {
+                    "$ref": "#/$defs/expr",
+                    "description": "for numeric distractors: the wrong computation that produces this value (check N5)"
+                  },
+                  "authority": {
+                    "$ref": "#/$defs/authority"
+                  },
+                  "award": {
+                    "type": "number"
+                  },
+                  "goTo": {
+                    "$ref": "#/$defs/slug"
+                  }
+                }
+              }
+            },
+            "shuffle": {
+              "type": "boolean",
+              "default": true
+            },
+            "wrongBehavior": {
+              "enum": [
+                "lock-all",
+                "disable-chosen"
+              ],
+              "default": "lock-all"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "options",
+            "correctSet"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "multi-select"
+            },
+            "options": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/slug"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "detail": {
+                    "type": "string"
+                  },
+                  "correct": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "feedback": {
+                    "type": "string"
+                  },
+                  "consequence": {
+                    "type": "string",
+                    "description": "Interstitial shown on a wrong pick. Check S3 is satisfied by feedback OR consequence: Cash Receipts deliberately ships \"\" feedback plus a real consequence string, and that is a design, not a defect."
+                  },
+                  "misconceptionTag": {
+                    "$ref": "#/$defs/slug"
+                  },
+                  "misconceptionFormula": {
+                    "$ref": "#/$defs/expr",
+                    "description": "for numeric distractors: the wrong computation that produces this value (check N5)"
+                  },
+                  "authority": {
+                    "$ref": "#/$defs/authority"
+                  },
+                  "award": {
+                    "type": "number"
+                  },
+                  "goTo": {
+                    "$ref": "#/$defs/slug"
+                  }
+                }
+              }
+            },
+            "correctSet": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/slug"
+              }
+            },
+            "grading": {
+              "enum": [
+                "all-or-nothing",
+                "partial"
+              ],
+              "default": "partial"
+            },
+            "perCorrect": {
+              "type": "number"
+            },
+            "perIncorrect": {
+              "type": "number"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "expectedExpr"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "numeric"
+            },
+            "expectedExpr": {
+              "$ref": "#/$defs/expr"
+            },
+            "tol": {
+              "type": "number",
+              "default": 0
+            },
+            "unit": {
+              "type": "string"
+            },
+            "formula": {
+              "type": "string"
+            },
+            "softWrongOnBlank": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "blanks"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "multi-blank"
+            },
+            "blanks": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "object",
+                "required": [
+                  "label",
+                  "expectedExpr"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "expectedExpr": {
+                    "$ref": "#/$defs/expr"
+                  },
+                  "tol": {
+                    "type": "number"
+                  },
+                  "note": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "grading": {
+              "enum": [
+                "all-or-nothing",
+                "partial"
+              ],
+              "default": "all-or-nothing"
+            },
+            "blankDiagnosis": {
+              "enum": [
+                "withheld",
+                "per-blank"
+              ],
+              "default": "per-blank"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "buckets",
+            "items"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "classify"
+            },
+            "buckets": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/slug"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "hint": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "items": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "text",
+                  "correctBucket"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/slug"
+                  },
+                  "text": {
+                    "type": "string"
+                  },
+                  "correctBucket": {
+                    "$ref": "#/$defs/slug"
+                  },
+                  "why": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "grading": {
+              "enum": [
+                "all-or-nothing",
+                "partial"
+              ],
+              "default": "partial"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "datasetId",
+            "selectCount"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "select-from-set"
+            },
+            "datasetId": {
+              "$ref": "#/$defs/slug"
+            },
+            "selectCount": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "rule": {
+              "type": "string",
+              "description": "e.g. 'minMaxBy:activity' or 'explicitIds'"
+            },
+            "correct": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "distractors": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "match": {
+                    "type": "string"
+                  },
+                  "feedback": {
+                    "type": "string"
+                  },
+                  "misconceptionTag": {
+                    "$ref": "#/$defs/slug"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "treeId",
+            "datasetId"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "traverse"
+            },
+            "treeId": {
+              "$ref": "#/$defs/slug"
+            },
+            "datasetId": {
+              "$ref": "#/$defs/slug"
+            },
+            "recordOrder": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "promptTemplate": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "generator"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "sandbox"
+            },
+            "generator": {
+              "type": "object",
+              "required": [
+                "kind",
+                "seed"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "log-uniform",
+                    "uniform",
+                    "normal",
+                    "from-dataset"
+                  ]
+                },
+                "params": {
+                  "type": "object"
+                },
+                "seed": {
+                  "type": "integer"
+                },
+                "algorithm": {
+                  "type": "string",
+                  "description": "named PRNG, e.g. lcg-park-miller"
+                }
+              }
+            },
+            "batchSize": {
+              "type": "integer"
+            },
+            "statistic": {
+              "type": "string"
+            },
+            "successCriterion": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "feedbackThresholds": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "max": {
+                    "type": "number"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "targetId"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "navigate"
+            },
+            "targetId": {
+              "$ref": "#/$defs/slug"
+            },
+            "gate": {
+              "enum": [
+                "proximity",
+                "click",
+                "none"
+              ],
+              "default": "click"
+            },
+            "radius": {
+              "type": "number"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "targets"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "drag-to-target"
+            },
+            "targets": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/slug"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "correct": {
+                    "type": "boolean"
+                  },
+                  "feedback": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "sourceLabel": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "beatId"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "narrative"
+            },
+            "beatId": {
+              "$ref": "#/$defs/slug"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "extensionId"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "extension"
+            },
+            "extensionId": {
+              "$ref": "#/$defs/slug"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
