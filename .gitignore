@@ -45,3 +45,6 @@ next-env.d.ts
 
 # generated GameSpec preview builds (not published)
 .gamespec-preview/
+
+# gate snapshots are generated per run; the ledger in the spec is the record
+framework/ledger/gates/*.json
