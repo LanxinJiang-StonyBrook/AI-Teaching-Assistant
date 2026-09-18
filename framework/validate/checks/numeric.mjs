@@ -10,7 +10,11 @@ import { makeScope, evalExpr, renderings, gradedCorpus, usd } from '../lib.mjs';
 const NUM_TOKEN = /\$\s?-?[\d,]+(?:\.\d+)?|-?[\d,]+(?:\.\d+)?\s?%|(?<![\w.])-?\d[\d,]*(?:\.\d+)?(?![\w.])/g;
 const parseTok = (t) => Number(String(t).replace(/[$,%\s]/g, ''));
 /** prose quantifiers that make a claim ABOUT numbers: "within ±2%", "off by $1,900" */
-const QUANTIFIER = /(?:within|under|over|off by|by)\s*(?:±|\+\/-)?\s*(\$?\s?[\d,.]+\s?%?)/gi;
+const QUANTIFIER = /(within|under|over|off by|by)\s*(?:±|\+\/-)?\s*(\$?\s?[\d,.]+\s?%?)/gi;
+// "within 2%" is a BOUND and must hold strictly. "off by 0.03%" is a STATED
+// MEASUREMENT and is compared at the precision it is stated to. Collapsing the
+// two lets a rounding allowance swallow a real breach of a bound.
+const isBound = (verb) => /^(within|under)$/i.test(verb.trim());
 
 export const checks = [
 {
@@ -164,6 +168,10 @@ export const checks = [
       const correct = (it.options ?? []).find((o) => o.correct);
       const nums = (s) => new Set((String(s).match(/\$\s?[\d,]+(?:\.\d+)?/g) ?? []).map((x) => x.replace(/[$,\s]/g, '')));
       const correctNums = nums(correct?.label ?? '');
+      // Only a NUMERIC-ANSWER item has numeric distractors. When the right
+      // answer is prose ("Many real vendor invoice amounts"), a dollar sign in
+      // a wrong option is part of a description, not a miscomputation.
+      if (!correctNums.size) continue;
       const numericOpts = (it.options ?? []).filter((o) => {
         if (o.correct) return false;
         const mine = nums(o.label);
@@ -290,6 +298,27 @@ export const checks = [
     }
   },
 },
+{
+  id: 'C2c', name: 'narrative-relation-holds', family: 'context', reads: ['scenario.beats', 'knowledge'],
+  // A declared relation is a claim too. `approximately` with a tolerance the
+  // number does not actually satisfy is a mis-declaration, and without this
+  // check the declaration would be a free opt-out from C2a.
+  run(spec, ctx, r) {
+    const scope = makeScope(spec);
+    for (const b of spec.scenario?.beats ?? [])
+      for (const n of b.narrativeNumbers ?? []) {
+        if (n.relation !== 'approximately' || !n.ofDerivation) continue;
+        let base;
+        try { base = Number(evalExpr(`d.${n.ofDerivation.replace(/-/g, '_')}`, scope)); } catch { continue; }
+        const actual = parseTok(n.token);
+        if (!Number.isFinite(actual) || !Number.isFinite(base)) continue;
+        const dev = Math.abs(actual - base);
+        if (n.tol != null && dev > n.tol)
+          r.error('C2c narrative-relation-holds', `scenario.beats/${b.id}`,
+            `'${n.token}' is declared approximately ${n.ofDerivation} (${base}) within ${n.tol}, but differs by ${dev.toFixed(2)}`);
+      }
+  },
+},
 // ------------------------------------------------------------------ C family
 {
   id: 'C1', name: 'scenario-coverage', family: 'context', reads: ['scenario', 'flow.segments'],
@@ -309,9 +338,14 @@ export const checks = [
             `offered for segment '${seg.id}' but carries no contextualModifier for objective(s) ${missing.join(', ')}`);
       }
     }
+    // A cast member earns their place by speaking OR by being rendered — the
+    // Cash Receipts staff are drawn on the office floor and never have a line.
+    const elsewhere = JSON.stringify({ ...spec, scenario: { ...spec.scenario, cast: undefined } });
     for (const c of spec.scenario.cast ?? []) {
-      const used = (spec.scenario.beats ?? []).some((b) => (b.lines ?? []).some((l) => l.who === c.id));
-      if (!used) r.warn('C1 scenario-coverage', `scenario.cast/${c.id}`, 'declared but never speaks');
+      const speaks = (spec.scenario.beats ?? []).some((b) => (b.lines ?? []).some((l) => l.who === c.id));
+      const rendered = elsewhere.includes(`"${c.id}"`);
+      if (!speaks && !rendered)
+        r.warn('C1 scenario-coverage', `scenario.cast/${c.id}`, 'declared but never speaks and never appears anywhere else in the spec');
     }
   },
 },
@@ -351,7 +385,8 @@ export const checks = [
       if (!quants.length) continue;
       const nn = b.narrativeNumbers ?? [];
       for (const q of quants) {
-        const claimTok = q[1].trim();
+        const verb = q[1];
+        const claimTok = q[2].trim();
         const claim = parseTok(claimTok);
         const isPct = claimTok.includes('%');
         const related = nn.filter((x) => x.relation === 'approximately' && x.ofDerivation);
@@ -364,10 +399,13 @@ export const checks = [
           let base;
           try { base = Number(evalExpr(`d.${x.ofDerivation.replace(/-/g, '_')}`, scope)); } catch { continue; }
           const actual = parseTok(x.token);
-          const dev = isPct ? Math.abs(actual - base) / Math.abs(base) * 100 : Math.abs(actual - base);
+          const devRaw = isPct ? Math.abs(actual - base) / Math.abs(base) * 100 : Math.abs(actual - base);
+          const dp = (claimTok.split('.')[1] ?? '').replace(/[^0-9]/g, '').length;
+          const dev = isBound(verb) ? devRaw : Number(devRaw.toFixed(dp));
           if (dev > claim + 1e-9)
             r.error('C2b narrative-quantifier-holds', `scenario.beats/${b.id}`,
-              `prose claims '${q[0].trim()}' but '${x.token}' deviates from ${x.ofDerivation} (${base}) by ${dev.toFixed(2)}${isPct ? '%' : ''}`);
+              `prose claims '${q[0].trim()}' but '${x.token}' deviates from ${x.ofDerivation} (${base}) by ${devRaw.toFixed(2)}${isPct ? '%' : ''}` +
+              (isBound(verb) ? ' — "within" is a bound, so it must hold exactly' : ''));
         }
       }
     }

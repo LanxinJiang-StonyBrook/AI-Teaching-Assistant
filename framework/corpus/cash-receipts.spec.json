@@ -1,0 +1,2157 @@
+{
+  "gamespec": "1.0",
+  "emitter": {
+    "runtime": "^1.0",
+    "widgetRegistry": "^1.0"
+  },
+  "meta": {
+    "id": "cash-receipts-control-game",
+    "title": "Cash Receipts Control Lab",
+    "subtitle": "Walk the cash receipts cycle as one of four role-holders",
+    "description": "Reverse-engineered GameSpec fixture for public/cash-receipts-control-game/index.html. Contributes two things no other fixture has: a genuine split feedback policy (deferred on correct, interstitial on wrong) and a spatial navigation layer that is deliberately unscored — the case that proves an award-value coverage metric is blind to game feel.",
+    "course": "Accounting information systems / internal control",
+    "chapter": "Cash receipts controls",
+    "audience": "undergraduate students who have had the lecture on the six internal-control activities",
+    "estimatedMinutes": 18,
+    "language": "en",
+    "offline": true,
+    "singleFile": true,
+    "sources": [
+      {
+        "id": "ic-textbook",
+        "kind": "textbook",
+        "citation": "Weygandt/Kimmel-style six internal-control activities",
+        "edition": "course edition"
+      }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "establish-responsibility",
+      "statement": "Assign a named owner to every cash task, drawer, hand-off and approval.",
+      "bloom": "apply",
+      "minGradedItems": 1,
+      "taughtBy": [
+        "control-legend"
+      ],
+      "assumesPriorInstruction": true,
+      "priorInstructionJustification": "The six control activities are introduced in the lecture; the game is the application exercise. An in-game reference legend is available at every step (scaffolding.referencePanels)."
+    },
+    {
+      "id": "segregate-duties",
+      "statement": "Keep custody, authorisation, deposit preparation and recording in different hands.",
+      "bloom": "apply",
+      "minGradedItems": 1,
+      "taughtBy": [
+        "control-legend"
+      ],
+      "assumesPriorInstruction": true,
+      "priorInstructionJustification": "The six control activities are introduced in the lecture; the game is the application exercise. An in-game reference legend is available at every step (scaffolding.referencePanels)."
+    },
+    {
+      "id": "document-procedures",
+      "statement": "Move prenumbered logs, slips and packets promptly to accounting.",
+      "bloom": "apply",
+      "minGradedItems": 1,
+      "taughtBy": [
+        "control-legend"
+      ],
+      "assumesPriorInstruction": true,
+      "priorInstructionJustification": "The six control activities are introduced in the lecture; the game is the application exercise. An in-game reference legend is available at every step (scaffolding.referencePanels)."
+    },
+    {
+      "id": "secure-physically",
+      "statement": "Protect cash and records with physical and electronic safeguards.",
+      "bloom": "apply",
+      "minGradedItems": 1,
+      "taughtBy": [
+        "control-legend"
+      ],
+      "assumesPriorInstruction": true,
+      "priorInstructionJustification": "The six control activities are introduced in the lecture; the game is the application exercise. An in-game reference legend is available at every step (scaffolding.referencePanels)."
+    },
+    {
+      "id": "verify-independently",
+      "statement": "Have someone independent compare the prelist, the deposit and the recorded entry.",
+      "bloom": "apply",
+      "minGradedItems": 1,
+      "taughtBy": [
+        "control-legend"
+      ],
+      "assumesPriorInstruction": true,
+      "priorInstructionJustification": "The six control activities are introduced in the lecture; the game is the application exercise. An in-game reference legend is available at every step (scaffolding.referencePanels)."
+    },
+    {
+      "id": "apply-hr-controls",
+      "statement": "Explain how bonding, rotation, mandatory vacation and background checks prevent and shorten a cash scheme.",
+      "bloom": "understand",
+      "minGradedItems": 1,
+      "taughtBy": [
+        "control-legend"
+      ],
+      "assumesPriorInstruction": true,
+      "priorInstructionJustification": "The six control activities are introduced in the lecture; the game is the application exercise. An in-game reference legend is available at every step (scaffolding.referencePanels)."
+    }
+  ],
+  "taxonomy": [
+    {
+      "id": "responsibility",
+      "label": "Establishment of Responsibility",
+      "shortLabel": "Responsibility",
+      "definition": "A named person owns each task, drawer, handoff, or approval.",
+      "objectiveIds": [
+        "establish-responsibility"
+      ]
+    },
+    {
+      "id": "segregation",
+      "label": "Segregation of Duties",
+      "shortLabel": "Segregation",
+      "definition": "Custody, authorization, deposit prep, and recording stay in different hands.",
+      "objectiveIds": [
+        "segregate-duties"
+      ]
+    },
+    {
+      "id": "documentation",
+      "label": "Documentation Procedures",
+      "shortLabel": "Documentation",
+      "definition": "Prenumbered logs, slips, and packets move promptly to accounting.",
+      "objectiveIds": [
+        "document-procedures"
+      ]
+    },
+    {
+      "id": "physical",
+      "label": "Physical Controls",
+      "shortLabel": "Physical",
+      "definition": "Cash, checks, and documents are protected with locked storage and restricted access.",
+      "objectiveIds": [
+        "secure-physically"
+      ]
+    },
+    {
+      "id": "verification",
+      "label": "Independent Internal Verification",
+      "shortLabel": "Verification",
+      "definition": "Someone independent compares the prelist, deposit, and recorded entry.",
+      "objectiveIds": [
+        "verify-independently"
+      ]
+    },
+    {
+      "id": "human",
+      "label": "Human Resource Controls",
+      "shortLabel": "Human Resources",
+      "definition": "Bonding, background checks, duty rotation, and vacations make concealment harder.",
+      "objectiveIds": [
+        "apply-hr-controls"
+      ]
+    }
+  ],
+  "knowledge": {
+    "params": {
+      "correctStepAward": 18,
+      "briefingAward": 12,
+      "wrongPenalty": 8,
+      "riskStart": 22,
+      "controls": 6,
+      "roles": 4
+    },
+    "thresholds": [
+      {
+        "name": "interact-radius",
+        "value": 1.55,
+        "kind": "design-constant",
+        "note": "World units within which the station prompt opens."
+      }
+    ],
+    "datasets": [],
+    "derivations": [
+      {
+        "id": "perfect-run-score",
+        "format": "number",
+        "expr": "p.briefingAward + 5 * p.correctStepAward",
+        "describe": "A flawless single-role run: one briefing plus five station decisions"
+      }
+    ],
+    "artifacts": [
+      {
+        "id": "control-legend",
+        "title": "The six control activities",
+        "kind": "table",
+        "objectiveIds": [
+          "establish-responsibility",
+          "segregate-duties",
+          "document-procedures",
+          "secure-physically",
+          "verify-independently",
+          "apply-hr-controls"
+        ],
+        "content": "**Establishment of Responsibility** — A named person owns each task, drawer, handoff, or approval.\n\n**Segregation of Duties** — Custody, authorization, deposit prep, and recording stay in different hands.\n\n**Documentation Procedures** — Prenumbered logs, slips, and packets move promptly to accounting.\n\n**Physical Controls** — Cash, checks, and documents are protected with locked storage and restricted access.\n\n**Independent Internal Verification** — Someone independent compares the prelist, deposit, and recorded entry.\n\n**Human Resource Controls** — Bonding, background checks, duty rotation, and vacations make concealment harder."
+      }
+    ]
+  },
+  "scenario": {
+    "framing": "workplace-case",
+    "entityNoun": "the front office",
+    "company": {
+      "name": "The front office",
+      "industry": "retail operations",
+      "contextualModifiers": {}
+    },
+    "cast": [
+      {
+        "id": "clerk",
+        "displayName": "Maya Chen",
+        "role": "clerk",
+        "voice": "colleague on the floor"
+      },
+      {
+        "id": "supervisor",
+        "displayName": "Omar Ruiz",
+        "role": "supervisor",
+        "voice": "colleague on the floor"
+      },
+      {
+        "id": "cashier",
+        "displayName": "Leah Park",
+        "role": "cashier",
+        "voice": "colleague on the floor"
+      },
+      {
+        "id": "accounting",
+        "displayName": "Sam Patel",
+        "role": "accounting",
+        "voice": "colleague on the floor"
+      }
+    ],
+    "personas": [
+      {
+        "id": "clerk",
+        "label": "Clerk",
+        "description": "Receive payments, create the first record, and hand the batch off cleanly.",
+        "selectionEffect": "replay-perspective",
+        "mission": "Keep the first custody point traceable, documented, and ready for secure transfer."
+      },
+      {
+        "id": "supervisor",
+        "label": "Supervisor",
+        "description": "Assign people, approve handoffs, and keep shortcuts from breaking the process.",
+        "selectionEffect": "replay-perspective",
+        "mission": "Use oversight to preserve accountability while the cash receipts packet moves through the office."
+      },
+      {
+        "id": "cashier",
+        "label": "Cashier",
+        "description": "Take custody, recount the batch, secure the funds, and prepare the deposit.",
+        "selectionEffect": "replay-perspective",
+        "mission": "Protect the deposit while staying out of the accounting records and preserving the audit trail."
+      },
+      {
+        "id": "accounting",
+        "label": "Accounting Department",
+        "description": "Record receipts from source documents and reconcile the deposit to the ledger.",
+        "selectionEffect": "replay-perspective",
+        "mission": "Keep the books accurate without touching the cash itself, then surface any discrepancy for management."
+      }
+    ],
+    "beats": []
+  },
+  "flow": {
+    "progression": "linear",
+    "segments": [
+      {
+        "id": "run-clerk",
+        "title": "Clerk run",
+        "subtitle": "Receive payments, create the first record, and hand the batch off cleanly.",
+        "order": 0,
+        "objectiveIds": [
+          "apply-hr-controls",
+          "establish-responsibility",
+          "document-procedures",
+          "segregate-duties",
+          "secure-physically",
+          "verify-independently"
+        ],
+        "personaScope": [
+          "clerk"
+        ],
+        "unlockRule": "always",
+        "debriefId": "final"
+      },
+      {
+        "id": "run-supervisor",
+        "title": "Supervisor run",
+        "subtitle": "Assign people, approve handoffs, and keep shortcuts from breaking the process.",
+        "order": 1,
+        "objectiveIds": [
+          "apply-hr-controls",
+          "establish-responsibility",
+          "segregate-duties",
+          "document-procedures",
+          "secure-physically",
+          "verify-independently"
+        ],
+        "personaScope": [
+          "supervisor"
+        ],
+        "unlockRule": "always",
+        "debriefId": "final"
+      },
+      {
+        "id": "run-cashier",
+        "title": "Cashier run",
+        "subtitle": "Take custody, recount the batch, secure the funds, and prepare the deposit.",
+        "order": 2,
+        "objectiveIds": [
+          "apply-hr-controls",
+          "establish-responsibility",
+          "segregate-duties",
+          "document-procedures",
+          "secure-physically",
+          "verify-independently"
+        ],
+        "personaScope": [
+          "cashier"
+        ],
+        "unlockRule": "always",
+        "debriefId": "final"
+      },
+      {
+        "id": "run-accounting",
+        "title": "Accounting Department run",
+        "subtitle": "Record receipts from source documents and reconcile the deposit to the ledger.",
+        "order": 3,
+        "objectiveIds": [
+          "apply-hr-controls",
+          "establish-responsibility",
+          "segregate-duties",
+          "document-procedures",
+          "secure-physically",
+          "verify-independently"
+        ],
+        "personaScope": [
+          "accounting"
+        ],
+        "unlockRule": "always",
+        "debriefId": "final"
+      }
+    ],
+    "steps": [
+      {
+        "id": "clerk-human",
+        "segmentId": "run-clerk",
+        "order": 0,
+        "graded": true,
+        "objectiveIds": [
+          "apply-hr-controls"
+        ],
+        "bloomDemand": "understand",
+        "title": "Pre-shift policy huddle",
+        "prompt": "HR reminds you that cash handlers are bonded, duties rotate weekly, vacations are mandatory, and backgrounds are checked. Why does that matter before you touch the day's receipts?",
+        "taxonomyId": "human",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "clerk-human-o1",
+              "label": "Those policies screen risky hires and make it harder for one person to hide a cash scheme for too long.",
+              "correct": true,
+              "feedback": "Human resource controls strengthen prevention before the first receipt arrives.",
+              "award": 12
+            },
+            {
+              "id": "clerk-human-o2",
+              "label": "Those policies mostly help employees move faster, but they do not change fraud risk much.",
+              "correct": false,
+              "consequence": "If cash handlers are never screened, rotated, or required to step away, concealment can continue much longer.",
+              "misconceptionTag": "clerk-human-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 12,
+          "meterDeltas": {
+            "risk": -5
+          }
+        },
+        "why": "Human resource controls strengthen prevention before the first receipt arrives."
+      },
+      {
+        "id": "clerk-responsibility-walk",
+        "segmentId": "run-clerk",
+        "order": 1,
+        "graded": false,
+        "objectiveIds": [
+          "establish-responsibility"
+        ],
+        "title": "Walk to the Receipt Counter",
+        "prompt": "Go to the Receipt Counter and keep the drawer and receipt batch under your own name.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "mail",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "clerk-responsibility",
+        "segmentId": "run-clerk",
+        "order": 2,
+        "graded": true,
+        "objectiveIds": [
+          "establish-responsibility"
+        ],
+        "bloomDemand": "apply",
+        "title": "Claim the batch under your ID",
+        "prompt": "A coworker offers to share your drawer code so either of you can accept payments during the lunch rush. What should you do?",
+        "caption": "Go to the Receipt Counter and keep the drawer and receipt batch under your own name.",
+        "taxonomyId": "responsibility",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "clerk-responsibility-o1",
+              "label": "Use your assigned drawer and put your initials on the batch cover sheet.",
+              "correct": true,
+              "feedback": "A named owner makes shortages traceable and supports quick follow-up.",
+              "award": 18
+            },
+            {
+              "id": "clerk-responsibility-o2",
+              "label": "Share the drawer so the line moves faster, then sort it out later if cash is short.",
+              "correct": false,
+              "consequence": "Shared responsibility weakens accountability. If the drawer is short, no one can be pinned to the missing cash quickly.",
+              "misconceptionTag": "clerk-responsibility-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "A named owner makes shortages traceable and supports quick follow-up."
+      },
+      {
+        "id": "clerk-documentation-walk",
+        "segmentId": "run-clerk",
+        "order": 3,
+        "graded": false,
+        "objectiveIds": [
+          "document-procedures"
+        ],
+        "title": "Walk to the Accounting Desk",
+        "prompt": "Walk to the Accounting Desk drop tray and forward a prenumbered remittance log promptly.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "accounting",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "clerk-documentation",
+        "segmentId": "run-clerk",
+        "order": 4,
+        "graded": true,
+        "objectiveIds": [
+          "document-procedures"
+        ],
+        "bloomDemand": "apply",
+        "title": "Prepare the remittance log",
+        "prompt": "The shift is busy and accounting says they can wait until tomorrow for the source documents. Which choice protects the process?",
+        "caption": "Walk to the Accounting Desk drop tray and forward a prenumbered remittance log promptly.",
+        "taxonomyId": "documentation",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "clerk-documentation-o1",
+              "label": "Complete the prenumbered log now, list each check and cash total, and send the packet immediately.",
+              "correct": true,
+              "feedback": "Prompt, prenumbered documentation keeps the accounting record timely and complete.",
+              "award": 18
+            },
+            {
+              "id": "clerk-documentation-o2",
+              "label": "Keep rough notes at your station and send one total at the end of the week.",
+              "correct": false,
+              "consequence": "Delaying source documents increases the chance of missing, duplicated, or altered entries.",
+              "misconceptionTag": "clerk-documentation-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Prompt, prenumbered documentation keeps the accounting record timely and complete."
+      },
+      {
+        "id": "clerk-segregation-walk",
+        "segmentId": "run-clerk",
+        "order": 5,
+        "graded": false,
+        "objectiveIds": [
+          "segregate-duties"
+        ],
+        "title": "Walk to the Supervisor Desk",
+        "prompt": "Move to the Supervisor Desk and route the packet for approval instead of recording it yourself.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "supervisor",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "clerk-segregation",
+        "segmentId": "run-clerk",
+        "order": 6,
+        "graded": true,
+        "objectiveIds": [
+          "segregate-duties"
+        ],
+        "bloomDemand": "apply",
+        "title": "Hand off instead of posting",
+        "prompt": "A temporary staff member says you can save time by entering today's receipts into the accounting system yourself after you finish at the counter. What is the secure response?",
+        "caption": "Move to the Supervisor Desk and route the packet for approval instead of recording it yourself.",
+        "taxonomyId": "segregation",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "clerk-segregation-o1",
+              "label": "Hand the packet to the supervisor and let accounting record the receipts from the source documents.",
+              "correct": true,
+              "feedback": "Separating custody from recordkeeping reduces the chance of hidden theft or altered records.",
+              "award": 18
+            },
+            {
+              "id": "clerk-segregation-o2",
+              "label": "Accept the shortcut so one person can finish the entire process end to end.",
+              "correct": false,
+              "consequence": "If the same person handles cash and updates the ledger, missing receipts can be concealed much more easily.",
+              "misconceptionTag": "clerk-segregation-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Separating custody from recordkeeping reduces the chance of hidden theft or altered records."
+      },
+      {
+        "id": "clerk-physical-walk",
+        "segmentId": "run-clerk",
+        "order": 7,
+        "graded": false,
+        "objectiveIds": [
+          "secure-physically"
+        ],
+        "title": "Walk to the Cashier Safe",
+        "prompt": "Take the batch to the Cashier Safe area and protect it during the handoff.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "cashier",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "clerk-physical",
+        "segmentId": "run-clerk",
+        "order": 8,
+        "graded": true,
+        "objectiveIds": [
+          "secure-physically"
+        ],
+        "bloomDemand": "apply",
+        "title": "Seal the transfer",
+        "prompt": "You are ready to transfer the batch. Which method best protects the cash and checks on the way to the safe?",
+        "caption": "Take the batch to the Cashier Safe area and protect it during the handoff.",
+        "taxonomyId": "physical",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "clerk-physical-o1",
+              "label": "Place the batch in the sealed transfer bag and keep it in locked storage until the cashier signs for it.",
+              "correct": true,
+              "feedback": "Locked storage and sealed custody reduce tampering opportunities during handoff.",
+              "award": 18
+            },
+            {
+              "id": "clerk-physical-o2",
+              "label": "Leave the receipts in an open tray so the cashier can grab them whenever the line slows down.",
+              "correct": false,
+              "consequence": "Unsecured cash or checks are vulnerable to theft, loss, and unauthorized access.",
+              "misconceptionTag": "clerk-physical-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Locked storage and sealed custody reduce tampering opportunities during handoff."
+      },
+      {
+        "id": "clerk-verification-walk",
+        "segmentId": "run-clerk",
+        "order": 9,
+        "graded": false,
+        "objectiveIds": [
+          "verify-independently"
+        ],
+        "title": "Walk to the Accounting Desk",
+        "prompt": "Return to Accounting so the packet can be independently matched to the deposit.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "accounting",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "clerk-verification",
+        "segmentId": "run-clerk",
+        "order": 10,
+        "graded": true,
+        "objectiveIds": [
+          "verify-independently"
+        ],
+        "bloomDemand": "apply",
+        "title": "Support the reconciliation",
+        "prompt": "Accounting notices a difference between the batch total and the deposit support. How should you respond?",
+        "caption": "Return to Accounting so the packet can be independently matched to the deposit.",
+        "taxonomyId": "verification",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "clerk-verification-o1",
+              "label": "Provide your original prelist and let accounting compare it independently to the deposit slip and recorded entry.",
+              "correct": true,
+              "feedback": "Independent verification works only when the reviewer uses the original support and stays separate from custody.",
+              "award": 18
+            },
+            {
+              "id": "clerk-verification-o2",
+              "label": "Rewrite your log so it matches the number that looks closest, then move on.",
+              "correct": false,
+              "consequence": "Changing source support to fit the totals destroys the audit trail and can hide both errors and fraud.",
+              "misconceptionTag": "clerk-verification-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Independent verification works only when the reviewer uses the original support and stays separate from custody.",
+        "terminal": true
+      },
+      {
+        "id": "supervisor-human",
+        "segmentId": "run-supervisor",
+        "order": 11,
+        "graded": true,
+        "objectiveIds": [
+          "apply-hr-controls"
+        ],
+        "bloomDemand": "understand",
+        "title": "Pre-shift policy huddle",
+        "prompt": "You are opening the shift and HR confirms duty rotation, background checks, bonding, and mandatory vacations for cash handlers. Why should you reinforce that message with your team?",
+        "taxonomyId": "human",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "supervisor-human-o1",
+              "label": "Because those policies discourage long-running concealment and signal that cash handling is monitored seriously.",
+              "correct": true,
+              "feedback": "Human resource controls support the control environment before any approval decision is made.",
+              "award": 12
+            },
+            {
+              "id": "supervisor-human-o2",
+              "label": "Because those policies matter mainly for morale, not for fraud prevention in the cash receipts cycle.",
+              "correct": false,
+              "consequence": "If management treats staffing controls as optional, employees have more room to rationalize and hide misconduct.",
+              "misconceptionTag": "supervisor-human-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 12,
+          "meterDeltas": {
+            "risk": -5
+          }
+        },
+        "why": "Human resource controls strengthen prevention before the first receipt arrives."
+      },
+      {
+        "id": "supervisor-responsibility-walk",
+        "segmentId": "run-supervisor",
+        "order": 12,
+        "graded": false,
+        "objectiveIds": [
+          "establish-responsibility"
+        ],
+        "title": "Walk to the Supervisor Desk",
+        "prompt": "At the Supervisor Desk, assign today's drawer and deposit custody to named employees.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "supervisor",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "supervisor-responsibility",
+        "segmentId": "run-supervisor",
+        "order": 13,
+        "graded": true,
+        "objectiveIds": [
+          "establish-responsibility"
+        ],
+        "bloomDemand": "apply",
+        "title": "Assign named ownership",
+        "prompt": "The team is short-handed. How should you assign today's responsibilities?",
+        "caption": "At the Supervisor Desk, assign today's drawer and deposit custody to named employees.",
+        "taxonomyId": "responsibility",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "supervisor-responsibility-o1",
+              "label": "Assign one named clerk to the drawer and one named cashier to deposit custody, then document both assignments.",
+              "correct": true,
+              "feedback": "Named assignments make each handoff traceable and strengthen accountability.",
+              "award": 18
+            },
+            {
+              "id": "supervisor-responsibility-o2",
+              "label": "Tell the team to share duties informally and cover for each other as needed.",
+              "correct": false,
+              "consequence": "When duties are shared casually, shortages and policy violations are much harder to trace.",
+              "misconceptionTag": "supervisor-responsibility-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Named assignments make each handoff traceable and strengthen accountability."
+      },
+      {
+        "id": "supervisor-segregation-walk",
+        "segmentId": "run-supervisor",
+        "order": 14,
+        "graded": false,
+        "objectiveIds": [
+          "segregate-duties"
+        ],
+        "title": "Walk to the Receipt Counter",
+        "prompt": "Go to the Receipt Counter and stop one person from handling both cash custody and recordkeeping.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "mail",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "supervisor-segregation",
+        "segmentId": "run-supervisor",
+        "order": 15,
+        "graded": true,
+        "objectiveIds": [
+          "segregate-duties"
+        ],
+        "bloomDemand": "apply",
+        "title": "Reject the shortcut",
+        "prompt": "A clerk says they can both receive the payments and post the cash receipts journal because the system is already open. What should you decide?",
+        "caption": "Go to the Receipt Counter and stop one person from handling both cash custody and recordkeeping.",
+        "taxonomyId": "segregation",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "supervisor-segregation-o1",
+              "label": "Keep the clerk on custody and documentation, then route the packet to accounting for posting.",
+              "correct": true,
+              "feedback": "Separating related duties lowers the chance that one person can both steal and hide the theft.",
+              "award": 18
+            },
+            {
+              "id": "supervisor-segregation-o2",
+              "label": "Approve the shortcut for today since it saves time during the rush.",
+              "correct": false,
+              "consequence": "Combining custody with recordkeeping removes a key barrier to concealment.",
+              "misconceptionTag": "supervisor-segregation-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Separating related duties lowers the chance that one person can both steal and hide the theft."
+      },
+      {
+        "id": "supervisor-documentation-walk",
+        "segmentId": "run-supervisor",
+        "order": 16,
+        "graded": false,
+        "objectiveIds": [
+          "document-procedures"
+        ],
+        "title": "Walk to the Supervisor Desk",
+        "prompt": "Return to the Supervisor Desk and review the clerk's prenumbered remittance support.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "supervisor",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "supervisor-documentation",
+        "segmentId": "run-supervisor",
+        "order": 17,
+        "graded": true,
+        "objectiveIds": [
+          "document-procedures"
+        ],
+        "bloomDemand": "apply",
+        "title": "Review the prenumbered support",
+        "prompt": "The clerk has a prelist with missing receipt numbers but says the totals look right. What should you do?",
+        "caption": "Return to the Supervisor Desk and review the clerk's prenumbered remittance support.",
+        "taxonomyId": "documentation",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "supervisor-documentation-o1",
+              "label": "Require the missing document numbers to be accounted for before approving the handoff.",
+              "correct": true,
+              "feedback": "Prenumbered documents help identify gaps, duplicates, and missing transactions.",
+              "award": 18
+            },
+            {
+              "id": "supervisor-documentation-o2",
+              "label": "Approve the handoff anyway because the batch total seems reasonable.",
+              "correct": false,
+              "consequence": "Skipping document control invites unrecorded or duplicated receipts.",
+              "misconceptionTag": "supervisor-documentation-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Prenumbered documents help identify gaps, duplicates, and missing transactions."
+      },
+      {
+        "id": "supervisor-physical-walk",
+        "segmentId": "run-supervisor",
+        "order": 18,
+        "graded": false,
+        "objectiveIds": [
+          "secure-physically"
+        ],
+        "title": "Walk to the Cashier Safe",
+        "prompt": "Walk to the Cashier Safe area and require locked storage before the bank deposit leaves.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "cashier",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "supervisor-physical",
+        "segmentId": "run-supervisor",
+        "order": 19,
+        "graded": true,
+        "objectiveIds": [
+          "secure-physically"
+        ],
+        "bloomDemand": "apply",
+        "title": "Secure the packet",
+        "prompt": "The courier is running late and the batch needs to wait. Which instruction protects the cash receipts packet?",
+        "caption": "Walk to the Cashier Safe area and require locked storage before the bank deposit leaves.",
+        "taxonomyId": "physical",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "supervisor-physical-o1",
+              "label": "Keep the sealed bag in the locked safe with access limited to authorized personnel.",
+              "correct": true,
+              "feedback": "Restricted access and locked storage reduce theft and tampering risk.",
+              "award": 18
+            },
+            {
+              "id": "supervisor-physical-o2",
+              "label": "Leave the bag beside the safe so the courier can take it without bothering anyone.",
+              "correct": false,
+              "consequence": "Leaving the bag exposed breaks physical control over one of the company's most vulnerable assets.",
+              "misconceptionTag": "supervisor-physical-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Restricted access and locked storage reduce theft and tampering risk."
+      },
+      {
+        "id": "supervisor-verification-walk",
+        "segmentId": "run-supervisor",
+        "order": 20,
+        "graded": false,
+        "objectiveIds": [
+          "verify-independently"
+        ],
+        "title": "Walk to the Accounting Desk",
+        "prompt": "Move to the Accounting Desk and make sure someone independent compares the batch to the books.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "accounting",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "supervisor-verification",
+        "segmentId": "run-supervisor",
+        "order": 21,
+        "graded": true,
+        "objectiveIds": [
+          "verify-independently"
+        ],
+        "bloomDemand": "apply",
+        "title": "Require the reconciliation",
+        "prompt": "The deposit slip and the accounting entry disagree by a small amount. How do you proceed?",
+        "caption": "Move to the Accounting Desk and make sure someone independent compares the batch to the books.",
+        "taxonomyId": "verification",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "supervisor-verification-o1",
+              "label": "Ask accounting to compare the prelist, deposit slip, and journal entry independently, then report any discrepancy.",
+              "correct": true,
+              "feedback": "Independent verification catches both honest mistakes and intentional manipulation.",
+              "award": 18
+            },
+            {
+              "id": "supervisor-verification-o2",
+              "label": "Tell accounting to round the entry to match the deposit so the day can close on time.",
+              "correct": false,
+              "consequence": "Ignoring discrepancies bypasses a control designed to detect errors and irregularities.",
+              "misconceptionTag": "supervisor-verification-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Independent verification catches both honest mistakes and intentional manipulation.",
+        "terminal": true
+      },
+      {
+        "id": "cashier-human",
+        "segmentId": "run-cashier",
+        "order": 22,
+        "graded": true,
+        "objectiveIds": [
+          "apply-hr-controls"
+        ],
+        "bloomDemand": "understand",
+        "title": "Pre-shift policy huddle",
+        "prompt": "You handle cash today, so HR reminds you that cash employees are bonded, rotated through duties, required to take vacations, and background checked. Which statement is most accurate?",
+        "taxonomyId": "human",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "cashier-human-o1",
+              "label": "Those policies both screen for risk and make it harder for a cashier to hide a problem over time.",
+              "correct": true,
+              "feedback": "Human resource controls help prevent and expose long-running cash schemes.",
+              "award": 12
+            },
+            {
+              "id": "cashier-human-o2",
+              "label": "Those policies matter only if theft already happened, so they do not affect today's shift much.",
+              "correct": false,
+              "consequence": "Preventive staffing controls matter before cash is handled, not just after a loss is discovered.",
+              "misconceptionTag": "cashier-human-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 12,
+          "meterDeltas": {
+            "risk": -5
+          }
+        },
+        "why": "Human resource controls strengthen prevention before the first receipt arrives."
+      },
+      {
+        "id": "cashier-responsibility-walk",
+        "segmentId": "run-cashier",
+        "order": 23,
+        "graded": false,
+        "objectiveIds": [
+          "establish-responsibility"
+        ],
+        "title": "Walk to the Cashier Safe",
+        "prompt": "At the Cashier Safe area, sign for the sealed batch when it changes hands.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "cashier",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "cashier-responsibility",
+        "segmentId": "run-cashier",
+        "order": 24,
+        "graded": true,
+        "objectiveIds": [
+          "establish-responsibility"
+        ],
+        "bloomDemand": "apply",
+        "title": "Accept custody formally",
+        "prompt": "The clerk hands you the transfer bag and says the signature log is optional because everyone knows the batch is yours now. What should you do?",
+        "caption": "At the Cashier Safe area, sign for the sealed batch when it changes hands.",
+        "taxonomyId": "responsibility",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "cashier-responsibility-o1",
+              "label": "Sign the custody log and confirm the bag number before taking possession.",
+              "correct": true,
+              "feedback": "Formal handoff records make custody clear at each point in the process.",
+              "award": 18
+            },
+            {
+              "id": "cashier-responsibility-o2",
+              "label": "Skip the log and move the bag straight to the safe.",
+              "correct": false,
+              "consequence": "Without a documented handoff, it is harder to trace where a shortage or tampering occurred.",
+              "misconceptionTag": "cashier-responsibility-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Formal handoff records make custody clear at each point in the process."
+      },
+      {
+        "id": "cashier-segregation-walk",
+        "segmentId": "run-cashier",
+        "order": 25,
+        "graded": false,
+        "objectiveIds": [
+          "segregate-duties"
+        ],
+        "title": "Walk to the Accounting Desk",
+        "prompt": "Walk to the Accounting Desk and keep your role limited to deposit custody and support.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "accounting",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "cashier-segregation",
+        "segmentId": "run-cashier",
+        "order": 26,
+        "graded": true,
+        "objectiveIds": [
+          "segregate-duties"
+        ],
+        "bloomDemand": "apply",
+        "title": "Stay out of the ledger",
+        "prompt": "Accounting is swamped and asks you to post the cash receipts journal after you finish the deposit slip. Which response is correct?",
+        "caption": "Walk to the Accounting Desk and keep your role limited to deposit custody and support.",
+        "taxonomyId": "segregation",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "cashier-segregation-o1",
+              "label": "Decline and provide the deposit support so accounting can record the entry independently.",
+              "correct": true,
+              "feedback": "The cashier should not both hold the money and update the books.",
+              "award": 18
+            },
+            {
+              "id": "cashier-segregation-o2",
+              "label": "Agree so the entry gets posted faster and the paperwork stays together.",
+              "correct": false,
+              "consequence": "Giving the cashier recordkeeping access makes it easier to conceal missing cash.",
+              "misconceptionTag": "cashier-segregation-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "The cashier should not both hold the money and update the books."
+      },
+      {
+        "id": "cashier-documentation-walk",
+        "segmentId": "run-cashier",
+        "order": 27,
+        "graded": false,
+        "objectiveIds": [
+          "document-procedures"
+        ],
+        "title": "Walk to the Cashier Safe",
+        "prompt": "Return to the Cashier Safe area and complete the deposit documentation from the source support.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "cashier",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "cashier-documentation",
+        "segmentId": "run-cashier",
+        "order": 28,
+        "graded": true,
+        "objectiveIds": [
+          "document-procedures"
+        ],
+        "bloomDemand": "apply",
+        "title": "Prepare the deposit slip",
+        "prompt": "The clerk's packet is complete, but you are tempted to send the bank only a total amount. What supports the control system?",
+        "caption": "Return to the Cashier Safe area and complete the deposit documentation from the source support.",
+        "taxonomyId": "documentation",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "cashier-documentation-o1",
+              "label": "Prepare the deposit slip from the detailed source support and keep the slip with the remittance packet.",
+              "correct": true,
+              "feedback": "Complete deposit documentation preserves the trail from receipt to bank deposit.",
+              "award": 18
+            },
+            {
+              "id": "cashier-documentation-o2",
+              "label": "Send a single total to the bank and discard the detailed support once you finish counting.",
+              "correct": false,
+              "consequence": "Discarding or skipping detailed support weakens both recording accuracy and later reconciliation.",
+              "misconceptionTag": "cashier-documentation-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Complete deposit documentation preserves the trail from receipt to bank deposit."
+      },
+      {
+        "id": "cashier-physical-walk",
+        "segmentId": "run-cashier",
+        "order": 29,
+        "graded": false,
+        "objectiveIds": [
+          "secure-physically"
+        ],
+        "title": "Walk to the Cashier Safe",
+        "prompt": "Keep the batch in protected storage until it leaves for the bank.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "cashier",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "cashier-physical",
+        "segmentId": "run-cashier",
+        "order": 30,
+        "graded": true,
+        "objectiveIds": [
+          "secure-physically"
+        ],
+        "bloomDemand": "apply",
+        "title": "Lock down the deposit",
+        "prompt": "You still have twenty minutes before pickup. Which handling choice best protects the deposit?",
+        "caption": "Keep the batch in protected storage until it leaves for the bank.",
+        "taxonomyId": "physical",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "cashier-physical-o1",
+              "label": "Keep the counted funds in the safe and seal the deposit bag until pickup.",
+              "correct": true,
+              "feedback": "Physical controls protect highly vulnerable cash between count and deposit.",
+              "award": 18
+            },
+            {
+              "id": "cashier-physical-o2",
+              "label": "Leave the counted cash on the desk so you can double-check it quickly if needed.",
+              "correct": false,
+              "consequence": "Visible, unsecured cash invites both theft and accidental loss.",
+              "misconceptionTag": "cashier-physical-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Physical controls protect highly vulnerable cash between count and deposit."
+      },
+      {
+        "id": "cashier-verification-walk",
+        "segmentId": "run-cashier",
+        "order": 31,
+        "graded": false,
+        "objectiveIds": [
+          "verify-independently"
+        ],
+        "title": "Walk to the Accounting Desk",
+        "prompt": "Bring the deposit support to Accounting so someone independent can match it to the entry.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "accounting",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "cashier-verification",
+        "segmentId": "run-cashier",
+        "order": 32,
+        "graded": true,
+        "objectiveIds": [
+          "verify-independently"
+        ],
+        "bloomDemand": "apply",
+        "title": "Support independent review",
+        "prompt": "Accounting asks for your count sheet and the deposit slip to compare with the clerk's prelist. What should happen next?",
+        "caption": "Bring the deposit support to Accounting so someone independent can match it to the entry.",
+        "taxonomyId": "verification",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "cashier-verification-o1",
+              "label": "Provide the original support and let accounting perform the reconciliation independently.",
+              "correct": true,
+              "feedback": "The review should compare the cashier's support with the clerk's record and the journal entry.",
+              "award": 18
+            },
+            {
+              "id": "cashier-verification-o2",
+              "label": "Adjust the count sheet yourself until it matches what accounting expects.",
+              "correct": false,
+              "consequence": "Letting the cashier rewrite support destroys the independence of the verification.",
+              "misconceptionTag": "cashier-verification-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "The review should compare the cashier's support with the clerk's record and the journal entry.",
+        "terminal": true
+      },
+      {
+        "id": "accounting-human",
+        "segmentId": "run-accounting",
+        "order": 33,
+        "graded": true,
+        "objectiveIds": [
+          "apply-hr-controls"
+        ],
+        "bloomDemand": "understand",
+        "title": "Pre-shift policy huddle",
+        "prompt": "As the accounting reviewer, you are told that cash handlers are background checked, bonded, rotated, and required to take vacations. Why should that matter to you if you do not touch the cash directly?",
+        "taxonomyId": "human",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "accounting-human-o1",
+              "label": "Because those staffing controls lower the chance that the documents reaching accounting hide a long-running scheme.",
+              "correct": true,
+              "feedback": "Human resource controls support the integrity of the information flowing into accounting.",
+              "award": 12
+            },
+            {
+              "id": "accounting-human-o2",
+              "label": "Because those policies matter only to HR, not to anyone who records or reviews transactions.",
+              "correct": false,
+              "consequence": "Accounting relies on staffing controls too. Weak hiring and no rotation increase concealment risk.",
+              "misconceptionTag": "accounting-human-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 12,
+          "meterDeltas": {
+            "risk": -5
+          }
+        },
+        "why": "Human resource controls strengthen prevention before the first receipt arrives."
+      },
+      {
+        "id": "accounting-responsibility-walk",
+        "segmentId": "run-accounting",
+        "order": 34,
+        "graded": false,
+        "objectiveIds": [
+          "establish-responsibility"
+        ],
+        "title": "Walk to the Accounting Desk",
+        "prompt": "At the Accounting Desk, post today's packet under your own user ID and initials.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "accounting",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "accounting-responsibility",
+        "segmentId": "run-accounting",
+        "order": 35,
+        "graded": true,
+        "objectiveIds": [
+          "establish-responsibility"
+        ],
+        "bloomDemand": "apply",
+        "title": "Own the posting batch",
+        "prompt": "A coworker says you can use the shared 'cash desk' login because it is already open. Which option keeps responsibility clear?",
+        "caption": "At the Accounting Desk, post today's packet under your own user ID and initials.",
+        "taxonomyId": "responsibility",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "accounting-responsibility-o1",
+              "label": "Use your own credentials and mark the batch as posted by you.",
+              "correct": true,
+              "feedback": "Posting responsibility should be tied to one person just like custody is.",
+              "award": 18
+            },
+            {
+              "id": "accounting-responsibility-o2",
+              "label": "Use the shared login so anyone can finish the entry if you step away.",
+              "correct": false,
+              "consequence": "Shared system access weakens accountability and makes later review harder.",
+              "misconceptionTag": "accounting-responsibility-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Posting responsibility should be tied to one person just like custody is."
+      },
+      {
+        "id": "accounting-segregation-walk",
+        "segmentId": "run-accounting",
+        "order": 36,
+        "graded": false,
+        "objectiveIds": [
+          "segregate-duties"
+        ],
+        "title": "Walk to the Receipt Counter",
+        "prompt": "Go to the Receipt Counter and keep accounting separate from physical custody of receipts.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "mail",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "accounting-segregation",
+        "segmentId": "run-accounting",
+        "order": 37,
+        "graded": true,
+        "objectiveIds": [
+          "segregate-duties"
+        ],
+        "bloomDemand": "apply",
+        "title": "Refuse custody of the cash",
+        "prompt": "The clerk asks you to carry the open transfer tray to the safe because you are walking that way anyway. What is the proper response?",
+        "caption": "Go to the Receipt Counter and keep accounting separate from physical custody of receipts.",
+        "taxonomyId": "segregation",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "accounting-segregation-o1",
+              "label": "Decline physical custody and direct the clerk to use the approved handoff to the cashier.",
+              "correct": true,
+              "feedback": "Accounting should record and reconcile, not take possession of the cash.",
+              "award": 18
+            },
+            {
+              "id": "accounting-segregation-o2",
+              "label": "Carry the tray to the safe yourself since accounting is part of the overall process.",
+              "correct": false,
+              "consequence": "If accounting takes custody of the cash, the separation between records and assets starts to disappear.",
+              "misconceptionTag": "accounting-segregation-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Accounting should record and reconcile, not take possession of the cash."
+      },
+      {
+        "id": "accounting-documentation-walk",
+        "segmentId": "run-accounting",
+        "order": 38,
+        "graded": false,
+        "objectiveIds": [
+          "document-procedures"
+        ],
+        "title": "Walk to the Accounting Desk",
+        "prompt": "Return to the Accounting Desk and use the source packet to record the receipts promptly.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "accounting",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "accounting-documentation",
+        "segmentId": "run-accounting",
+        "order": 39,
+        "graded": true,
+        "objectiveIds": [
+          "document-procedures"
+        ],
+        "bloomDemand": "apply",
+        "title": "Record from the support",
+        "prompt": "The supervisor gives you only a verbal total and says the detailed remittance log can follow later. What should you do?",
+        "caption": "Return to the Accounting Desk and use the source packet to record the receipts promptly.",
+        "taxonomyId": "documentation",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "accounting-documentation-o1",
+              "label": "Wait for the prenumbered support packet and record the entry from the actual documents.",
+              "correct": true,
+              "feedback": "Accounting entries should be based on timely source documents, not unsupported estimates.",
+              "award": 18
+            },
+            {
+              "id": "accounting-documentation-o2",
+              "label": "Post the verbal total now and let the support catch up whenever it arrives.",
+              "correct": false,
+              "consequence": "Posting unsupported totals increases the risk of incomplete or inaccurate records.",
+              "misconceptionTag": "accounting-documentation-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Accounting entries should be based on timely source documents, not unsupported estimates."
+      },
+      {
+        "id": "accounting-physical-walk",
+        "segmentId": "run-accounting",
+        "order": 40,
+        "graded": false,
+        "objectiveIds": [
+          "secure-physically"
+        ],
+        "title": "Walk to the Accounting Desk",
+        "prompt": "Keep the cash receipts packet in restricted storage after you finish the entry.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "accounting",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "accounting-physical",
+        "segmentId": "run-accounting",
+        "order": 41,
+        "graded": true,
+        "objectiveIds": [
+          "secure-physically"
+        ],
+        "bloomDemand": "apply",
+        "title": "Protect the records",
+        "prompt": "Once the entry is recorded, where should the supporting packet go?",
+        "caption": "Keep the cash receipts packet in restricted storage after you finish the entry.",
+        "taxonomyId": "physical",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "accounting-physical-o1",
+              "label": "Into the restricted accounting file so only authorized staff can alter or remove it.",
+              "correct": true,
+              "feedback": "Physical controls apply to key records as well as to the cash itself.",
+              "award": 18
+            },
+            {
+              "id": "accounting-physical-o2",
+              "label": "Back onto the open counter so anyone in the office can access it later.",
+              "correct": false,
+              "consequence": "Unprotected records can be removed, changed, or lost before review.",
+              "misconceptionTag": "accounting-physical-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Physical controls apply to key records as well as to the cash itself."
+      },
+      {
+        "id": "accounting-verification-walk",
+        "segmentId": "run-accounting",
+        "order": 42,
+        "graded": false,
+        "objectiveIds": [
+          "verify-independently"
+        ],
+        "title": "Walk to the Supervisor Desk",
+        "prompt": "Take the packet to the Supervisor Desk and report the result of your reconciliation.",
+        "interaction": {
+          "type": "navigate",
+          "targetId": "supervisor",
+          "gate": "proximity",
+          "radius": 1.55
+        }
+      },
+      {
+        "id": "accounting-verification",
+        "segmentId": "run-accounting",
+        "order": 43,
+        "graded": true,
+        "objectiveIds": [
+          "verify-independently"
+        ],
+        "bloomDemand": "apply",
+        "title": "Flag and report the difference",
+        "prompt": "The prelist, deposit slip, and journal entry do not match. Which action completes the control properly?",
+        "caption": "Take the packet to the Supervisor Desk and report the result of your reconciliation.",
+        "taxonomyId": "verification",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "accounting-verification-o1",
+              "label": "Document the discrepancy and report it to management after your independent comparison.",
+              "correct": true,
+              "feedback": "Independent verification works only when discrepancies are surfaced instead of buried.",
+              "award": 18
+            },
+            {
+              "id": "accounting-verification-o2",
+              "label": "Adjust whichever document is easiest so the packet balances before anyone notices.",
+              "correct": false,
+              "consequence": "Changing documents to force agreement bypasses the very control meant to detect problems.",
+              "misconceptionTag": "accounting-verification-miss",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 18,
+          "meterDeltas": {
+            "risk": -6
+          }
+        },
+        "why": "Independent verification works only when discrepancies are surfaced instead of buried.",
+        "terminal": true
+      }
+    ],
+    "runtimeSemantics": {
+      "interrupts": "inert",
+      "optionBranching": "inert",
+      "distractorArtifacts": "inert",
+      "revealRules": "inert",
+      "personaRestriction": "active",
+      "eventsAffectFinalScore": false
+    }
+  },
+  "scoring": {
+    "model": "flat-penalty",
+    "params": {
+      "correct": 18,
+      "incorrect": -8,
+      "floors": {
+        "score": 0
+      }
+    },
+    "meters": [
+      {
+        "id": "score",
+        "label": "Score",
+        "initial": 0,
+        "floor": 0,
+        "ceiling": 102,
+        "resetScope": "per-run",
+        "affectsFinalGrade": true,
+        "deltas": {
+          "correct": 18,
+          "incorrect": -8
+        }
+      },
+      {
+        "id": "risk",
+        "label": "Risk",
+        "icon": "shield",
+        "initial": 22,
+        "floor": 0,
+        "ceiling": 100,
+        "resetScope": "per-run",
+        "affectsFinalGrade": false,
+        "deltas": {
+          "correct": -6,
+          "incorrect": 14,
+          "hint": 0
+        },
+        "tiers": [
+          {
+            "max": 33,
+            "colorRole": "correct"
+          },
+          {
+            "max": 66,
+            "colorRole": "caution"
+          },
+          {
+            "max": 100,
+            "colorRole": "incorrect"
+          }
+        ]
+      }
+    ],
+    "retryPolicy": "until-correct-free",
+    "recordsAttempts": true,
+    "replay": {
+      "resets": [
+        "score",
+        "risk"
+      ],
+      "idempotentAwards": false
+    }
+  },
+  "feedback": {
+    "content": {
+      "correctPrefix": "Control applied",
+      "incorrectPrefix": "Control failure",
+      "summaryPassed": "The cycle held. Every hand-off is traceable.",
+      "summaryFailed": "Cash moved faster than the controls did."
+    },
+    "policy": {
+      "timing": {
+        "correct": "deferred-to-debrief",
+        "incorrect": "interstitial"
+      },
+      "targeting": "per-option",
+      "showPointDelta": true,
+      "requireMisconceptionTag": false,
+      "consequencePreview": {
+        "enabled": true,
+        "tag": "What happens next",
+        "rewindLine": "Rewind and try the other approach.",
+        "oncePerStep": false
+      }
+    }
+  },
+  "scaffolding": {
+    "hints": [
+      {
+        "id": "hint-clerk",
+        "stepId": "clerk-human",
+        "personaId": "clerk",
+        "text": "The station objective in the sidebar names the control this decision is about."
+      },
+      {
+        "id": "hint-supervisor",
+        "stepId": "supervisor-human",
+        "personaId": "supervisor",
+        "text": "The station objective in the sidebar names the control this decision is about."
+      },
+      {
+        "id": "hint-cashier",
+        "stepId": "cashier-human",
+        "personaId": "cashier",
+        "text": "The station objective in the sidebar names the control this decision is about."
+      },
+      {
+        "id": "hint-accounting",
+        "stepId": "accounting-human",
+        "personaId": "accounting",
+        "text": "The station objective in the sidebar names the control this decision is about."
+      }
+    ],
+    "referencePanels": [
+      {
+        "id": "controls-panel",
+        "artifactId": "control-legend",
+        "persistent": true
+      }
+    ],
+    "cognitiveLoad": {
+      "maxConcurrentItems": 4,
+      "maxOptionsPerStep": 2
+    },
+    "navigation": {
+      "toc": false
+    },
+    "difficultyRamp": {
+      "run-clerk": "none",
+      "run-supervisor": "none",
+      "run-cashier": "none",
+      "run-accounting": "none"
+    }
+  },
+  "assurance": {
+    "domain": "audit-assurance",
+    "authorityPolicy": {
+      "allowedKinds": [
+        "aicpa-aus",
+        "gaap-principle",
+        "course-material",
+        "professional-judgement"
+      ],
+      "requireOnCorrect": false
+    },
+    "assertions": [
+      {
+        "id": "CR-1",
+        "kind": "identity",
+        "expr": "p.controls === 6",
+        "describe": "All six textbook control activities are represented",
+        "writtenAtGate": 5
+      },
+      {
+        "id": "CR-2",
+        "kind": "identity",
+        "expr": "d.perfect_run_score === 102",
+        "describe": "A flawless single-role run scores 102: one briefing at 12 plus five decisions at 18",
+        "writtenAtGate": 5
+      }
+    ],
+    "attestation": {
+      "humanReviewer": "UNSIGNED — reverse-pass fixture",
+      "credential": "n/a",
+      "standardsEdition": "course textbook edition",
+      "signed": false
+    }
+  },
+  "telemetry": {
+    "route": "completion-code",
+    "completionCode": {
+      "prefix": "CRC1",
+      "fields": [
+        "stepId",
+        "correct",
+        "attempts",
+        "hintUsed",
+        "ms"
+      ],
+      "maxChars": 120
+    },
+    "itemAnalysis": {
+      "pBand": [
+        0.25,
+        0.95
+      ],
+      "discriminationBand": [
+        0.2,
+        1
+      ],
+      "reportBy": "both"
+    }
+  },
+  "presentation": {
+    "target": "dom",
+    "motion": {
+      "reducedMotionRespected": true
+    },
+    "a11y": {
+      "liveRegion": true,
+      "ariaCurrentStep": true,
+      "colorRedundant": true,
+      "focusOrder": "dom",
+      "reducedMotion": true
+    }
+  },
+  "extensions": [
+    {
+      "id": "office-floor",
+      "widget": "isometric-room",
+      "widgetVersion": "^1.0",
+      "fidelity": "bespoke-pending-generalisation",
+      "usedBy": [
+        "cash-receipts-control-game"
+      ],
+      "params": {
+        "room": {
+          "width": 7.6,
+          "depth": 5.8,
+          "halfTileW": 58,
+          "halfTileH": 30,
+          "originX": 845,
+          "originY": 178
+        },
+        "stations": {
+          "mail": {
+            "id": "mail",
+            "label": "Receipt Counter",
+            "hint": "Receive payments and prepare the first record.",
+            "x": 0.7,
+            "y": 1.15,
+            "w": 1.9,
+            "d": 1.2,
+            "h": 52,
+            "palette": {
+              "top": "#ffcc9d",
+              "left": "#f7a468",
+              "right": "#dc7b46",
+              "accent": "#a54722"
+            }
+          },
+          "supervisor": {
+            "id": "supervisor",
+            "label": "Supervisor Desk",
+            "hint": "Approve assignments and review handoffs.",
+            "x": 4.15,
+            "y": 0.7,
+            "w": 1.65,
+            "d": 1.15,
+            "h": 44,
+            "palette": {
+              "top": "#9fd7ff",
+              "left": "#6fb6f0",
+              "right": "#3f8fc6",
+              "accent": "#215f91"
+            }
+          },
+          "cashier": {
+            "id": "cashier",
+            "label": "Cashier Safe",
+            "hint": "Count, secure, and prepare the deposit packet.",
+            "x": 5.55,
+            "y": 3.15,
+            "w": 1.4,
+            "d": 1.15,
+            "h": 70,
+            "palette": {
+              "top": "#9de2b5",
+              "left": "#70c78c",
+              "right": "#4a9d68",
+              "accent": "#2f6f47"
+            }
+          },
+          "accounting": {
+            "id": "accounting",
+            "label": "Accounting Desk",
+            "hint": "Record cash receipts and reconcile the support.",
+            "x": 1.75,
+            "y": 4.2,
+            "w": 1.95,
+            "d": 1.15,
+            "h": 42,
+            "palette": {
+              "top": "#ffe39c",
+              "left": "#f5c96c",
+              "right": "#d59c33",
+              "accent": "#9a6512"
+            }
+          }
+        },
+        "staff": {
+          "clerk": {
+            "name": "Maya Chen",
+            "color": "#f28c5d"
+          },
+          "supervisor": {
+            "name": "Omar Ruiz",
+            "color": "#5fa9dd"
+          },
+          "cashier": {
+            "name": "Leah Park",
+            "color": "#62b986"
+          },
+          "accounting": {
+            "name": "Sam Patel",
+            "color": "#e5ba53"
+          }
+        },
+        "moveSpeed": 3.2,
+        "interactRadius": 1.55
+      },
+      "layout": {
+        "originX": 845,
+        "originY": 178,
+        "halfTileW": 58,
+        "halfTileH": 30
+      },
+      "textAlternative": "An isometric office floor with four stations: Receipt Counter, Supervisor Desk, Cashier Safe and Accounting Desk. The player walks between them. Every station is also reachable from the step list, so the floor is presentation, never a gate on assessment.",
+      "assets": [],
+      "fallback": {
+        "prompt": "Which station do you go to next?",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": false,
+          "options": [
+            {
+              "id": "go-mail",
+              "label": "Receipt Counter",
+              "correct": false,
+              "feedback": "Station selected."
+            },
+            {
+              "id": "go-supervisor",
+              "label": "Supervisor Desk",
+              "correct": false,
+              "feedback": "Station selected."
+            },
+            {
+              "id": "go-cashier",
+              "label": "Cashier Safe",
+              "correct": false,
+              "feedback": "Station selected."
+            },
+            {
+              "id": "go-accounting",
+              "label": "Accounting Desk",
+              "correct": false,
+              "feedback": "Station selected."
+            }
+          ]
+        }
+      },
+      "pedagogy": {
+        "objectiveIds": [
+          "establish-responsibility"
+        ],
+        "bloomDemand": "remember",
+        "successCriterion": null,
+        "feedback": "Arriving at the right station opens that station's control decision."
+      }
+    }
+  ],
+  "debrief": [
+    {
+      "id": "final",
+      "segmentId": "final",
+      "headline": "Shift debrief",
+      "body": "The four-stage cash receipts process, and the six controls you applied along the way.",
+      "processMap": [
+        {
+          "label": "Receive",
+          "colorRole": "accent"
+        },
+        {
+          "label": "Prelist",
+          "colorRole": "neutral"
+        },
+        {
+          "label": "Deposit",
+          "colorRole": "neutral"
+        },
+        {
+          "label": "Record",
+          "colorRole": "expected"
+        }
+      ],
+      "takeaways": [
+        "A named owner makes a shortage traceable.",
+        "Custody and recording never sit in the same hands.",
+        "Someone independent ties the prelist to the deposit to the entry."
+      ],
+      "earnedNotes": true
+    }
+  ],
+  "provenance": {
+    "gates": [
+      {
+        "agent": 1,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "meta",
+          "objectives",
+          "taxonomy"
+        ],
+        "hiddenFrom": [
+          "flow.steps",
+          "scoring"
+        ],
+        "note": "REVERSE PASS: the artifact states per-station objectives but no learning objectives and no Bloom level. The six objectives here are reconstructed from CONTROL_META."
+      },
+      {
+        "agent": 2,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "knowledge"
+        ]
+      },
+      {
+        "agent": 3,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "scenario",
+          "debrief"
+        ]
+      },
+      {
+        "agent": 4,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "flow",
+          "scoring",
+          "presentation",
+          "extensions"
+        ]
+      },
+      {
+        "agent": 5,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "assurance"
+        ],
+        "hiddenFrom": [
+          "flow.steps"
+        ]
+      },
+      {
+        "agent": 6,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "scaffolding",
+          "telemetry"
+        ]
+      }
+    ],
+    "deltas": [],
+    "findings": []
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "about": "framework/corpus/acc214-cost-estimation.baseline.json",
+  "fixture": "acc214-cost-estimation.spec.json",
+  "reverseEngineeredFrom": "public/acc214-cost-estimation/index.html",
+  "note": "One accepted error, and it is the single most valuable finding of the whole reverse pass: a false quantitative claim in the game's own narrative, of a kind no content read-through and no playtest would catch.",
+  "accepted": [
+    {
+      "check": "C2b narrative-quantifier-holds",
+      "target": "scenario.beats/c3-outcome-beat",
+      "reason": "REAL DEFECT OF THE ORIGINAL. index.html:769-772 prints three quarterly actuals against a predicted $41,730 and then claims 'Every quarter lands within ±2% of the model.' Q3's actual of $40,880 is 2.04% below the prediction of $41,729.72. The game tells a student that a model performed inside a tolerance it did not meet — in the case whose entire subject is judging whether a model is fit to budget on. Fix in a forward build: change the Q3 actual to $40,900 or above, or soften the prose to 'within about 2%'.",
+      "arity": 2,
+      "raisedBy": 5,
+      "against": 3,
+      "whyItMatters": "This is the defect the adversarial review predicted the framework would wave through, on the grounds that narrative numbers could be declared exempt. They cannot: a declaration under narrativeNumbers carries an obligation, and a prose quantifier over declared numbers is itself evaluated. The distinction that makes it work is that 'within X' is a BOUND and must hold exactly, while 'off by X' is a stated measurement compared at its own precision."
+    }
+  ],
+  "acceptedWarnings": [
+    { "check": "A5 human-attestation", "reason": "Reverse-pass fixture; no credentialed signer." }
+  ],
+  "fixedByRoundTrip": [
+    {
+      "defect": "Three of the eight step types are not data-driven at all. renderClassify (index.html:968) hardcodes its three cost lines, renderPickPoints (1037) hardcodes the selection rule, and renderResidual (1078) hardcodes its eight-point dataset, the OLS solve, the 1.35 tolerance factor and the bad-fit reference. The LEVELS entries for those steps are just {type, quip}.",
+      "howTheSpecFixesIt": "classify carries its buckets and items; select-from-set carries the dataset, the count and the rule; the residual sandbox becomes an extension whose params hold the points, the objective, the tolerance factor and the reference fit. An instructor can now change the numbers without touching a renderer.",
+      "consequence": "Roughly 60 authored strings and numbers move out of render functions and into addressable content fields — which is also what makes check N2 able to see them at all."
+    },
+    {
+      "defect": "The mixed-cost total $2,800, the annual splits $9,600 / $21,600, the high-low spread 4,800/400, the prediction $6,600 and the unexplained 35% are all typed as literals in prose, with no link to the primitives they come from.",
+      "howTheSpecFixesIt": "Each becomes a named derivation over knowledge.params, and check N2 refuses any number in graded text that is not reachable from a param, a dataset or a derivation. Editing the water bill now propagates, or breaks the build."
+    }
+  ],
+  "expressiveRangeContributed": [
+    "modes[]: solo vs class competition is not a local override — it changes the scoring formula, the hint labelling, turn rotation and projector typography, touching four agents' field sets at 13 sites. It forced a first-class cross-cutting construct that no other fixture needed.",
+    "A resource meter with a payout rule: client trust starts at 100, floors at 20, loses 5 per hint and 12 per wrong answer, and cashes out 1:1 into score at segment end in solo mode only.",
+    "The base-streak-speed scoring model, the only one in the corpus where the award depends on how the answer was reached rather than only on what it was.",
+    "narrativeNumbers with checked prose quantifiers — see the accepted finding above."
+  ]
+}

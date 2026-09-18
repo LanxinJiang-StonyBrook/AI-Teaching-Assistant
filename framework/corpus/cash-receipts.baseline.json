@@ -1,0 +1,28 @@
+{
+  "about": "framework/corpus/cash-receipts.baseline.json",
+  "fixture": "cash-receipts.spec.json",
+  "reverseEngineeredFrom": "public/cash-receipts-control-game/index.html",
+  "note": "All six accepted findings are one defect seen six times, and it is the sharpest thing the reverse pass found in this game. The four roles are four separate RUNS, not four difficulty levels, so a student sees exactly one item per control activity — and every item in the game is binary.",
+  "accepted": [
+    { "check": "P6 chance-score-budget", "target": "objectives/establish-responsibility", "reason": "See the shared reason below.", "arity": 3, "raisedBy": 1, "against": 4 },
+    { "check": "P6 chance-score-budget", "target": "objectives/segregate-duties", "reason": "See the shared reason below.", "arity": 3, "raisedBy": 1, "against": 4 },
+    { "check": "P6 chance-score-budget", "target": "objectives/document-procedures", "reason": "See the shared reason below.", "arity": 3, "raisedBy": 1, "against": 4 },
+    { "check": "P6 chance-score-budget", "target": "objectives/secure-physically", "reason": "See the shared reason below.", "arity": 3, "raisedBy": 1, "against": 4 },
+    { "check": "P6 chance-score-budget", "target": "objectives/verify-independently", "reason": "See the shared reason below.", "arity": 3, "raisedBy": 1, "against": 4 },
+    { "check": "P6 chance-score-budget", "target": "objectives/apply-hr-controls", "reason": "See the shared reason below.", "arity": 3, "raisedBy": 1, "against": 4 }
+  ],
+  "sharedReason": {
+    "defect": "REAL DEFECT OF THE ORIGINAL. Every one of the 24 authored questions is binary — option() is called exactly twice per step throughout index.html:290-899 — and personaScope means a single player answers 6 of them. So each control activity is assessed by ONE two-option item: a student who understands nothing collects each objective half the time, and clears the whole game by coin flip more often than not.",
+    "whyItWasInvisible": "The framework-matching spreadsheet rated this game Strong on all six MAAEGDE steps, and it is genuinely strong on scenario, feedback and control accuracy. Item-level measurement quality is simply not something a content read-through surfaces.",
+    "whyTheCheckSeesIt": "P6 is arity 3: it reads agent 1's objectives, agent 4's flow and agent 3's personas together. No single one of those field sets contains the defect — the objectives are fine, the items are fine, and the personas are fine. It is their combination that is a coin flip, which is what a cross-author check is for.",
+    "fixInAForwardBuild": "Three options per decision instead of two, or a second item per control on each role run, or drop personaScope so one run covers all six controls twice."
+  },
+  "acceptedWarnings": [
+    { "check": "A5 human-attestation", "reason": "Reverse-pass fixture; no credentialed signer, and the framework refuses to fake one." }
+  ],
+  "expressiveRangeContributed": [
+    "Split feedback policy: timing {correct: deferred-to-debrief, incorrect: interstitial}. No other corpus game defers praise and interrupts on error, and the schema had to grow an object-valued timing to hold it.",
+    "A deliberately unscored navigation layer (11 navigate steps, 0 points). This is the fixture that proves an award-value coverage metric is structurally blind to game feel: degrade the whole isometric floor to a list and award-value coverage still reports 100%.",
+    "A non-grading meter (risk) alongside the grading meter (score), forcing scoring.meters[].affectsFinalGrade to be mandatory rather than defaulted."
+  ]
+}

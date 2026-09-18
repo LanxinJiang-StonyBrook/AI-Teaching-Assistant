@@ -1,0 +1,2119 @@
+{
+  "gamespec": "1.0",
+  "emitter": {
+    "runtime": "^1.0",
+    "widgetRegistry": "^1.0"
+  },
+  "meta": {
+    "id": "acc214-cost-estimation",
+    "title": "ACC 214 Cost Estimation Challenge",
+    "subtitle": "Three consulting engagements: account analysis, high-low, regression",
+    "description": "Reverse-engineered GameSpec fixture for public/acc214-cost-estimation/index.html. The richest game in the corpus and the one that forced three schema features: a cross-cutting modes[] construct, a resource meter with a payout rule, and narrativeNumbers with a checked prose quantifier.",
+    "course": "ACC 214",
+    "chapter": "Chapter 3 — Cost behaviour and estimation",
+    "audience": "undergraduate managerial accounting students, in class or self-paced after the lecture",
+    "estimatedMinutes": 35,
+    "language": "en",
+    "offline": true,
+    "singleFile": true,
+    "sources": [
+      {
+        "id": "ch3-slides",
+        "kind": "slide-deck",
+        "citation": "ACC 214 Chapter 3 Slides, slides 12-47",
+        "version": "Chapter_3_Slides - S",
+        "archivedAt": "NOT ARCHIVED — the source file header cites \"slides 12-47\" with no pinned copy."
+      }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "separate-mixed-cost",
+      "statement": "Separate a mixed cost into its fixed and variable components by reading the underlying bill.",
+      "bloom": "apply",
+      "minGradedItems": 2,
+      "taughtBy": [
+        "c1-brief",
+        "dover-bill"
+      ]
+    },
+    {
+      "id": "build-cost-equation",
+      "statement": "Build the cost equation Y = b + mX from an estimation method’s output.",
+      "bloom": "apply",
+      "taughtBy": [
+        "c1-brief"
+      ]
+    },
+    {
+      "id": "forecast-from-equation",
+      "statement": "Forecast cost at a stated activity level and state the relevant-range caveat.",
+      "bloom": "apply",
+      "minGradedItems": 3,
+      "taughtBy": [
+        "c1-brief"
+      ]
+    },
+    {
+      "id": "apply-high-low",
+      "statement": "Apply the high-low method using the highest and lowest ACTIVITY levels, not the highest and lowest costs.",
+      "bloom": "apply",
+      "minGradedItems": 3,
+      "taughtBy": [
+        "c2-brief",
+        "pottery-table"
+      ]
+    },
+    {
+      "id": "judge-model-validity",
+      "statement": "Judge whether an estimated cost model is fit to budget on, using economic plausibility, goodness of fit and statistical significance.",
+      "bloom": "evaluate",
+      "minGradedItems": 4,
+      "taughtBy": [
+        "c3-brief",
+        "c3-residual"
+      ]
+    },
+    {
+      "id": "reason-cost-behaviour",
+      "statement": "Reason about how a change in a fixed or variable component moves the cost equation, within the relevant range.",
+      "bloom": "analyze",
+      "minGradedItems": 2,
+      "taughtBy": [
+        "c1-brief",
+        "dover-bill"
+      ]
+    },
+    {
+      "id": "critique-estimation-method",
+      "statement": "Critique an estimation method by naming what its sample ignores and what an outlier does to it.",
+      "bloom": "evaluate",
+      "minGradedItems": 2,
+      "taughtBy": [
+        "c2-brief",
+        "pottery-table"
+      ]
+    }
+  ],
+  "modes": [
+    {
+      "id": "solo",
+      "label": "Solo Practice",
+      "default": true,
+      "affects": [
+        "scaffolding.hints",
+        "scoring.params"
+      ]
+    },
+    {
+      "id": "competition",
+      "label": "Class Competition",
+      "teams": {
+        "enabled": true,
+        "min": 2,
+        "max": 4,
+        "rotation": "per-step"
+      },
+      "affects": [
+        "scoring.params.speedBonus",
+        "scaffolding.hints",
+        "scoring.meters",
+        "presentation.projectorMode"
+      ]
+    }
+  ],
+  "knowledge": {
+    "params": {
+      "doverBaseFee": 800,
+      "doverUsageCharge": 2000,
+      "doverUnitsUsed": 1000,
+      "doverUsageRetained": 0.9,
+      "monthsPerYear": 12,
+      "potteryHighMugs": 500,
+      "potteryHighCost": 9000,
+      "potteryLowMugs": 100,
+      "potteryLowCost": 4200,
+      "potteryPredictMugs": 300,
+      "xavierIntercept": 8773.72,
+      "xavierCoefficient": 14.98,
+      "xavierPlannedHours": 2200,
+      "xavierR2": 0.65,
+      "xavierT": 4.53,
+      "xavierP": 0.00086,
+      "boardBudgetAtRisk": 200000,
+      "doverNewBaseFee": 900,
+      "quartersPerYear": 4,
+      "boardBudgetAtRiskK": 200,
+      "potteryDoubling": 2
+    },
+    "thresholds": [
+      {
+        "name": "r2-floor",
+        "value": 0.3,
+        "kind": "rule-of-thumb",
+        "sourceId": "ch3-slides",
+        "inclusive": true,
+        "note": "Course screening threshold for goodness of fit."
+      },
+      {
+        "name": "t-critical",
+        "value": 1.96,
+        "kind": "standard",
+        "sourceId": "ch3-slides",
+        "inclusive": true,
+        "note": "Two-sided 5% critical value for a large sample."
+      },
+      {
+        "name": "p-alpha",
+        "value": 0.05,
+        "kind": "standard",
+        "sourceId": "ch3-slides",
+        "inclusive": false,
+        "note": "Significance level."
+      }
+    ],
+    "datasets": [
+      {
+        "id": "pottery",
+        "title": "Zeffani Ceramics — seven years of mugs and cost",
+        "role": "training",
+        "provenance": {
+          "sourceId": "ch3-slides"
+        },
+        "labelColumn": "cost",
+        "columns": [
+          {
+            "key": "year",
+            "label": "Year",
+            "type": "number"
+          },
+          {
+            "key": "mugs",
+            "label": "Mugs (X)",
+            "type": "number"
+          },
+          {
+            "key": "cost",
+            "label": "Cost (Y)",
+            "type": "currency"
+          }
+        ],
+        "rows": [
+          {
+            "year": 1,
+            "mugs": 100,
+            "cost": 4200
+          },
+          {
+            "year": 2,
+            "mugs": 180,
+            "cost": 4000
+          },
+          {
+            "year": 3,
+            "mugs": 250,
+            "cost": 6200
+          },
+          {
+            "year": 4,
+            "mugs": 320,
+            "cost": 6500
+          },
+          {
+            "year": 5,
+            "mugs": 380,
+            "cost": 7800
+          },
+          {
+            "year": 6,
+            "mugs": 440,
+            "cost": 8100
+          },
+          {
+            "year": 7,
+            "mugs": 500,
+            "cost": 9000
+          }
+        ],
+        "invariants": [
+          {
+            "kind": "rowCount",
+            "target": 7
+          }
+        ]
+      }
+    ],
+    "derivations": [
+      {
+        "id": "dover-rate",
+        "format": "usd",
+        "expr": "p.doverUsageCharge / p.doverUnitsUsed",
+        "describe": "Dover variable rate per unit",
+        "objectiveIds": [
+          "separate-mixed-cost"
+        ]
+      },
+      {
+        "id": "dover-annual-total",
+        "format": "usd",
+        "expr": "p.doverBaseFee * p.monthsPerYear + p.doverUsageRetained * p.doverUsageCharge * p.monthsPerYear",
+        "describe": "Dover forecast total for next year",
+        "objectiveIds": [
+          "forecast-from-equation"
+        ]
+      },
+      {
+        "id": "pottery-slope",
+        "format": "usd",
+        "expr": "(p.potteryHighCost - p.potteryLowCost) / (p.potteryHighMugs - p.potteryLowMugs)",
+        "describe": "High-low slope",
+        "objectiveIds": [
+          "apply-high-low"
+        ]
+      },
+      {
+        "id": "pottery-intercept",
+        "format": "usd",
+        "expr": "p.potteryHighCost - ((p.potteryHighCost - p.potteryLowCost) / (p.potteryHighMugs - p.potteryLowMugs)) * p.potteryHighMugs",
+        "describe": "High-low intercept",
+        "objectiveIds": [
+          "apply-high-low"
+        ]
+      },
+      {
+        "id": "board-prediction",
+        "format": "usd",
+        "expr": "p.xavierCoefficient * p.xavierPlannedHours + p.xavierIntercept",
+        "describe": "The maintenance budget the board locks in at 2,200 machine hours",
+        "objectiveIds": [
+          "forecast-from-equation"
+        ]
+      },
+      {
+        "id": "dover-monthly-total",
+        "format": "usd",
+        "expr": "p.doverBaseFee + p.doverUsageCharge",
+        "describe": "Dover total monthly water bill (fixed base plus usage charge)",
+        "objectiveIds": [
+          "separate-mixed-cost"
+        ]
+      },
+      {
+        "id": "dover-annual-fixed",
+        "format": "usd",
+        "expr": "p.doverBaseFee * p.monthsPerYear",
+        "describe": "Dover fixed cost for the year"
+      },
+      {
+        "id": "dover-annual-variable",
+        "format": "usd",
+        "expr": "p.doverUsageRetained * p.doverUsageCharge * p.monthsPerYear",
+        "describe": "Dover variable cost for the year at 90% usage"
+      },
+      {
+        "id": "dover-quarterly-total",
+        "format": "usd",
+        "expr": "(p.doverBaseFee * p.monthsPerYear + p.doverUsageRetained * p.doverUsageCharge * p.monthsPerYear) / p.quartersPerYear",
+        "describe": "One quarter of the Dover annual forecast"
+      },
+      {
+        "id": "pottery-cost-spread",
+        "format": "usd",
+        "expr": "p.potteryHighCost - p.potteryLowCost",
+        "describe": "Cost spread between the activity extremes"
+      },
+      {
+        "id": "pottery-activity-spread",
+        "format": "number",
+        "expr": "p.potteryHighMugs - p.potteryLowMugs",
+        "describe": "Activity spread between the extremes"
+      },
+      {
+        "id": "pottery-prediction",
+        "format": "usd",
+        "expr": "((p.potteryHighCost - p.potteryLowCost) / (p.potteryHighMugs - p.potteryLowMugs)) * p.potteryPredictMugs + (p.potteryHighCost - ((p.potteryHighCost - p.potteryLowCost) / (p.potteryHighMugs - p.potteryLowMugs)) * p.potteryHighMugs)",
+        "describe": "High-low cost prediction at 300 mugs",
+        "objectiveIds": [
+          "forecast-from-equation"
+        ]
+      },
+      {
+        "id": "xavier-unexplained",
+        "format": "percent",
+        "expr": "1 - p.xavierR2",
+        "describe": "Share of cost variation the single driver does not explain",
+        "objectiveIds": [
+          "judge-model-validity"
+        ]
+      },
+      {
+        "id": "pottery-rate-doubled",
+        "format": "usd",
+        "expr": "((p.potteryHighCost - p.potteryLowCost) / (p.potteryHighMugs - p.potteryLowMugs)) * 2",
+        "describe": "The misconception value: variable rate wrongly doubled with volume"
+      },
+      {
+        "id": "dover-rate-doubled",
+        "format": "usd",
+        "expr": "(p.doverUsageCharge / p.doverUnitsUsed) * p.potteryDoubling",
+        "describe": "The misconception value: variable rate per unit wrongly doubled with volume"
+      }
+    ],
+    "artifacts": [
+      {
+        "id": "dover-bill",
+        "title": "Dover Mfg. Monthly Water Bill",
+        "kind": "invoice",
+        "objectiveIds": [
+          "separate-mixed-cost",
+          "build-cost-equation"
+        ],
+        "content": "Meter base fee $800. Water usage charge $2,000 for 1,000 units. Total $2,800."
+      },
+      {
+        "id": "pottery-table",
+        "title": "Zeffani Ceramics — seven years",
+        "kind": "dataset-view",
+        "datasetId": "pottery",
+        "objectiveIds": [
+          "apply-high-low"
+        ]
+      },
+      {
+        "id": "xavier-output",
+        "title": "Excel regression output — Xavier Co.",
+        "kind": "code-output",
+        "objectiveIds": [
+          "judge-model-validity",
+          "build-cost-equation"
+        ],
+        "content": "Intercept 8773.72 | Machine hours coefficient 14.98 | R Square 0.65 | t Stat 4.53 | P-value 0.00086"
+      }
+    ]
+  },
+  "scenario": {
+    "framing": "consulting-engagement",
+    "entityNoun": "Rivera & Park, Cost Consultants",
+    "company": {
+      "name": "Rivera & Park, Cost Consultants",
+      "industry": "professional services",
+      "contextualModifiers": {}
+    },
+    "cast": [
+      {
+        "id": "rivera",
+        "displayName": "Ms. Rivera",
+        "role": "Partner",
+        "voice": "dry, signs nothing she has not read"
+      },
+      {
+        "id": "priya",
+        "displayName": "Priya Dover",
+        "role": "Facilities manager",
+        "voice": "stressed, deadline in two days"
+      },
+      {
+        "id": "zeff",
+        "displayName": "Zeffani",
+        "role": "Ceramic artist",
+        "voice": "wry, broke, sells out every market"
+      },
+      {
+        "id": "marcus",
+        "displayName": "Marcus Xavier",
+        "role": "CFO",
+        "voice": "board-facing, wants one number"
+      },
+      {
+        "id": "you",
+        "displayName": "You",
+        "role": "Cost analyst",
+        "voice": "the player"
+      }
+    ],
+    "beats": [
+      {
+        "id": "c1-brief-beat",
+        "kind": "scene",
+        "attachTo": {
+          "target": "step",
+          "id": "c1-brief"
+        },
+        "label": "Client briefing",
+        "cta": "Open the bill",
+        "lines": [
+          {
+            "who": "rivera",
+            "text": "Welcome to Rivera & Park. No time for a tour — Dover Manufacturing is on line two."
+          },
+          {
+            "who": "priya",
+            "text": "Corporate wants next year’s water budget by Friday. If my number is wrong, Facilities eats the difference."
+          },
+          {
+            "who": "you",
+            "text": "Send over the bill. We will take it apart line by line — that is what account analysis means."
+          },
+          {
+            "who": "narrator",
+            "text": "ENGAGEMENT #1 — separate fixed from variable, build the cost equation, forecast next year."
+          }
+        ]
+      },
+      {
+        "id": "c1-outcome-beat",
+        "kind": "outcome",
+        "attachTo": {
+          "target": "step",
+          "id": "c1-outcome"
+        },
+        "stamp": "ONE YEAR LATER",
+        "blocks": [
+          {
+            "kind": "paragraph",
+            "text": "Your budget goes in at $31,200. The quarters roll by."
+          },
+          {
+            "kind": "row",
+            "label": "Q1",
+            "aux": "budget $7,800",
+            "value": "actual $7,760"
+          },
+          {
+            "kind": "row",
+            "label": "Q2",
+            "aux": "budget $7,800",
+            "value": "actual $7,850"
+          },
+          {
+            "kind": "row",
+            "label": "Q3",
+            "aux": "budget $7,800",
+            "value": "actual $7,790"
+          },
+          {
+            "kind": "row",
+            "label": "Q4",
+            "aux": "budget $7,800",
+            "value": "actual $7,810"
+          },
+          {
+            "kind": "paragraph",
+            "text": "Actual for the year: $31,210 — your forecast was off by 0.03%."
+          }
+        ],
+        "narrativeNumbers": [
+          {
+            "token": "$7,760",
+            "relation": "independent",
+            "reason": "Authored quarterly actual, illustrating variance around the forecast."
+          },
+          {
+            "token": "$7,850",
+            "relation": "independent",
+            "reason": "Authored quarterly actual."
+          },
+          {
+            "token": "$7,790",
+            "relation": "independent",
+            "reason": "Authored quarterly actual."
+          },
+          {
+            "token": "$7,810",
+            "relation": "independent",
+            "reason": "Authored quarterly actual."
+          },
+          {
+            "token": "$7,800",
+            "relation": "approximately",
+            "ofDerivation": "dover-quarterly-total",
+            "tol": 1,
+            "reason": "One quarter of the annual forecast ($31,200 / 4 = $7,800)."
+          },
+          {
+            "token": "$31,210",
+            "relation": "independent",
+            "reason": "The sum of the four authored quarterly actuals, not a derivation of the forecast."
+          },
+          {
+            "token": "0.03%",
+            "relation": "independent",
+            "reason": "The stated forecast error, in percent."
+          },
+          {
+            "token": "0.03%",
+            "relation": "independent",
+            "reason": "The stated forecast error in percent, computed from the authored actuals."
+          }
+        ]
+      },
+      {
+        "id": "c2-brief-beat",
+        "kind": "scene",
+        "attachTo": {
+          "target": "step",
+          "id": "c2-brief"
+        },
+        "label": "Client briefing",
+        "cta": "Look at her numbers",
+        "lines": [
+          {
+            "who": "rivera",
+            "text": "Next client is a referral. Zeffani — ceramic artist. Sells every mug she makes. And somehow, she is broke."
+          },
+          {
+            "who": "zeff",
+            "text": "Sold-out markets. And my bank balance after seven years? Basically pottery dust."
+          },
+          {
+            "who": "you",
+            "text": "You have seven years of cost data. Let us find the line hiding in it."
+          },
+          {
+            "who": "narrator",
+            "text": "ENGAGEMENT #2 — use the high-low method to uncover where the money goes."
+          }
+        ]
+      },
+      {
+        "id": "c2-outcome-beat",
+        "kind": "outcome",
+        "attachTo": {
+          "target": "step",
+          "id": "c2-outcome"
+        },
+        "stamp": "ONE YEAR LATER",
+        "blocks": [
+          {
+            "kind": "paragraph",
+            "text": "Knowing $12 a mug is variable and $3,000 a year is fixed, Zeffani reprices."
+          },
+          {
+            "kind": "quip",
+            "who": "zeff",
+            "text": "Turns out I was selling below variable cost at the small markets. I stopped doing the small markets."
+          }
+        ]
+      },
+      {
+        "id": "c3-brief-beat",
+        "kind": "scene",
+        "attachTo": {
+          "target": "step",
+          "id": "c3-brief"
+        },
+        "label": "Client briefing",
+        "cta": "Open the output",
+        "lines": [
+          {
+            "who": "marcus",
+            "text": "My intern ran a regression. I am about to put $200,000 of maintenance budget in front of the board on the strength of it."
+          },
+          {
+            "who": "you",
+            "text": "Then before anyone signs anything, we run the three validity checks."
+          },
+          {
+            "who": "narrator",
+            "text": "ENGAGEMENT #3 — judge whether the model is fit to budget on."
+          }
+        ],
+        "narrativeNumbers": [
+          {
+            "token": "$200,000",
+            "relation": "independent",
+            "reason": "Declared in knowledge.params as boardBudgetAtRisk."
+          }
+        ]
+      },
+      {
+        "id": "c3-outcome-beat",
+        "kind": "outcome",
+        "attachTo": {
+          "target": "step",
+          "id": "c3-outcome"
+        },
+        "stamp": "BOARD MEETING — 9:00 AM",
+        "blocks": [
+          {
+            "kind": "paragraph",
+            "text": "You present: plausible driver, R-squared 0.65, p 0.00086. The board locks next year’s maintenance budget on the model."
+          },
+          {
+            "kind": "row",
+            "label": "Q1",
+            "aux": "predicted $41,730",
+            "value": "actual $41,190"
+          },
+          {
+            "kind": "row",
+            "label": "Q2",
+            "aux": "predicted $41,730",
+            "value": "actual $42,310"
+          },
+          {
+            "kind": "row",
+            "label": "Q3",
+            "aux": "predicted $41,730",
+            "value": "actual $40,880"
+          },
+          {
+            "kind": "paragraph",
+            "text": "Every quarter lands within 2% of the model. The $200K bet pays off."
+          }
+        ],
+        "narrativeNumbers": [
+          {
+            "token": "$41,730",
+            "relation": "approximately",
+            "ofDerivation": "board-prediction",
+            "tol": 1,
+            "reason": "The rounded board number."
+          },
+          {
+            "token": "$41,190",
+            "relation": "approximately",
+            "ofDerivation": "board-prediction",
+            "tol": 600,
+            "reason": "Authored Q1 actual."
+          },
+          {
+            "token": "$42,310",
+            "relation": "approximately",
+            "ofDerivation": "board-prediction",
+            "tol": 600,
+            "reason": "Authored Q2 actual."
+          },
+          {
+            "token": "$40,880",
+            "relation": "approximately",
+            "ofDerivation": "board-prediction",
+            "tol": 900,
+            "reason": "Authored Q3 actual."
+          },
+          {
+            "token": "$200",
+            "relation": "independent",
+            "reason": "The \"$200K bet\" shorthand; the full figure is knowledge.params.boardBudgetAtRisk."
+          }
+        ]
+      }
+    ]
+  },
+  "flow": {
+    "progression": "toc-free",
+    "segments": [
+      {
+        "id": "case-1",
+        "title": "Case 1 — The Water Bill Mystery",
+        "subtitle": "Account Analysis, Dover Mfg.",
+        "order": 0,
+        "objectiveIds": [
+          "separate-mixed-cost",
+          "build-cost-equation",
+          "forecast-from-equation",
+          "reason-cost-behaviour"
+        ],
+        "sourceRef": "ch3-slides",
+        "unlockRule": "always",
+        "debriefId": "wrap"
+      },
+      {
+        "id": "case-2",
+        "title": "Case 2 — The Vanishing Profits",
+        "subtitle": "High-Low, Zeffani Ceramics",
+        "order": 1,
+        "objectiveIds": [
+          "apply-high-low",
+          "forecast-from-equation",
+          "critique-estimation-method"
+        ],
+        "sourceRef": "ch3-slides",
+        "unlockRule": "always",
+        "debriefId": "wrap"
+      },
+      {
+        "id": "case-3",
+        "title": "Case 3 — The $200K Bet",
+        "subtitle": "Regression validity, Xavier Co.",
+        "order": 2,
+        "objectiveIds": [
+          "judge-model-validity",
+          "build-cost-equation",
+          "forecast-from-equation"
+        ],
+        "sourceRef": "ch3-slides",
+        "unlockRule": "always",
+        "debriefId": "wrap"
+      }
+    ],
+    "steps": [
+      {
+        "order": 0,
+        "id": "c1-brief",
+        "segmentId": "case-1",
+        "graded": false,
+        "objectiveIds": [
+          "separate-mixed-cost"
+        ],
+        "prompt": "Client briefing — Dover Manufacturing needs next year’s water budget by Friday.",
+        "interaction": {
+          "type": "narrative",
+          "beatId": "c1-brief-beat"
+        }
+      },
+      {
+        "order": 1,
+        "id": "c1-classify",
+        "segmentId": "case-1",
+        "graded": true,
+        "objectiveIds": [
+          "separate-mixed-cost"
+        ],
+        "bloomDemand": "understand",
+        "title": "Sort the bill",
+        "prompt": "Sort each line of Dover’s water bill into the right cost type.",
+        "caption": "Account analysis means reading the actual bill to separate fixed from variable.",
+        "artifactIds": [
+          "dover-bill"
+        ],
+        "interaction": {
+          "type": "classify",
+          "grading": "partial",
+          "buckets": [
+            {
+              "id": "fixed",
+              "label": "Fixed"
+            },
+            {
+              "id": "variable",
+              "label": "Variable"
+            },
+            {
+              "id": "mixed",
+              "label": "Mixed"
+            }
+          ],
+          "items": [
+            {
+              "id": "meter",
+              "text": "Meter base fee — $800 / month (charged even at zero usage)",
+              "correctBucket": "fixed",
+              "why": "Charged even at zero usage, so it does not vary with the driver."
+            },
+            {
+              "id": "usage",
+              "text": "Water usage charge — $2,000 / month (1,000 units used)",
+              "correctBucket": "variable",
+              "why": "Scales directly with units used."
+            },
+            {
+              "id": "total",
+              "text": "Total water bill — $2,800 / month ($800 + $2,000)",
+              "correctBucket": "mixed",
+              "why": "A fixed base plus a variable usage charge is a mixed cost."
+            }
+          ]
+        },
+        "award": {
+          "base": 100
+        },
+        "why": "A mixed cost is a fixed base plus a variable rate."
+      },
+      {
+        "order": 2,
+        "id": "c1-rate",
+        "segmentId": "case-1",
+        "graded": true,
+        "objectiveIds": [
+          "separate-mixed-cost"
+        ],
+        "bloomDemand": "apply",
+        "title": "Variable rate",
+        "prompt": "What is the variable cost per unit of water?",
+        "caption": "The usage charge was $2,000 for 1,000 units this month.",
+        "artifactIds": [
+          "dover-bill"
+        ],
+        "interaction": {
+          "type": "numeric",
+          "expectedExpr": "p.doverUsageCharge / p.doverUnitsUsed",
+          "tol": 0.1,
+          "unit": "$ / unit"
+        },
+        "award": {
+          "base": 100
+        },
+        "why": "2,000 / 1,000 = $2 per unit — the cost of each additional unit of water, i.e. the slope of the cost line."
+      },
+      {
+        "order": 3,
+        "id": "c1-equation",
+        "segmentId": "case-1",
+        "graded": true,
+        "objectiveIds": [
+          "build-cost-equation"
+        ],
+        "bloomDemand": "apply",
+        "title": "Assemble the equation",
+        "prompt": "Assemble the mixed-cost equation Y = b + mX.",
+        "caption": "Pull the fixed part (b) and the variable rate (m) from the bill.",
+        "artifactIds": [
+          "dover-bill"
+        ],
+        "interaction": {
+          "type": "multi-blank",
+          "grading": "all-or-nothing",
+          "blankDiagnosis": "per-blank",
+          "blanks": [
+            {
+              "label": "Fixed cost  b  ($)",
+              "expectedExpr": "p.doverBaseFee",
+              "tol": 0.5
+            },
+            {
+              "label": "Variable rate  m  ($/unit)",
+              "expectedExpr": "p.doverUsageCharge / p.doverUnitsUsed",
+              "tol": 0.1
+            }
+          ]
+        },
+        "award": {
+          "base": 120
+        },
+        "why": "Y = 800 + 2X — an $800 fixed base plus $2 for every unit. With this equation you can predict the bill at any usage level X."
+      },
+      {
+        "order": 4,
+        "id": "c1-forecast",
+        "segmentId": "case-1",
+        "graded": true,
+        "objectiveIds": [
+          "forecast-from-equation"
+        ],
+        "bloomDemand": "apply",
+        "title": "Forecast next year",
+        "prompt": "Forecast next year’s water expense (usage drops 10%).",
+        "caption": "Annualize over 12 months. Fixed stays put; variable scales to 90%.",
+        "artifactIds": [
+          "dover-bill"
+        ],
+        "interaction": {
+          "type": "multi-blank",
+          "grading": "all-or-nothing",
+          "blankDiagnosis": "per-blank",
+          "blanks": [
+            {
+              "label": "Fixed for the year ($)",
+              "expectedExpr": "p.doverBaseFee * p.monthsPerYear",
+              "tol": 1
+            },
+            {
+              "label": "Variable for the year ($)",
+              "expectedExpr": "p.doverUsageRetained * p.doverUsageCharge * p.monthsPerYear",
+              "tol": 2
+            },
+            {
+              "label": "Total expense ($)",
+              "expectedExpr": "p.doverBaseFee * p.monthsPerYear + p.doverUsageRetained * p.doverUsageCharge * p.monthsPerYear",
+              "tol": 2
+            }
+          ]
+        },
+        "award": {
+          "base": 150
+        },
+        "why": "$9,600 + $21,600 = $31,200. Only the variable part shrank with the 10% usage cut; the fixed meter fee did not move at all."
+      },
+      {
+        "order": 5,
+        "id": "c1-outcome",
+        "segmentId": "case-1",
+        "graded": false,
+        "objectiveIds": [
+          "forecast-from-equation"
+        ],
+        "prompt": "One year later — the quarters roll by.",
+        "interaction": {
+          "type": "narrative",
+          "beatId": "c1-outcome-beat"
+        }
+      },
+      {
+        "order": 6,
+        "id": "c1-intercept",
+        "segmentId": "case-1",
+        "graded": true,
+        "objectiveIds": [
+          "reason-cost-behaviour"
+        ],
+        "bloomDemand": "analyze",
+        "title": "Partner sign-off",
+        "prompt": "The city announces the meter base fee rises from $800 to $900 next year. What happens to Y = 800 + 2X?",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "c1-intercept-a",
+              "label": "The intercept shifts: Y = 900 + 2X. The slope does not change.",
+              "correct": true,
+              "feedback": "The base fee is the fixed part — the intercept b. The per-unit rate m is set by usage pricing and is untouched.",
+              "award": 110
+            },
+            {
+              "id": "c1-intercept-b",
+              "label": "The slope rises to $2.25 per unit.",
+              "correct": false,
+              "feedback": "The base fee is not a per-unit charge, so it cannot change the slope.",
+              "misconceptionTag": "confuses-intercept-slope",
+              "award": 0
+            },
+            {
+              "id": "c1-intercept-c",
+              "label": "Both the intercept and the slope increase.",
+              "correct": false,
+              "feedback": "Only the fixed base changed. The usage rate was not repriced.",
+              "misconceptionTag": "changes-both",
+              "award": 0
+            },
+            {
+              "id": "c1-intercept-d",
+              "label": "Nothing changes.",
+              "correct": false,
+              "feedback": "A higher base fee raises the bill at every usage level — the intercept moves.",
+              "misconceptionTag": "no-change",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 110
+        },
+        "why": "A change in the fixed base moves the intercept, never the slope."
+      },
+      {
+        "order": 7,
+        "id": "c1-relevant-range",
+        "segmentId": "case-1",
+        "graded": true,
+        "objectiveIds": [
+          "reason-cost-behaviour"
+        ],
+        "bloomDemand": "analyze",
+        "title": "Doubling volume",
+        "prompt": "Dover expects to double its water usage next year. Which statement is true?",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "c1-relevant-range-a",
+              "label": "Total fixed cost stays $9,600, so fixed cost per unit is cut in half.",
+              "correct": true,
+              "feedback": "Within the relevant range, fixed cost is constant in total, so per-unit fixed falls as volume rises.",
+              "award": 110
+            },
+            {
+              "id": "c1-relevant-range-b",
+              "label": "Total fixed cost doubles along with usage.",
+              "correct": false,
+              "feedback": "Fixed cost is fixed in total, not per unit.",
+              "misconceptionTag": "fixed-scales",
+              "award": 0
+            },
+            {
+              "id": "c1-relevant-range-c",
+              "label": "Variable cost per unit doubles to $4.",
+              "correct": false,
+              "feedback": "Variable cost is constant per unit; it is the TOTAL that scales.",
+              "misconceptionTag": "variable-per-unit-scales",
+              "award": 0,
+              "misconceptionFormula": "d.dover_rate_doubled"
+            },
+            {
+              "id": "c1-relevant-range-d",
+              "label": "Total variable cost stays the same.",
+              "correct": false,
+              "feedback": "Total variable cost scales with the driver.",
+              "misconceptionTag": "variable-total-fixed",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 110
+        },
+        "terminal": true,
+        "why": "Fixed is constant in total; variable is constant per unit. Both statements only hold within the relevant range."
+      },
+      {
+        "order": 8,
+        "id": "c2-brief",
+        "segmentId": "case-2",
+        "graded": false,
+        "objectiveIds": [
+          "apply-high-low"
+        ],
+        "prompt": "Client briefing — Zeffani sells every mug she makes and is still broke.",
+        "interaction": {
+          "type": "narrative",
+          "beatId": "c2-brief-beat"
+        }
+      },
+      {
+        "order": 9,
+        "id": "c2-pickpoints",
+        "segmentId": "case-2",
+        "graded": true,
+        "objectiveIds": [
+          "apply-high-low"
+        ],
+        "bloomDemand": "apply",
+        "title": "Pick the two points",
+        "prompt": "Pick the two points the high-low method uses.",
+        "caption": "Zeffani made mugs (X) at these costs (Y) over 7 years. Select exactly two points.",
+        "artifactIds": [
+          "pottery-table"
+        ],
+        "interaction": {
+          "type": "select-from-set",
+          "datasetId": "pottery",
+          "selectCount": 2,
+          "rule": "minMaxBy:mugs",
+          "correct": [
+            "1",
+            "7"
+          ],
+          "distractors": [
+            {
+              "match": "minMaxBy:cost",
+              "feedback": "High-low reads the highest and lowest ACTIVITY level, not the highest and lowest cost.",
+              "misconceptionTag": "high-low-by-cost"
+            }
+          ]
+        },
+        "award": {
+          "base": 120
+        },
+        "why": "High-low uses the highest and lowest activity levels: 500 mugs and 100 mugs."
+      },
+      {
+        "order": 10,
+        "id": "c2-slope",
+        "segmentId": "case-2",
+        "graded": true,
+        "objectiveIds": [
+          "apply-high-low"
+        ],
+        "bloomDemand": "apply",
+        "title": "Compute the slope",
+        "prompt": "Compute the slope (m), the variable cost per mug.",
+        "caption": "High point (500, $9,000) and low point (100, $4,200).",
+        "interaction": {
+          "type": "numeric",
+          "expectedExpr": "(p.potteryHighCost - p.potteryLowCost) / (p.potteryHighMugs - p.potteryLowMugs)",
+          "tol": 0.2,
+          "unit": "$ / mug"
+        },
+        "award": {
+          "base": 120
+        },
+        "why": "m = 4,800 / 400 = $12 — the variable cost of making one more mug."
+      },
+      {
+        "order": 11,
+        "id": "c2-intercept",
+        "segmentId": "case-2",
+        "graded": true,
+        "objectiveIds": [
+          "apply-high-low"
+        ],
+        "bloomDemand": "apply",
+        "title": "Compute the intercept",
+        "prompt": "Compute the intercept (b), the fixed cost.",
+        "caption": "Use the high point: $9,000 total at 500 mugs, with a $12 variable rate.",
+        "interaction": {
+          "type": "numeric",
+          "expectedExpr": "p.potteryHighCost - ((p.potteryHighCost - p.potteryLowCost) / (p.potteryHighMugs - p.potteryLowMugs)) * p.potteryHighMugs",
+          "tol": 1,
+          "unit": "$"
+        },
+        "award": {
+          "base": 120
+        },
+        "why": "b = 9,000 - 12 x 500 = $3,000 of cost that is there whether or not a mug is made."
+      },
+      {
+        "order": 12,
+        "id": "c2-predict",
+        "segmentId": "case-2",
+        "graded": true,
+        "objectiveIds": [
+          "forecast-from-equation"
+        ],
+        "bloomDemand": "apply",
+        "title": "Predict at 300 mugs",
+        "prompt": "Using Y = 12X + 3,000, what does it cost to make 300 mugs?",
+        "interaction": {
+          "type": "numeric",
+          "expectedExpr": "((p.potteryHighCost - p.potteryLowCost) / (p.potteryHighMugs - p.potteryLowMugs)) * p.potteryPredictMugs + (p.potteryHighCost - ((p.potteryHighCost - p.potteryLowCost) / (p.potteryHighMugs - p.potteryLowMugs)) * p.potteryHighMugs)",
+          "tol": 1,
+          "unit": "$"
+        },
+        "award": {
+          "base": 150
+        },
+        "why": "12 x 300 + 3,000 = $6,600."
+      },
+      {
+        "order": 13,
+        "id": "c2-outcome",
+        "segmentId": "case-2",
+        "graded": false,
+        "objectiveIds": [
+          "forecast-from-equation"
+        ],
+        "prompt": "One year later — Zeffani reprices.",
+        "interaction": {
+          "type": "narrative",
+          "beatId": "c2-outcome-beat"
+        }
+      },
+      {
+        "order": 14,
+        "id": "c2-limitation",
+        "segmentId": "case-2",
+        "graded": true,
+        "objectiveIds": [
+          "critique-estimation-method"
+        ],
+        "bloomDemand": "evaluate",
+        "title": "Partner sign-off",
+        "prompt": "What is the main weakness of the high-low method?",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "c2-limitation-a",
+              "label": "It uses only two observations, so an unusual year drives the whole equation.",
+              "correct": true,
+              "feedback": "High-low throws away every point between the extremes, and the extremes are exactly where outliers live.",
+              "award": 110
+            },
+            {
+              "id": "c2-limitation-b",
+              "label": "It cannot handle mixed costs.",
+              "correct": false,
+              "feedback": "Separating a mixed cost is precisely what it does.",
+              "misconceptionTag": "cannot-mix",
+              "award": 0
+            },
+            {
+              "id": "c2-limitation-c",
+              "label": "It requires a statistics package.",
+              "correct": false,
+              "feedback": "It needs only arithmetic — that is its appeal.",
+              "misconceptionTag": "needs-software",
+              "award": 0
+            },
+            {
+              "id": "c2-limitation-d",
+              "label": "It gives the fixed cost but not the variable rate.",
+              "correct": false,
+              "feedback": "It gives both: the slope first, then the intercept.",
+              "misconceptionTag": "partial-output",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 110
+        },
+        "why": "Two points, both at the extremes, is the whole sample high-low uses."
+      },
+      {
+        "order": 15,
+        "id": "c2-outlier",
+        "segmentId": "case-2",
+        "graded": true,
+        "objectiveIds": [
+          "critique-estimation-method"
+        ],
+        "bloomDemand": "evaluate",
+        "title": "The outlier question",
+        "prompt": "Year 2 shows 180 mugs at $4,000 — lower cost than year 1 at 100 mugs. What should you do?",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "c2-outlier-a",
+              "label": "Investigate it, but leave high-low on the true activity extremes.",
+              "correct": true,
+              "feedback": "High-low is defined on the activity extremes. An odd interior point is a reason to ask questions, not to redefine the method.",
+              "award": 110
+            },
+            {
+              "id": "c2-outlier-b",
+              "label": "Use year 2 as the low point because it has the lowest cost.",
+              "correct": false,
+              "feedback": "That is the high-low-by-cost error: the method reads the ACTIVITY extremes.",
+              "misconceptionTag": "high-low-by-cost",
+              "award": 0
+            },
+            {
+              "id": "c2-outlier-c",
+              "label": "Drop year 2 from the data set without asking why.",
+              "correct": false,
+              "feedback": "Deleting an inconvenient observation without a reason is not analysis.",
+              "misconceptionTag": "silent-drop",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 110
+        },
+        "terminal": true,
+        "why": "Investigate interior oddities; the method still reads the activity extremes."
+      },
+      {
+        "order": 16,
+        "id": "c3-brief",
+        "segmentId": "case-3",
+        "graded": false,
+        "objectiveIds": [
+          "judge-model-validity"
+        ],
+        "prompt": "Client briefing — a $200K board budget rides on an intern’s regression.",
+        "interaction": {
+          "type": "narrative",
+          "beatId": "c3-brief-beat"
+        }
+      },
+      {
+        "order": 17,
+        "id": "c3-residual",
+        "segmentId": "case-3",
+        "graded": true,
+        "objectiveIds": [
+          "judge-model-validity"
+        ],
+        "bloomDemand": "understand",
+        "title": "What regression minimises",
+        "prompt": "Drag the line until the squared errors are as small as you can get them.",
+        "caption": "Regression picks the line that minimises the sum of squared residuals.",
+        "interaction": {
+          "type": "extension",
+          "extensionId": "fit-lab"
+        },
+        "award": {
+          "base": 200
+        },
+        "why": "Ordinary least squares is exactly the line with the smallest sum of squared vertical distances."
+      },
+      {
+        "order": 18,
+        "id": "c3-plausible",
+        "segmentId": "case-3",
+        "graded": true,
+        "objectiveIds": [
+          "judge-model-validity"
+        ],
+        "bloomDemand": "evaluate",
+        "title": "Validity check 1 — the driver",
+        "prompt": "The intern regressed maintenance cost on machine hours. Is the driver economically plausible?",
+        "artifactIds": [
+          "xavier-output"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "c3-plausible-a",
+              "label": "Yes — machines that run more need more maintenance, so the causal story holds.",
+              "correct": true,
+              "feedback": "Economic plausibility comes first. A statistically strong relationship with no causal story is a coincidence you are about to budget on.",
+              "award": 110
+            },
+            {
+              "id": "c3-plausible-b",
+              "label": "It does not matter, because R-squared is high.",
+              "correct": false,
+              "feedback": "R-squared measures fit, not causation. Plausibility is a separate, prior test.",
+              "misconceptionTag": "r2-replaces-theory",
+              "award": 0
+            },
+            {
+              "id": "c3-plausible-c",
+              "label": "No — cost can never be predicted from an activity measure.",
+              "correct": false,
+              "feedback": "That is what cost estimation is.",
+              "misconceptionTag": "nihilism",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 110
+        },
+        "why": "Plausible driver first; statistics second."
+      },
+      {
+        "order": 19,
+        "id": "c3-r2",
+        "segmentId": "case-3",
+        "graded": true,
+        "objectiveIds": [
+          "judge-model-validity"
+        ],
+        "bloomDemand": "evaluate",
+        "title": "Validity check 2 — goodness of fit",
+        "prompt": "R-squared is 0.65. Does the model clear the course threshold?",
+        "artifactIds": [
+          "xavier-output"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "c3-r2-a",
+              "label": "Yes — 0.65 is above the 0.30 rule of thumb, so the fit is acceptable.",
+              "correct": true,
+              "feedback": "R-squared of 0.65 means machine hours explain 65% of the variation in cost, comfortably above the 0.30 screening threshold.",
+              "award": 110
+            },
+            {
+              "id": "c3-r2-b",
+              "label": "No — anything below 0.90 is unusable.",
+              "correct": false,
+              "feedback": "A 0.90 bar would reject almost every real cost model.",
+              "misconceptionTag": "perfectionism",
+              "award": 0
+            },
+            {
+              "id": "c3-r2-c",
+              "label": "R-squared cannot be judged without the p-value.",
+              "correct": false,
+              "feedback": "They are separate checks; both are run, neither replaces the other.",
+              "misconceptionTag": "conflates-r2-p",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 110
+        },
+        "why": "R-squared 0.65 clears the 0.30 rule of thumb."
+      },
+      {
+        "order": 20,
+        "id": "c3-significance",
+        "segmentId": "case-3",
+        "graded": true,
+        "objectiveIds": [
+          "judge-model-validity"
+        ],
+        "bloomDemand": "evaluate",
+        "title": "Validity check 3 — significance",
+        "prompt": "t = 4.53 and p = 0.00086. What do you conclude about the machine-hours coefficient?",
+        "artifactIds": [
+          "xavier-output"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "c3-significance-a",
+              "label": "It is significant: |t| exceeds 1.96 and p is far below 0.05.",
+              "correct": true,
+              "feedback": "Both tests agree. The slope is distinguishable from zero.",
+              "award": 110
+            },
+            {
+              "id": "c3-significance-b",
+              "label": "It is not significant, because p is nearly zero.",
+              "correct": false,
+              "feedback": "A small p-value is evidence FOR the coefficient, not against it.",
+              "misconceptionTag": "p-direction-reversed",
+              "award": 0
+            },
+            {
+              "id": "c3-significance-c",
+              "label": "You cannot tell without the R-squared.",
+              "correct": false,
+              "feedback": "Significance of the coefficient is read from t and p.",
+              "misconceptionTag": "conflates-r2-p",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 110
+        },
+        "why": "|t| = 4.53 > 1.96 and p = 0.00086 < 0.05."
+      },
+      {
+        "order": 21,
+        "id": "c3-equation",
+        "segmentId": "case-3",
+        "graded": true,
+        "objectiveIds": [
+          "build-cost-equation"
+        ],
+        "bloomDemand": "apply",
+        "title": "Assemble the regression equation",
+        "prompt": "Read the intercept and the machine-hours coefficient off the Excel output.",
+        "artifactIds": [
+          "xavier-output"
+        ],
+        "interaction": {
+          "type": "multi-blank",
+          "grading": "all-or-nothing",
+          "blankDiagnosis": "per-blank",
+          "blanks": [
+            {
+              "label": "Intercept b ($)",
+              "expectedExpr": "p.xavierIntercept",
+              "tol": 0.01
+            },
+            {
+              "label": "Machine-hours coefficient m ($/hour)",
+              "expectedExpr": "p.xavierCoefficient",
+              "tol": 0.01
+            }
+          ]
+        },
+        "award": {
+          "base": 120
+        },
+        "why": "Y = 14.98X + 8,773.72."
+      },
+      {
+        "order": 22,
+        "id": "c3-board-budget",
+        "segmentId": "case-3",
+        "graded": true,
+        "objectiveIds": [
+          "forecast-from-equation"
+        ],
+        "bloomDemand": "apply",
+        "title": "The board number",
+        "prompt": "The plant plans 2,200 machine hours. What maintenance budget goes to the board?",
+        "artifactIds": [
+          "xavier-output"
+        ],
+        "interaction": {
+          "type": "numeric",
+          "expectedExpr": "p.xavierCoefficient * p.xavierPlannedHours + p.xavierIntercept",
+          "tol": 1,
+          "unit": "$"
+        },
+        "award": {
+          "base": 150
+        },
+        "why": "14.98 x 2,200 + 8,773.72 = $41,729.72, which is the $41,730 the board locks in."
+      },
+      {
+        "order": 23,
+        "id": "c3-outcome",
+        "segmentId": "case-3",
+        "graded": false,
+        "objectiveIds": [
+          "forecast-from-equation"
+        ],
+        "prompt": "The board meeting, and then the quarters.",
+        "interaction": {
+          "type": "narrative",
+          "beatId": "c3-outcome-beat"
+        }
+      },
+      {
+        "order": 24,
+        "id": "c3-unexplained",
+        "segmentId": "case-3",
+        "graded": true,
+        "objectiveIds": [
+          "judge-model-validity"
+        ],
+        "bloomDemand": "evaluate",
+        "title": "The board member’s question",
+        "prompt": "A board member asks: R-squared = 0.65 means machine hours explain 65% of cost variation. What about the other 35%?",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "c3-unexplained-a",
+              "label": "Other drivers and random variation the model does not capture — which is why a relevant range and a review date matter.",
+              "correct": true,
+              "feedback": "Unexplained variation is not error to be embarrassed about; it is the honest width of the forecast.",
+              "award": 110
+            },
+            {
+              "id": "c3-unexplained-b",
+              "label": "Measurement mistakes in the data, which should be corrected until R-squared reaches 1.",
+              "correct": false,
+              "feedback": "A cost model that fits perfectly is usually overfitted, not correct.",
+              "misconceptionTag": "chase-r2-one",
+              "award": 0
+            },
+            {
+              "id": "c3-unexplained-c",
+              "label": "Nothing — 65% means the model is right 65% of the time.",
+              "correct": false,
+              "feedback": "R-squared is variance explained, not a hit rate.",
+              "misconceptionTag": "r2-as-accuracy",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 110
+        },
+        "terminal": true,
+        "why": "The other 35% is everything the single driver does not capture."
+      }
+    ],
+    "runtimeSemantics": {
+      "interrupts": "active",
+      "optionBranching": "inert",
+      "distractorArtifacts": "inert",
+      "revealRules": "inert",
+      "personaRestriction": "inert",
+      "eventsAffectFinalScore": false
+    }
+  },
+  "scoring": {
+    "model": "base-streak-speed",
+    "params": {
+      "multiplierStep": 0.1,
+      "multiplierCap": 1.5,
+      "nonFirstTryFactor": 0.5,
+      "speedBonus": {
+        "modes": [
+          "competition"
+        ],
+        "windowSeconds": 25,
+        "pointsPerSecond": 4
+      }
+    },
+    "meters": [
+      {
+        "id": "star",
+        "label": "Stars",
+        "icon": "star",
+        "initial": 0,
+        "floor": 0,
+        "ceiling": 4000,
+        "resetScope": "per-run",
+        "affectsFinalGrade": true,
+        "deltas": {
+          "correct": 0,
+          "incorrect": 0
+        }
+      },
+      {
+        "id": "streak",
+        "label": "Streak",
+        "icon": "flame",
+        "initial": 0,
+        "floor": 0,
+        "ceiling": 5,
+        "resetScope": "per-run",
+        "affectsFinalGrade": false,
+        "deltas": {
+          "correct": 1,
+          "incorrect": -5
+        }
+      },
+      {
+        "id": "trust",
+        "label": "Client trust",
+        "icon": "heart",
+        "initial": 100,
+        "floor": 20,
+        "ceiling": 100,
+        "resetScope": "per-segment",
+        "affectsFinalGrade": false,
+        "deltas": {
+          "correct": 0,
+          "incorrect": -12,
+          "hint": -5
+        },
+        "payout": {
+          "when": "segment-end",
+          "modeScope": [
+            "solo"
+          ],
+          "rate": 1
+        },
+        "tiers": [
+          {
+            "max": 40,
+            "colorRole": "incorrect"
+          },
+          {
+            "max": 70,
+            "colorRole": "caution"
+          },
+          {
+            "max": 100,
+            "colorRole": "correct"
+          }
+        ]
+      }
+    ],
+    "retryPolicy": "until-correct-penalized",
+    "recordsAttempts": true,
+    "replay": {
+      "resets": [
+        "star",
+        "streak",
+        "trust"
+      ],
+      "idempotentAwards": false
+    }
+  },
+  "feedback": {
+    "content": {
+      "correctPrefix": "Correct",
+      "incorrectPrefix": "Not quite",
+      "softWrongByInteraction": {
+        "numeric": "Check the arithmetic and try again.",
+        "multi-blank": "One of the blanks is off."
+      },
+      "summaryPassed": "Three engagements, three equations, one very relieved CFO.",
+      "summaryFailed": "Review the mistake log before the next engagement."
+    },
+    "policy": {
+      "timing": "immediate",
+      "targeting": "per-option",
+      "showPointDelta": true,
+      "requireMisconceptionTag": false,
+      "consequencePreview": {
+        "enabled": true,
+        "tag": "Flash forward",
+        "rewindLine": "Rewind and fix it before it ships.",
+        "oncePerStep": true
+      }
+    }
+  },
+  "scaffolding": {
+    "hints": [
+      {
+        "id": "h-c1-rate",
+        "stepId": "c1-rate",
+        "personaId": "*",
+        "text": "Variable rate = variable dollars / units used.",
+        "cost": {
+          "meterId": "trust",
+          "amount": 5,
+          "awardFactor": 0.5
+        },
+        "announceCost": true
+      },
+      {
+        "id": "h-c1-equation",
+        "stepId": "c1-equation",
+        "personaId": "*",
+        "text": "b is the meter base fee charged even at zero usage; m is the per-unit rate you just found.",
+        "cost": {
+          "meterId": "trust",
+          "amount": 5,
+          "awardFactor": 0.5
+        },
+        "announceCost": true
+      },
+      {
+        "id": "h-c1-forecast",
+        "stepId": "c1-forecast",
+        "personaId": "*",
+        "text": "Fixed = 800 x 12. Variable = 0.90 x 2,000 x 12.",
+        "cost": {
+          "meterId": "trust",
+          "amount": 5,
+          "awardFactor": 0.5
+        },
+        "announceCost": true
+      },
+      {
+        "id": "h-c2-slope",
+        "stepId": "c2-slope",
+        "personaId": "*",
+        "text": "Slope = change in cost / change in activity.",
+        "cost": {
+          "meterId": "trust",
+          "amount": 5,
+          "awardFactor": 0.5
+        },
+        "announceCost": true
+      },
+      {
+        "id": "h-c2-intercept",
+        "stepId": "c2-intercept",
+        "personaId": "*",
+        "text": "Take the high point and strip out the variable part.",
+        "cost": {
+          "meterId": "trust",
+          "amount": 5,
+          "awardFactor": 0.5
+        },
+        "announceCost": true
+      },
+      {
+        "id": "h-c3-equation",
+        "stepId": "c3-equation",
+        "personaId": "*",
+        "text": "Excel labels them Intercept and the coefficient on your X variable.",
+        "cost": {
+          "meterId": "trust",
+          "amount": 5,
+          "awardFactor": 0.5
+        },
+        "announceCost": true
+      }
+    ],
+    "referencePanels": [
+      {
+        "id": "bill-panel",
+        "artifactId": "dover-bill",
+        "persistent": false,
+        "shownAtSteps": [
+          "c1-classify",
+          "c1-rate",
+          "c1-equation",
+          "c1-forecast"
+        ]
+      },
+      {
+        "id": "output-panel",
+        "artifactId": "xavier-output",
+        "persistent": false,
+        "shownAtSteps": [
+          "c3-plausible",
+          "c3-r2",
+          "c3-significance",
+          "c3-equation",
+          "c3-board-budget"
+        ]
+      }
+    ],
+    "cognitiveLoad": {
+      "maxConcurrentItems": 6,
+      "maxOptionsPerStep": 4
+    },
+    "navigation": {
+      "toc": true,
+      "tocGranularity": "step"
+    },
+    "mistakeLog": {
+      "enabled": true,
+      "persistKey": "ce_mistakes",
+      "dedupeBy": [
+        "stepId"
+      ],
+      "clickToRetry": true
+    },
+    "difficultyRamp": {
+      "case-1": "within-segment",
+      "case-2": "within-segment",
+      "case-3": "within-segment"
+    }
+  },
+  "assurance": {
+    "domain": "managerial-cost",
+    "authorityPolicy": {
+      "allowedKinds": [
+        "gaap-principle",
+        "mathematical",
+        "statistical",
+        "course-material",
+        "professional-judgement"
+      ],
+      "requireOnCorrect": false
+    },
+    "assertions": [
+      {
+        "id": "CE-1",
+        "kind": "must-appear",
+        "expr": "p.doverUsageCharge / p.doverUnitsUsed",
+        "corpus": [
+          "c1-rate"
+        ],
+        "writtenAtGate": 5,
+        "describe": "Dover variable rate $2/unit must appear in the graded text"
+      },
+      {
+        "id": "CE-2",
+        "kind": "identity",
+        "expr": "abs(d.dover_annual_total - 31200) < 1",
+        "writtenAtGate": 5,
+        "describe": "Dover annual forecast must come to $31,200"
+      },
+      {
+        "id": "CE-3",
+        "kind": "identity",
+        "expr": "d.pottery_slope === 12",
+        "writtenAtGate": 5,
+        "describe": "High-low slope must be exactly $12 per mug"
+      },
+      {
+        "id": "CE-4",
+        "kind": "identity",
+        "expr": "d.pottery_intercept === 3000",
+        "writtenAtGate": 5,
+        "describe": "High-low intercept must be exactly $3,000"
+      },
+      {
+        "id": "CE-5",
+        "kind": "identity",
+        "expr": "ds.pottery.mugs[0] === p.potteryLowMugs && ds.pottery.mugs[6] === p.potteryHighMugs",
+        "writtenAtGate": 5,
+        "describe": "The high-low points must actually be the activity extremes of the seven-year table the student is shown"
+      },
+      {
+        "id": "CE-6",
+        "kind": "range",
+        "expr": "d.board_prediction",
+        "expected": [
+          41729,
+          41731
+        ],
+        "writtenAtGate": 5,
+        "describe": "The board number must follow from the regression output on screen"
+      },
+      {
+        "id": "CE-7",
+        "kind": "identity",
+        "expr": "p.xavierR2 >= 0.3 && p.xavierT >= 1.96 && p.xavierP <= 0.05",
+        "writtenAtGate": 5,
+        "describe": "The model the game teaches as valid must actually clear all three declared thresholds"
+      }
+    ],
+    "attestation": {
+      "humanReviewer": "UNSIGNED — reverse-pass fixture",
+      "credential": "n/a",
+      "standardsEdition": "ACC 214 Chapter 3",
+      "signed": false
+    }
+  },
+  "telemetry": {
+    "route": "completion-code",
+    "completionCode": {
+      "prefix": "CEC1",
+      "fields": [
+        "stepId",
+        "correct",
+        "attempts",
+        "hintUsed",
+        "ms"
+      ],
+      "maxChars": 140
+    },
+    "itemAnalysis": {
+      "pBand": [
+        0.25,
+        0.95
+      ],
+      "discriminationBand": [
+        0.2,
+        1
+      ],
+      "reportBy": "both"
+    }
+  },
+  "presentation": {
+    "target": "dom",
+    "projectorMode": true,
+    "motion": {
+      "reducedMotionRespected": true
+    },
+    "a11y": {
+      "liveRegion": true,
+      "ariaCurrentStep": true,
+      "colorRedundant": true,
+      "focusOrder": "dom",
+      "reducedMotion": true
+    }
+  },
+  "extensions": [
+    {
+      "id": "fit-lab",
+      "widget": "fit-sandbox",
+      "widgetVersion": "^1.0",
+      "fidelity": "bespoke-pending-generalisation",
+      "usedBy": [
+        "acc214-cost-estimation"
+      ],
+      "params": {
+        "points": [
+          [
+            1,
+            23
+          ],
+          [
+            2,
+            33
+          ],
+          [
+            3,
+            47
+          ],
+          [
+            4,
+            57
+          ],
+          [
+            5,
+            72
+          ],
+          [
+            6,
+            80
+          ],
+          [
+            7,
+            95
+          ],
+          [
+            8,
+            104
+          ]
+        ],
+        "objective": "ssr",
+        "tolFactor": 1.35,
+        "badReference": {
+          "m": 2,
+          "b": 5
+        },
+        "snapToOptimum": true
+      },
+      "layout": {
+        "width": 520,
+        "height": 320,
+        "pad": 28
+      },
+      "textAlternative": "Eight points scattered around a rising line. Two sliders set the slope and the intercept; a bar shows the sum of squared residuals, which shrinks as the line fits better. The best-fit values and the current sum of squared errors are printed as text beside the plot.",
+      "fallback": {
+        "prompt": "Which line does regression choose?",
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "ssr",
+              "label": "The line with the smallest sum of SQUARED vertical distances to the points.",
+              "correct": true,
+              "feedback": "That is the definition of ordinary least squares."
+            },
+            {
+              "id": "abs",
+              "label": "The line with the smallest total vertical distance, ignoring sign.",
+              "correct": false,
+              "feedback": "That is least absolute deviations — a different estimator.",
+              "misconceptionTag": "lad-not-ols"
+            },
+            {
+              "id": "through",
+              "label": "The line that passes through the most points.",
+              "correct": false,
+              "feedback": "Regression is not interpolation; it can pass through none of them.",
+              "misconceptionTag": "interpolation"
+            }
+          ]
+        }
+      },
+      "pedagogy": {
+        "objectiveIds": [
+          "judge-model-validity"
+        ],
+        "bloomDemand": "understand",
+        "successCriterion": "ssr <= ssrOptimum * 1.35",
+        "feedback": "You found a line within 35% of the least-squares minimum, which is close enough to see what the criterion is doing."
+      }
+    }
+  ],
+  "debrief": [
+    {
+      "id": "wrap",
+      "segmentId": "final",
+      "headline": "One-glance recap",
+      "body": "Three engagements, three equations, three validity checks.",
+      "takeaways": [
+        "Y = 800 + 2X — account analysis, read off the bill.",
+        "Y = 12X + 3,000 — high-low, from the activity extremes.",
+        "Y = 14.98X + 8,773.72 — regression, once it passed plausibility, fit and significance."
+      ],
+      "earnedNotes": true
+    }
+  ],
+  "provenance": {
+    "gates": [
+      {
+        "agent": 1,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "meta",
+          "objectives"
+        ],
+        "hiddenFrom": [
+          "flow.steps",
+          "scoring"
+        ],
+        "note": "REVERSE PASS: objectives are stated in the original as narrator lines (\"ENGAGEMENT #1 — separate fixed from variable...\") rather than as labelled competency statements, and no Bloom level is named anywhere."
+      },
+      {
+        "agent": 2,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "knowledge"
+        ]
+      },
+      {
+        "agent": 3,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "scenario",
+          "debrief"
+        ]
+      },
+      {
+        "agent": 4,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "flow",
+          "scoring",
+          "presentation",
+          "extensions",
+          "modes"
+        ]
+      },
+      {
+        "agent": 5,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "assurance"
+        ],
+        "hiddenFrom": [
+          "flow.steps"
+        ]
+      },
+      {
+        "agent": 6,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "scaffolding",
+          "telemetry"
+        ]
+      }
+    ],
+    "deltas": [],
+    "findings": []
+  }
+}

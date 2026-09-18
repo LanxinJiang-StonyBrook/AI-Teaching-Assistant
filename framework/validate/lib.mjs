@@ -89,9 +89,14 @@ export const num = (n) => String(Math.round(n * 1e6) / 1e6);
 export const renderings = (v) => {
   if (typeof v !== 'number') return [String(v)];
   const out = new Set([usd(v), num(v), String(v)]);
-  if (Math.abs(v) < 1) out.add(pct(v));
+  if (Math.abs(v) <= 1) {
+    // prose writes a probability as 30%, 30.1% or 30.10% — all three are the
+    // same number and all three must count as grounded
+    for (const d of [0, 1, 2]) out.add(`${(v * 100).toFixed(d)}%`);
+    out.add(pct(v));
+  }
   if (Number.isInteger(v)) out.add(v.toLocaleString('en-US'));
-  else out.add(v.toFixed(2)), out.add(usd(Math.round(v)));
+  else { out.add(v.toFixed(2)); out.add(usd(Math.round(v))); }
   return [...out];
 };
 
@@ -134,7 +139,7 @@ export function evalExpr(expr, scope) {
   if (expr == null) return undefined;
   if (typeof expr === 'number') return expr;
   const src = String(expr);
-  if (!/^[\w\s.,()+\-*/%<>=!?:[\]'"]+$/.test(src))
+  if (!/^[\w\s.,()+\-*/%<>=!?:&|[\]'"]+$/.test(src))
     throw new Error(`illegal characters in expression: ${src}`);
   const names = Object.keys(FN);
   // eslint-disable-next-line no-new-func
@@ -152,14 +157,18 @@ export function gradedCorpus(spec) {
     push(`flow.steps/${st.id}.why`, st.why);
     const it = st.interaction ?? {};
     for (const o of it.options ?? []) {
-      push(`flow.steps/${st.id}/${o.id}.label`, o.label);
+      // A distractor's number is WRONG on purpose. Grounding it in
+      // knowledge.params would be nonsense; check N5 covers it instead, by
+      // demanding the misconception formula that produces it.
+      if (o.correct) push(`flow.steps/${st.id}/${o.id}.label`, o.label);
       push(`flow.steps/${st.id}/${o.id}.feedback`, o.feedback);
       push(`flow.steps/${st.id}/${o.id}.consequence`, o.consequence);
     }
     for (const b of it.blanks ?? []) push(`flow.steps/${st.id}.blank`, b.label);
     for (const i of it.items ?? []) push(`flow.steps/${st.id}.item`, `${i.text} ${i.why ?? ''}`);
   }
-  for (const a of spec.knowledge?.artifacts ?? []) push(`artifacts/${a.id}`, a.content);
+  for (const a of spec.knowledge?.artifacts ?? [])
+    if (!a.illustrativeNumbers) push(`artifacts/${a.id}`, a.content);
   for (const h of spec.scaffolding?.hints ?? []) push(`hints/${h.id}`, h.text);
   return out;
 }

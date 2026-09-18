@@ -1,0 +1,1661 @@
+{
+  "gamespec": "1.0",
+  "emitter": {
+    "runtime": "^1.0",
+    "widgetRegistry": "^1.0"
+  },
+  "meta": {
+    "id": "benford-law-game",
+    "title": "Benford Audit Lab",
+    "subtitle": "Mechanism lab, then audit triage",
+    "description": "Reverse-engineered GameSpec fixture for public/benford-law-game/index.html. Contributes the sandbox interaction and the only assurance domain in the corpus where the taught content can be checked against a closed-form law rather than against a citation.",
+    "course": "Audit analytics",
+    "chapter": "Benford's Law as a screening tool",
+    "audience": "undergraduate auditing students meeting digit analysis for the first time",
+    "estimatedMinutes": 25,
+    "language": "en",
+    "offline": true,
+    "singleFile": true,
+    "sources": [
+      {
+        "id": "benford-slides",
+        "kind": "slide-deck",
+        "citation": "Course slides on Benford's Law",
+        "version": "unpinned-in-original",
+        "archivedAt": "NOT ARCHIVED — the original game says \"the slide table gives 30.10%\" with no pinned copy."
+      }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "explain-mechanism",
+      "statement": "Explain why the leading digits of naturally occurring amounts are nonuniform.",
+      "bloom": "understand",
+      "minGradedItems": 4,
+      "taughtBy": [
+        "mechanism-sandbox",
+        "benford-chart"
+      ]
+    },
+    {
+      "id": "judge-suitability",
+      "statement": "Judge whether a population is appropriate for digit analysis before treating a Benford deviation as a fraud lead.",
+      "bloom": "evaluate",
+      "minGradedItems": 5,
+      "taughtBy": [
+        "mechanism-sandbox"
+      ]
+    }
+  ],
+  "knowledge": {
+    "params": {
+      "quizAward": 25,
+      "caseAward": 20,
+      "batchSize": 25,
+      "decadesLow": 1,
+      "decadesHigh": 6,
+      "seed": 20260421,
+      "supplierInvoiceCount": 682,
+      "travelClaimCount": 126,
+      "employeeIdLow": 10000,
+      "employeeIdHigh": 19999,
+      "rolloverExampleDiameter": 9.2
+    },
+    "thresholds": [
+      {
+        "name": "tvd-normalizer",
+        "value": 0.28,
+        "kind": "design-constant",
+        "sourceId": "benford-slides",
+        "note": "Full-scale value of the digit-pattern pressure meter."
+      },
+      {
+        "name": "chart-ceiling",
+        "value": 0.42,
+        "kind": "design-constant",
+        "sourceId": "benford-slides",
+        "note": "Top of the bar chart axis."
+      }
+    ],
+    "datasets": [
+      {
+        "id": "benford-first",
+        "title": "Benford first-digit probabilities",
+        "role": "reference",
+        "provenance": {
+          "sourceId": "benford-slides"
+        },
+        "labelColumn": null,
+        "columns": [
+          {
+            "key": "digit",
+            "label": "Digit",
+            "type": "number"
+          },
+          {
+            "key": "p",
+            "label": "Probability",
+            "type": "percent"
+          }
+        ],
+        "rows": [
+          {
+            "digit": 1,
+            "p": 0.301
+          },
+          {
+            "digit": 2,
+            "p": 0.1761
+          },
+          {
+            "digit": 3,
+            "p": 0.1249
+          },
+          {
+            "digit": 4,
+            "p": 0.0969
+          },
+          {
+            "digit": 5,
+            "p": 0.0792
+          },
+          {
+            "digit": 6,
+            "p": 0.0669
+          },
+          {
+            "digit": 7,
+            "p": 0.058
+          },
+          {
+            "digit": 8,
+            "p": 0.0512
+          },
+          {
+            "digit": 9,
+            "p": 0.0458
+          }
+        ],
+        "invariants": [
+          {
+            "kind": "probabilityVector",
+            "column": "p",
+            "target": 1,
+            "tol": 0.001
+          },
+          {
+            "kind": "rowCount",
+            "target": 9
+          }
+        ]
+      },
+      {
+        "id": "benford-second",
+        "title": "Benford second-digit probabilities",
+        "role": "reference",
+        "provenance": {
+          "sourceId": "benford-slides"
+        },
+        "labelColumn": null,
+        "columns": [
+          {
+            "key": "digit",
+            "label": "Digit",
+            "type": "number"
+          },
+          {
+            "key": "p",
+            "label": "Probability",
+            "type": "percent"
+          }
+        ],
+        "rows": [
+          {
+            "digit": 0,
+            "p": 0.1197
+          },
+          {
+            "digit": 1,
+            "p": 0.1139
+          },
+          {
+            "digit": 2,
+            "p": 0.1088
+          },
+          {
+            "digit": 3,
+            "p": 0.1043
+          },
+          {
+            "digit": 4,
+            "p": 0.1003
+          },
+          {
+            "digit": 5,
+            "p": 0.0967
+          },
+          {
+            "digit": 6,
+            "p": 0.0934
+          },
+          {
+            "digit": 7,
+            "p": 0.0904
+          },
+          {
+            "digit": 8,
+            "p": 0.0876
+          },
+          {
+            "digit": 9,
+            "p": 0.085
+          }
+        ],
+        "invariants": [
+          {
+            "kind": "probabilityVector",
+            "column": "p",
+            "target": 1,
+            "tol": 0.001
+          },
+          {
+            "kind": "rowCount",
+            "target": 10
+          }
+        ]
+      },
+      {
+        "id": "case-1-observed",
+        "title": "Supplier Payments — observed first digits",
+        "role": "reference",
+        "provenance": {
+          "sourceId": "benford-slides",
+          "note": "Authored population profile."
+        },
+        "labelColumn": null,
+        "columns": [
+          {
+            "key": "digit",
+            "label": "Digit",
+            "type": "number"
+          },
+          {
+            "key": "p",
+            "label": "Observed share",
+            "type": "percent"
+          }
+        ],
+        "rows": [
+          {
+            "digit": 1,
+            "p": 0.293
+          },
+          {
+            "digit": 2,
+            "p": 0.181
+          },
+          {
+            "digit": 3,
+            "p": 0.129
+          },
+          {
+            "digit": 4,
+            "p": 0.094
+          },
+          {
+            "digit": 5,
+            "p": 0.082
+          },
+          {
+            "digit": 6,
+            "p": 0.067
+          },
+          {
+            "digit": 7,
+            "p": 0.058
+          },
+          {
+            "digit": 8,
+            "p": 0.05
+          },
+          {
+            "digit": 9,
+            "p": 0.046
+          }
+        ],
+        "invariants": [
+          {
+            "kind": "probabilityVector",
+            "column": "p",
+            "target": 1,
+            "tol": 0.001
+          }
+        ]
+      },
+      {
+        "id": "case-2-observed",
+        "title": "Travel Reimbursements — observed first digits",
+        "role": "reference",
+        "provenance": {
+          "sourceId": "benford-slides",
+          "note": "Authored population profile."
+        },
+        "labelColumn": null,
+        "columns": [
+          {
+            "key": "digit",
+            "label": "Digit",
+            "type": "number"
+          },
+          {
+            "key": "p",
+            "label": "Observed share",
+            "type": "percent"
+          }
+        ],
+        "rows": [
+          {
+            "digit": 1,
+            "p": 0.079
+          },
+          {
+            "digit": 2,
+            "p": 0.063
+          },
+          {
+            "digit": 3,
+            "p": 0.071
+          },
+          {
+            "digit": 4,
+            "p": 0.087
+          },
+          {
+            "digit": 5,
+            "p": 0.095
+          },
+          {
+            "digit": 6,
+            "p": 0.111
+          },
+          {
+            "digit": 7,
+            "p": 0.151
+          },
+          {
+            "digit": 8,
+            "p": 0.167
+          },
+          {
+            "digit": 9,
+            "p": 0.176
+          }
+        ],
+        "invariants": [
+          {
+            "kind": "probabilityVector",
+            "column": "p",
+            "target": 1,
+            "tol": 0.001
+          }
+        ]
+      },
+      {
+        "id": "case-3-observed",
+        "title": "Employee Numbers — observed first digits",
+        "role": "reference",
+        "provenance": {
+          "sourceId": "benford-slides",
+          "note": "Authored population profile."
+        },
+        "labelColumn": null,
+        "columns": [
+          {
+            "key": "digit",
+            "label": "Digit",
+            "type": "number"
+          },
+          {
+            "key": "p",
+            "label": "Observed share",
+            "type": "percent"
+          }
+        ],
+        "rows": [
+          {
+            "digit": 1,
+            "p": 0.998
+          },
+          {
+            "digit": 2,
+            "p": 0.002
+          },
+          {
+            "digit": 3,
+            "p": 0
+          },
+          {
+            "digit": 4,
+            "p": 0
+          },
+          {
+            "digit": 5,
+            "p": 0
+          },
+          {
+            "digit": 6,
+            "p": 0
+          },
+          {
+            "digit": 7,
+            "p": 0
+          },
+          {
+            "digit": 8,
+            "p": 0
+          },
+          {
+            "digit": 9,
+            "p": 0
+          }
+        ],
+        "invariants": [
+          {
+            "kind": "probabilityVector",
+            "column": "p",
+            "target": 1,
+            "tol": 0.001
+          }
+        ]
+      },
+      {
+        "id": "case-4-observed",
+        "title": "Manual Journal Entries — observed first digits",
+        "role": "reference",
+        "provenance": {
+          "sourceId": "benford-slides",
+          "note": "Authored population profile."
+        },
+        "labelColumn": null,
+        "columns": [
+          {
+            "key": "digit",
+            "label": "Digit",
+            "type": "number"
+          },
+          {
+            "key": "p",
+            "label": "Observed share",
+            "type": "percent"
+          }
+        ],
+        "rows": [
+          {
+            "digit": 1,
+            "p": 0.105
+          },
+          {
+            "digit": 2,
+            "p": 0.092
+          },
+          {
+            "digit": 3,
+            "p": 0.083
+          },
+          {
+            "digit": 4,
+            "p": 0.096
+          },
+          {
+            "digit": 5,
+            "p": 0.247
+          },
+          {
+            "digit": 6,
+            "p": 0.202
+          },
+          {
+            "digit": 7,
+            "p": 0.081
+          },
+          {
+            "digit": 8,
+            "p": 0.052
+          },
+          {
+            "digit": 9,
+            "p": 0.042
+          }
+        ],
+        "invariants": [
+          {
+            "kind": "probabilityVector",
+            "column": "p",
+            "target": 1,
+            "tol": 0.001
+          }
+        ]
+      },
+      {
+        "id": "case-5-observed",
+        "title": "Cash Register Receipt Numbers — observed first digits",
+        "role": "reference",
+        "provenance": {
+          "sourceId": "benford-slides",
+          "note": "Authored population profile."
+        },
+        "labelColumn": null,
+        "columns": [
+          {
+            "key": "digit",
+            "label": "Digit",
+            "type": "number"
+          },
+          {
+            "key": "p",
+            "label": "Observed share",
+            "type": "percent"
+          }
+        ],
+        "rows": [
+          {
+            "digit": 1,
+            "p": 0.112
+          },
+          {
+            "digit": 2,
+            "p": 0.112
+          },
+          {
+            "digit": 3,
+            "p": 0.111
+          },
+          {
+            "digit": 4,
+            "p": 0.111
+          },
+          {
+            "digit": 5,
+            "p": 0.111
+          },
+          {
+            "digit": 6,
+            "p": 0.111
+          },
+          {
+            "digit": 7,
+            "p": 0.111
+          },
+          {
+            "digit": 8,
+            "p": 0.11
+          },
+          {
+            "digit": 9,
+            "p": 0.111
+          }
+        ],
+        "invariants": [
+          {
+            "kind": "probabilityVector",
+            "column": "p",
+            "target": 1,
+            "tol": 0.001
+          }
+        ]
+      }
+    ],
+    "derivations": [
+      {
+        "id": "p-digit-1",
+        "format": "percent",
+        "expr": "ds.benford_first.p[0]",
+        "describe": "Benford probability of a leading 1"
+      },
+      {
+        "id": "p-digit-9",
+        "format": "percent",
+        "expr": "ds.benford_first.p[8]",
+        "describe": "Benford probability of a leading 9"
+      },
+      {
+        "id": "case-1-divergence",
+        "format": "number",
+        "expr": "sum(ds.case_1_observed.p.map((v, k) => abs(v - ds.benford_first.p[k]))) / 2",
+        "describe": "Total-variation distance between Supplier Payments and the Benford curve",
+        "objectiveIds": [
+          "judge-suitability"
+        ]
+      },
+      {
+        "id": "case-2-divergence",
+        "format": "number",
+        "expr": "sum(ds.case_2_observed.p.map((v, k) => abs(v - ds.benford_first.p[k]))) / 2",
+        "describe": "Total-variation distance between Travel Reimbursements and the Benford curve",
+        "objectiveIds": [
+          "judge-suitability"
+        ]
+      },
+      {
+        "id": "case-3-divergence",
+        "format": "number",
+        "expr": "sum(ds.case_3_observed.p.map((v, k) => abs(v - ds.benford_first.p[k]))) / 2",
+        "describe": "Total-variation distance between Employee Numbers and the Benford curve",
+        "objectiveIds": [
+          "judge-suitability"
+        ]
+      },
+      {
+        "id": "case-4-divergence",
+        "format": "number",
+        "expr": "sum(ds.case_4_observed.p.map((v, k) => abs(v - ds.benford_first.p[k]))) / 2",
+        "describe": "Total-variation distance between Manual Journal Entries and the Benford curve",
+        "objectiveIds": [
+          "judge-suitability"
+        ]
+      },
+      {
+        "id": "case-5-divergence",
+        "format": "number",
+        "expr": "sum(ds.case_5_observed.p.map((v, k) => abs(v - ds.benford_first.p[k]))) / 2",
+        "describe": "Total-variation distance between Cash Register Receipt Numbers and the Benford curve",
+        "objectiveIds": [
+          "judge-suitability"
+        ]
+      }
+    ],
+    "artifacts": [
+      {
+        "id": "benford-chart",
+        "title": "Benford curve vs observed",
+        "kind": "dataset-view",
+        "datasetId": "benford-first",
+        "objectiveIds": [
+          "explain-mechanism",
+          "judge-suitability"
+        ]
+      },
+      {
+        "id": "case-1-ledger",
+        "title": "Supplier Payments — sample records",
+        "kind": "table",
+        "objectiveIds": [
+          "judge-suitability"
+        ],
+        "content": "- $128.40\n- $2,418.90\n- $17,902.10\n- $641.75\n- $34,809.00",
+        "illustrativeNumbers": true
+      },
+      {
+        "id": "case-2-ledger",
+        "title": "Travel Reimbursements — sample records",
+        "kind": "table",
+        "objectiveIds": [
+          "judge-suitability"
+        ],
+        "content": "- $89.20\n- $91.45\n- $78.10\n- $97.80\n- $84.60",
+        "illustrativeNumbers": true
+      },
+      {
+        "id": "case-3-ledger",
+        "title": "Employee Numbers — sample records",
+        "kind": "table",
+        "objectiveIds": [
+          "judge-suitability"
+        ],
+        "content": "- 10041\n- 10042\n- 10043\n- 10044\n- 10045",
+        "illustrativeNumbers": true
+      },
+      {
+        "id": "case-4-ledger",
+        "title": "Manual Journal Entries — sample records",
+        "kind": "table",
+        "objectiveIds": [
+          "judge-suitability"
+        ],
+        "content": "- $5,850.00\n- $5,910.00\n- $6,240.00\n- $5,760.00\n- $6,180.00",
+        "illustrativeNumbers": true
+      },
+      {
+        "id": "case-5-ledger",
+        "title": "Cash Register Receipt Numbers — sample records",
+        "kind": "table",
+        "objectiveIds": [
+          "judge-suitability"
+        ],
+        "content": "- 408321\n- 408322\n- 408323\n- 408324\n- 408325",
+        "illustrativeNumbers": true
+      }
+    ]
+  },
+  "scenario": {
+    "framing": "lab",
+    "beats": [
+      {
+        "id": "lab-open",
+        "kind": "scene",
+        "attachTo": {
+          "target": "segment",
+          "id": "mechanism"
+        },
+        "lines": [
+          {
+            "who": "narrator",
+            "text": "Leading digits are not uniform. Find out why before you use that fact on a ledger."
+          }
+        ]
+      },
+      {
+        "id": "triage-open",
+        "kind": "scene",
+        "attachTo": {
+          "target": "segment",
+          "id": "triage"
+        },
+        "lines": [
+          {
+            "who": "narrator",
+            "text": "Five populations. Some are suitable for digit analysis. Some are not. One is worth a closer look."
+          }
+        ]
+      },
+      {
+        "id": "digit-chart-table",
+        "kind": "scene",
+        "attachTo": {
+          "target": "segment",
+          "id": "triage"
+        },
+        "lines": [
+          {
+            "who": "narrator",
+            "text": "Expected vs observed first-digit shares, as a table: digit 1 through digit 9, Benford expectation beside the observed share for this population."
+          }
+        ]
+      },
+      {
+        "id": "pressure-meter-value",
+        "kind": "scene",
+        "attachTo": {
+          "target": "segment",
+          "id": "triage"
+        },
+        "lines": [
+          {
+            "who": "narrator",
+            "text": "Digit-pattern pressure is printed as a number: the total-variation distance between the observed and expected distributions."
+          }
+        ]
+      }
+    ]
+  },
+  "flow": {
+    "progression": "linear-with-jumps",
+    "segments": [
+      {
+        "id": "mechanism",
+        "title": "Mechanism Lab",
+        "order": 0,
+        "objectiveIds": [
+          "explain-mechanism"
+        ],
+        "sourceRef": "benford-slides",
+        "unlockRule": "always",
+        "debriefId": "debrief-mechanism"
+      },
+      {
+        "id": "triage",
+        "title": "Audit Triage",
+        "order": 1,
+        "objectiveIds": [
+          "judge-suitability"
+        ],
+        "sourceRef": "benford-slides",
+        "unlockRule": "always",
+        "debriefId": "debrief-triage"
+      }
+    ],
+    "steps": [
+      {
+        "id": "mechanism-sandbox",
+        "segmentId": "mechanism",
+        "order": 0,
+        "graded": false,
+        "objectiveIds": [
+          "explain-mechanism"
+        ],
+        "title": "Generate invoices and watch the digits settle",
+        "prompt": "Generate batches of 25 invoices drawn across five decades of magnitude. Watch the observed first-digit bars converge on the Benford curve.",
+        "interaction": {
+          "type": "sandbox",
+          "generator": {
+            "kind": "log-uniform",
+            "params": {
+              "decades": [
+                1,
+                6
+              ]
+            },
+            "seed": 20260421,
+            "algorithm": "lcg-park-miller"
+          },
+          "batchSize": 25,
+          "statistic": "first-digit-histogram",
+          "successCriterion": null,
+          "feedbackThresholds": [
+            {
+              "max": 75,
+              "text": "Noisy invoice sample: generate another batch."
+            },
+            {
+              "max": 1000000000,
+              "text": "The sample is settling toward the nonuniform Benford pattern."
+            }
+          ]
+        }
+      },
+      {
+        "id": "mech-q1",
+        "segmentId": "mechanism",
+        "order": 1,
+        "graded": true,
+        "objectiveIds": [
+          "explain-mechanism"
+        ],
+        "bloomDemand": "understand",
+        "title": "Checkpoint 1",
+        "prompt": "On a multiplying scale, which first digit takes the widest stretch before it changes?",
+        "artifactIds": [
+          "benford-chart"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "mech-q1-o1",
+              "label": "1",
+              "correct": true,
+              "feedback": "Digit 1 covers the full stretch from 1.x up to 2.x. That is why about 30% of natural first digits are 1.",
+              "award": 25,
+              "authority": {
+                "kind": "statistical",
+                "ref": "Benford first-digit law",
+                "sourceId": "benford-slides",
+                "note": "Derivable in closed form as log10(1 + 1/d); the slide table is the pinned rendering of it."
+              }
+            },
+            {
+              "id": "mech-q1-o2",
+              "label": "5",
+              "correct": false,
+              "feedback": "Not this one. Digit 1 covers the full stretch from 1.x up to 2.x. That is why about 30% of natural first digits are 1.",
+              "misconceptionTag": "mech-q1-d2",
+              "award": 0
+            },
+            {
+              "id": "mech-q1-o3",
+              "label": "9",
+              "correct": false,
+              "feedback": "Not this one. Digit 1 covers the full stretch from 1.x up to 2.x. That is why about 30% of natural first digits are 1.",
+              "misconceptionTag": "mech-q1-d3",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 25
+        },
+        "why": "Digit 1 covers the full stretch from 1.x up to 2.x. That is why about 30% of natural first digits are 1."
+      },
+      {
+        "id": "mech-q2",
+        "segmentId": "mechanism",
+        "order": 2,
+        "graded": true,
+        "objectiveIds": [
+          "explain-mechanism"
+        ],
+        "bloomDemand": "understand",
+        "title": "Checkpoint 2",
+        "prompt": "A diameter that starts near 9.2 only has to grow about how much before it rolls over to leading digit 1?",
+        "artifactIds": [
+          "benford-chart"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "mech-q2-o1",
+              "label": "About 11%",
+              "correct": true,
+              "feedback": "The 9.x band is short. Going from about 9 to 10 is only about 11% growth, so 9 appears less often.",
+              "award": 25,
+              "authority": {
+                "kind": "statistical",
+                "ref": "Benford first-digit law",
+                "sourceId": "benford-slides",
+                "note": "Derivable in closed form as log10(1 + 1/d); the slide table is the pinned rendering of it."
+              }
+            },
+            {
+              "id": "mech-q2-o2",
+              "label": "About 50%",
+              "correct": false,
+              "feedback": "Not this one. The 9.x band is short. Going from about 9 to 10 is only about 11% growth, so 9 appears less often.",
+              "misconceptionTag": "mech-q2-d2",
+              "award": 0
+            },
+            {
+              "id": "mech-q2-o3",
+              "label": "About 100%",
+              "correct": false,
+              "feedback": "Not this one. The 9.x band is short. Going from about 9 to 10 is only about 11% growth, so 9 appears less often.",
+              "misconceptionTag": "mech-q2-d3",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 25
+        },
+        "why": "The 9.x band is short. Going from about 9 to 10 is only about 11% growth, so 9 appears less often."
+      },
+      {
+        "id": "mech-q3",
+        "segmentId": "mechanism",
+        "order": 3,
+        "graded": true,
+        "objectiveIds": [
+          "explain-mechanism"
+        ],
+        "bloomDemand": "understand",
+        "title": "Checkpoint 3",
+        "prompt": "In the first-digit Benford table, digit 1 appears about how often?",
+        "artifactIds": [
+          "benford-chart"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "mech-q3-o1",
+              "label": "30%",
+              "correct": true,
+              "feedback": "The slide table gives 30.10% for first digit 1, while 9 is only 4.58%. Equal 11.1% odds is the common trap.",
+              "award": 25,
+              "authority": {
+                "kind": "statistical",
+                "ref": "Benford first-digit law",
+                "sourceId": "benford-slides",
+                "note": "Derivable in closed form as log10(1 + 1/d); the slide table is the pinned rendering of it."
+              }
+            },
+            {
+              "id": "mech-q3-o2",
+              "label": "11.1%",
+              "correct": false,
+              "feedback": "Not this one. The slide table gives 30.10% for first digit 1, while 9 is only 4.58%. Equal 11.1% odds is the common trap.",
+              "misconceptionTag": "mech-q3-d2",
+              "award": 0
+            },
+            {
+              "id": "mech-q3-o3",
+              "label": "4.6%",
+              "correct": false,
+              "feedback": "Not this one. The slide table gives 30.10% for first digit 1, while 9 is only 4.58%. Equal 11.1% odds is the common trap.",
+              "misconceptionTag": "mech-q3-d3",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 25
+        },
+        "why": "The slide table gives 30.10% for first digit 1, while 9 is only 4.58%. Equal 11.1% odds is the common trap."
+      },
+      {
+        "id": "mech-q4",
+        "segmentId": "mechanism",
+        "order": 4,
+        "graded": true,
+        "objectiveIds": [
+          "explain-mechanism"
+        ],
+        "bloomDemand": "analyze",
+        "title": "Checkpoint 4",
+        "prompt": "Which data set is most likely to conform to Benford's Law?",
+        "artifactIds": [
+          "benford-chart"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": true,
+          "options": [
+            {
+              "id": "mech-q4-o1",
+              "label": "Many real vendor invoice amounts",
+              "correct": true,
+              "feedback": "The slides point to real-life numerical data and most accounting numbers. Human-created or assigned numbers need caution.",
+              "award": 25,
+              "authority": {
+                "kind": "statistical",
+                "ref": "Benford first-digit law",
+                "sourceId": "benford-slides",
+                "note": "Derivable in closed form as log10(1 + 1/d); the slide table is the pinned rendering of it."
+              }
+            },
+            {
+              "id": "mech-q4-o2",
+              "label": "Employee ID numbers",
+              "correct": false,
+              "feedback": "Not this one. The slides point to real-life numerical data and most accounting numbers. Human-created or assigned numbers need caution.",
+              "misconceptionTag": "mech-q4-d2",
+              "award": 0
+            },
+            {
+              "id": "mech-q4-o3",
+              "label": "A list of prices all set at $9.99",
+              "correct": false,
+              "feedback": "Not this one. The slides point to real-life numerical data and most accounting numbers. Human-created or assigned numbers need caution.",
+              "misconceptionTag": "mech-q4-d3",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 25
+        },
+        "why": "The slides point to real-life numerical data and most accounting numbers. Human-created or assigned numbers need caution.",
+        "terminal": true
+      },
+      {
+        "id": "case-1",
+        "segmentId": "triage",
+        "order": 5,
+        "graded": true,
+        "objectiveIds": [
+          "judge-suitability"
+        ],
+        "bloomDemand": "evaluate",
+        "title": "Supplier Payments",
+        "prompt": "682 invoice amounts from many vendors and product quantities. The amounts span small parts orders, monthly services, freight, and large inventory buys. What is your audit call?",
+        "caption": "Compare the observed first-digit distribution against the Benford curve, then decide.",
+        "artifactIds": [
+          "case-1-ledger",
+          "benford-chart"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": false,
+          "options": [
+            {
+              "id": "case-1-accept",
+              "label": "Accept — the population tracks Benford",
+              "correct": true,
+              "feedback": "This is a broad real accounting population and the observed digits track the Benford curve closely. That is low digit-risk, though normal audit work still continues.",
+              "award": 20,
+              "authority": {
+                "kind": "statistical",
+                "ref": "Benford first-digit law",
+                "sourceId": "benford-slides",
+                "note": "Benford is a screen, not proof. A red flag means ask for documents, business explanations and control evidence."
+              }
+            },
+            {
+              "id": "case-1-investigate",
+              "label": "Investigate — follow up with evidence work",
+              "correct": false,
+              "feedback": "Revise the audit call. This is a broad real accounting population and the observed digits track the Benford curve closely. That is low digit-risk, though normal audit work still continues.",
+              "misconceptionTag": "case-1-investigate",
+              "award": 0
+            },
+            {
+              "id": "case-1-not-suitable",
+              "label": "Not suitable — Benford does not apply to this population",
+              "correct": false,
+              "feedback": "Revise the audit call. This is a broad real accounting population and the observed digits track the Benford curve closely. That is low digit-risk, though normal audit work still continues.",
+              "misconceptionTag": "case-1-not-suitable",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 20
+        },
+        "why": "This is a broad real accounting population and the observed digits track the Benford curve closely. That is low digit-risk, though normal audit work still continues."
+      },
+      {
+        "id": "case-2",
+        "segmentId": "triage",
+        "order": 6,
+        "graded": true,
+        "objectiveIds": [
+          "judge-suitability"
+        ],
+        "bloomDemand": "evaluate",
+        "title": "Travel Reimbursements",
+        "prompt": "126 claims keyed manually near the quarter close. Amounts are all under the manager approval threshold and many receipts are missing. What is your audit call?",
+        "caption": "Compare the observed first-digit distribution against the Benford curve, then decide.",
+        "artifactIds": [
+          "case-2-ledger",
+          "benford-chart"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": false,
+          "options": [
+            {
+              "id": "case-2-accept",
+              "label": "Accept — the population tracks Benford",
+              "correct": false,
+              "feedback": "Revise the audit call. The high digits are far too frequent. This is the pattern Benford screening is good at flagging for follow-up evidence.",
+              "misconceptionTag": "case-2-accept",
+              "award": 0
+            },
+            {
+              "id": "case-2-investigate",
+              "label": "Investigate — follow up with evidence work",
+              "correct": true,
+              "feedback": "The high digits are far too frequent. This is the pattern Benford screening is good at flagging for follow-up evidence.",
+              "award": 20,
+              "authority": {
+                "kind": "statistical",
+                "ref": "Benford first-digit law",
+                "sourceId": "benford-slides",
+                "note": "Benford is a screen, not proof. A red flag means ask for documents, business explanations and control evidence."
+              }
+            },
+            {
+              "id": "case-2-not-suitable",
+              "label": "Not suitable — Benford does not apply to this population",
+              "correct": false,
+              "feedback": "Revise the audit call. The high digits are far too frequent. This is the pattern Benford screening is good at flagging for follow-up evidence.",
+              "misconceptionTag": "case-2-not-suitable",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 20
+        },
+        "why": "The high digits are far too frequent. This is the pattern Benford screening is good at flagging for follow-up evidence."
+      },
+      {
+        "id": "case-3",
+        "segmentId": "triage",
+        "order": 7,
+        "graded": true,
+        "objectiveIds": [
+          "judge-suitability"
+        ],
+        "bloomDemand": "evaluate",
+        "title": "Employee Numbers",
+        "prompt": "Staff IDs assigned by HR from 10000 to 19999. Every ID is a label created by the company, not a naturally occurring measurement. What is your audit call?",
+        "caption": "Compare the observed first-digit distribution against the Benford curve, then decide.",
+        "artifactIds": [
+          "case-3-ledger",
+          "benford-chart"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": false,
+          "options": [
+            {
+              "id": "case-3-accept",
+              "label": "Accept — the population tracks Benford",
+              "correct": false,
+              "feedback": "Revise the audit call. These are human-assigned labels. The slide warning applies: created numbers are not expected to conform.",
+              "misconceptionTag": "case-3-accept",
+              "award": 0
+            },
+            {
+              "id": "case-3-investigate",
+              "label": "Investigate — follow up with evidence work",
+              "correct": false,
+              "feedback": "Revise the audit call. These are human-assigned labels. The slide warning applies: created numbers are not expected to conform.",
+              "misconceptionTag": "case-3-investigate",
+              "award": 0
+            },
+            {
+              "id": "case-3-not-suitable",
+              "label": "Not suitable — Benford does not apply to this population",
+              "correct": true,
+              "feedback": "These are human-assigned labels. The slide warning applies: created numbers are not expected to conform.",
+              "award": 20,
+              "authority": {
+                "kind": "statistical",
+                "ref": "Benford first-digit law",
+                "sourceId": "benford-slides",
+                "note": "Benford is a screen, not proof. A red flag means ask for documents, business explanations and control evidence."
+              }
+            }
+          ]
+        },
+        "award": {
+          "base": 20
+        },
+        "why": "These are human-assigned labels. The slide warning applies: created numbers are not expected to conform."
+      },
+      {
+        "id": "case-4",
+        "segmentId": "triage",
+        "order": 8,
+        "graded": true,
+        "objectiveIds": [
+          "judge-suitability"
+        ],
+        "bloomDemand": "evaluate",
+        "title": "Manual Journal Entries",
+        "prompt": "Entries posted by one preparer after normal review hours. Several postings sit just below internal review levels and repeat similar prefixes. What is your audit call?",
+        "caption": "Compare the observed first-digit distribution against the Benford curve, then decide.",
+        "artifactIds": [
+          "case-4-ledger",
+          "benford-chart"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": false,
+          "options": [
+            {
+              "id": "case-4-accept",
+              "label": "Accept — the population tracks Benford",
+              "correct": false,
+              "feedback": "Revise the audit call. Digits 5 and 6 are inflated and the context is sensitive. Benford does not prove fraud, but it gives a strong audit lead.",
+              "misconceptionTag": "case-4-accept",
+              "award": 0
+            },
+            {
+              "id": "case-4-investigate",
+              "label": "Investigate — follow up with evidence work",
+              "correct": true,
+              "feedback": "Digits 5 and 6 are inflated and the context is sensitive. Benford does not prove fraud, but it gives a strong audit lead.",
+              "award": 20,
+              "authority": {
+                "kind": "statistical",
+                "ref": "Benford first-digit law",
+                "sourceId": "benford-slides",
+                "note": "Benford is a screen, not proof. A red flag means ask for documents, business explanations and control evidence."
+              }
+            },
+            {
+              "id": "case-4-not-suitable",
+              "label": "Not suitable — Benford does not apply to this population",
+              "correct": false,
+              "feedback": "Revise the audit call. Digits 5 and 6 are inflated and the context is sensitive. Benford does not prove fraud, but it gives a strong audit lead.",
+              "misconceptionTag": "case-4-not-suitable",
+              "award": 0
+            }
+          ]
+        },
+        "award": {
+          "base": 20
+        },
+        "why": "Digits 5 and 6 are inflated and the context is sensitive. Benford does not prove fraud, but it gives a strong audit lead."
+      },
+      {
+        "id": "case-5",
+        "segmentId": "triage",
+        "order": 9,
+        "graded": true,
+        "objectiveIds": [
+          "judge-suitability"
+        ],
+        "bloomDemand": "evaluate",
+        "title": "Cash Register Receipt Numbers",
+        "prompt": "Sequential receipt IDs printed by the POS system. The numbers identify receipts, not transaction amounts. What is your audit call?",
+        "caption": "Compare the observed first-digit distribution against the Benford curve, then decide.",
+        "artifactIds": [
+          "case-5-ledger",
+          "benford-chart"
+        ],
+        "interaction": {
+          "type": "mcq",
+          "shuffle": false,
+          "options": [
+            {
+              "id": "case-5-accept",
+              "label": "Accept — the population tracks Benford",
+              "correct": false,
+              "feedback": "Revise the audit call. Sequential identifiers are designed by a system. Use Benford on the receipt amounts, not the receipt numbers.",
+              "misconceptionTag": "case-5-accept",
+              "award": 0
+            },
+            {
+              "id": "case-5-investigate",
+              "label": "Investigate — follow up with evidence work",
+              "correct": false,
+              "feedback": "Revise the audit call. Sequential identifiers are designed by a system. Use Benford on the receipt amounts, not the receipt numbers.",
+              "misconceptionTag": "case-5-investigate",
+              "award": 0
+            },
+            {
+              "id": "case-5-not-suitable",
+              "label": "Not suitable — Benford does not apply to this population",
+              "correct": true,
+              "feedback": "Sequential identifiers are designed by a system. Use Benford on the receipt amounts, not the receipt numbers.",
+              "award": 20,
+              "authority": {
+                "kind": "statistical",
+                "ref": "Benford first-digit law",
+                "sourceId": "benford-slides",
+                "note": "Benford is a screen, not proof. A red flag means ask for documents, business explanations and control evidence."
+              }
+            }
+          ]
+        },
+        "award": {
+          "base": 20
+        },
+        "why": "Sequential identifiers are designed by a system. Use Benford on the receipt amounts, not the receipt numbers.",
+        "terminal": true
+      }
+    ],
+    "runtimeSemantics": {
+      "interrupts": "inert",
+      "optionBranching": "inert",
+      "distractorArtifacts": "inert",
+      "revealRules": "inert",
+      "personaRestriction": "inert",
+      "eventsAffectFinalScore": false
+    }
+  },
+  "scoring": {
+    "model": "flat-per-item",
+    "params": {
+      "perCorrect": 25,
+      "perIncorrect": 0,
+      "denominator": "computed"
+    },
+    "meters": [
+      {
+        "id": "score",
+        "label": "Total mastery",
+        "initial": 0,
+        "floor": 0,
+        "ceiling": 200,
+        "resetScope": "per-run",
+        "affectsFinalGrade": true,
+        "deltas": {
+          "correct": 25,
+          "incorrect": 0
+        }
+      }
+    ],
+    "retryPolicy": "lock-after-select",
+    "replay": {
+      "resets": [
+        "score"
+      ],
+      "idempotentAwards": false
+    }
+  },
+  "feedback": {
+    "content": {
+      "correctPrefix": "Correct",
+      "incorrectPrefix": "Revise the audit call",
+      "summaryPassed": "You can explain the mechanism and judge when it applies.",
+      "summaryFailed": "Review the mechanism lab before the next triage run."
+    },
+    "policy": {
+      "timing": "immediate",
+      "targeting": "per-option",
+      "showPointDelta": true,
+      "requireMisconceptionTag": false
+    }
+  },
+  "scaffolding": {
+    "hints": [
+      {
+        "id": "hint-suitability",
+        "stepId": "case-3",
+        "personaId": "*",
+        "text": "Ask first whether the numbers were generated by a natural process or assigned by a person or a system."
+      }
+    ],
+    "referencePanels": [
+      {
+        "id": "curve-panel",
+        "artifactId": "benford-chart",
+        "persistent": true
+      }
+    ],
+    "cognitiveLoad": {
+      "maxConcurrentItems": 5,
+      "maxOptionsPerStep": 3
+    },
+    "navigation": {
+      "toc": true,
+      "tocGranularity": "segment"
+    },
+    "difficultyRamp": {
+      "mechanism": "within-segment",
+      "triage": "within-segment"
+    }
+  },
+  "assurance": {
+    "domain": "data-analytics",
+    "authorityPolicy": {
+      "allowedKinds": [
+        "statistical",
+        "mathematical",
+        "aicpa-aus",
+        "professional-judgement"
+      ],
+      "requireOnCorrect": true,
+      "refPatterns": {}
+    },
+    "assertions": [
+      {
+        "id": "BF-1",
+        "kind": "identity",
+        "expr": "abs(ds.benford_first.p[0] - 0.301) < 0.0005",
+        "writtenAtGate": 5,
+        "describe": "The taught P(first digit = 1) must equal log10(2) = 0.30103 to three decimals"
+      },
+      {
+        "id": "BF-2",
+        "kind": "identity",
+        "expr": "abs(sum(ds.benford_first.p) - 1) < 0.001",
+        "writtenAtGate": 5,
+        "describe": "The first-digit table must be a probability vector"
+      },
+      {
+        "id": "BF-3",
+        "kind": "identity",
+        "expr": "ds.benford_first.p[0] > ds.benford_first.p[8] * 6",
+        "writtenAtGate": 5,
+        "describe": "A leading 1 must be more than six times as likely as a leading 9, which is the whole point being taught"
+      },
+      {
+        "id": "BF-4",
+        "kind": "range",
+        "expr": "d.case_1_divergence",
+        "expected": [
+          0,
+          0.05
+        ],
+        "writtenAtGate": 5,
+        "describe": "The case taught as \"accept\" must actually track the curve closely"
+      },
+      {
+        "id": "BF-5",
+        "kind": "range",
+        "expr": "d.case_3_divergence",
+        "expected": [
+          0.5,
+          1
+        ],
+        "writtenAtGate": 5,
+        "describe": "The employee-ID case taught as \"not suitable\" must actually diverge wildly"
+      }
+    ],
+    "attestation": {
+      "humanReviewer": "UNSIGNED — reverse-pass fixture",
+      "credential": "n/a",
+      "standardsEdition": "n/a — closed-form law",
+      "signed": false
+    }
+  },
+  "telemetry": {
+    "route": "completion-code",
+    "completionCode": {
+      "prefix": "BFD1",
+      "fields": [
+        "stepId",
+        "correct",
+        "attempts",
+        "hintUsed",
+        "ms"
+      ],
+      "maxChars": 120
+    },
+    "itemAnalysis": {
+      "pBand": [
+        0.25,
+        0.95
+      ],
+      "discriminationBand": [
+        0.2,
+        1
+      ],
+      "reportBy": "both"
+    }
+  },
+  "presentation": {
+    "target": "dom",
+    "motion": {
+      "reducedMotionRespected": true
+    },
+    "a11y": {
+      "liveRegion": true,
+      "ariaCurrentStep": true,
+      "colorRedundant": true,
+      "focusOrder": "dom",
+      "reducedMotion": true
+    }
+  },
+  "extensions": [
+    {
+      "id": "digit-chart",
+      "widget": "dual-series-bar",
+      "widgetVersion": "^1.0",
+      "fidelity": "bespoke-pending-generalisation",
+      "usedBy": [
+        "benford-law-game"
+      ],
+      "params": {
+        "expected": "benford-first",
+        "observed": "runtime",
+        "max": 0.42,
+        "labels": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "textAlternative": "A bar chart with nine pairs of bars, one pair per leading digit. The green bar is the Benford expectation, the red bar the observed share in this population. The table of both series is available below the chart.",
+      "fallback": {
+        "prompt": "Read the expected and observed shares from the table.",
+        "interaction": {
+          "type": "narrative",
+          "beatId": "digit-chart-table"
+        }
+      },
+      "pedagogy": {
+        "objectiveIds": [
+          "judge-suitability"
+        ],
+        "bloomDemand": "analyze",
+        "successCriterion": null,
+        "feedback": "The gap between the two series is what the audit call is about."
+      }
+    },
+    {
+      "id": "pressure-meter",
+      "widget": "gauge",
+      "widgetVersion": "^1.0",
+      "fidelity": "bespoke-pending-generalisation",
+      "usedBy": [
+        "benford-law-game"
+      ],
+      "params": {
+        "normalizer": 0.28,
+        "thresholds": [
+          0.28,
+          0.62
+        ]
+      },
+      "textAlternative": "A horizontal meter showing digit-pattern pressure: the total-variation distance between the observed and expected first-digit distributions, scaled to a full-scale value of 0.28.",
+      "fallback": {
+        "prompt": "Read the divergence value printed beside the table.",
+        "interaction": {
+          "type": "narrative",
+          "beatId": "pressure-meter-value"
+        }
+      },
+      "pedagogy": {
+        "objectiveIds": [
+          "judge-suitability"
+        ],
+        "bloomDemand": "understand",
+        "successCriterion": null,
+        "feedback": "Higher pressure means the digits deviate more, not that fraud is present."
+      }
+    }
+  ],
+  "debrief": [
+    {
+      "id": "debrief-mechanism",
+      "segmentId": "mechanism",
+      "headline": "Why the digits are nonuniform",
+      "body": "On a multiplying scale the low digits occupy the widest stretches.",
+      "takeaways": [
+        "About 30% of natural first digits are 1.",
+        "A leading 9 appears only about 4.6% of the time."
+      ],
+      "earnedNotes": true
+    },
+    {
+      "id": "debrief-triage",
+      "segmentId": "triage",
+      "headline": "Two habits to leave with",
+      "body": "First, explain why the leading digits are nonuniform. Second, ask whether the population is appropriate before treating a deviation as a fraud lead.",
+      "takeaways": [
+        "Benford screens for unusual patterns; evidence work proves or disproves fraud.",
+        "Assigned or sequential numbers are not suitable populations.",
+        "A red flag means ask for documents, business explanations and control evidence."
+      ],
+      "earnedNotes": true
+    }
+  ],
+  "provenance": {
+    "gates": [
+      {
+        "agent": 1,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "meta",
+          "objectives"
+        ],
+        "hiddenFrom": [
+          "flow.steps",
+          "scoring"
+        ],
+        "note": "REVERSE PASS: the two objectives are stated in the original, but only in the final debrief — never up front, and never with a Bloom level. That placement is why the framework-matching spreadsheet still called Learning Design \"Strong\" here while the objectives were invisible during play."
+      },
+      {
+        "agent": 2,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "knowledge"
+        ]
+      },
+      {
+        "agent": 3,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "scenario",
+          "debrief"
+        ]
+      },
+      {
+        "agent": 4,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "flow",
+          "scoring",
+          "presentation",
+          "extensions"
+        ]
+      },
+      {
+        "agent": 5,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "assurance"
+        ],
+        "hiddenFrom": [
+          "flow.steps"
+        ]
+      },
+      {
+        "agent": 6,
+        "specHash": "reverse",
+        "fieldPathsPresent": [
+          "scaffolding",
+          "telemetry"
+        ]
+      }
+    ],
+    "deltas": [],
+    "findings": []
+  }
+}

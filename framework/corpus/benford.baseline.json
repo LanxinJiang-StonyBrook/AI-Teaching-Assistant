@@ -1,0 +1,34 @@
+{
+  "about": "framework/corpus/benford.baseline.json",
+  "fixture": "benford.spec.json",
+  "reverseEngineeredFrom": "public/benford-law-game/index.html",
+  "note": "Zero errors. The remaining warnings are two real properties of the original artifact, both about item quality rather than content accuracy — which is the pattern across the whole corpus.",
+  "accepted": [],
+  "acceptedWarnings": [
+    { "check": "P8 distractor-diagnosticity",
+      "count": 9,
+      "reason": "REAL DEFECT OF THE ORIGINAL, and it is architectural rather than an oversight. Each mechanismQuestions entry (index.html:165-200) and each auditCases entry (index.html:202-258) carries exactly ONE `explain` string, which the renderer shows after any answer. So a student who picks distractor B and a student who picks distractor C read the identical sentence. The feedback says what the right answer is; it never says what THEIR error was. Fix in a forward build: move `explain` onto the option, which is what the GameSpec option shape already requires."
+    },
+    { "check": "P3 bloom-match",
+      "target": "flow.steps/mech-q4",
+      "reason": "REAL STRUCTURAL OBSERVATION. The fourth checkpoint of the Mechanism Lab asks 'Which data set is most likely to conform to Benford's Law?' — that is a suitability judgement, the job of the SECOND mission's objective, not an explanation of the mechanism. The original puts it in mission 1. Flagging it is P3 doing exactly what it is for: the item demands a higher Bloom level than the objective it is filed under."
+    },
+    { "check": "A5 human-attestation", "reason": "Reverse-pass fixture; no credentialed signer." }
+  ],
+  "assuranceResult": {
+    "claim": "This is the only fixture whose taught content can be checked against a closed-form law instead of a citation, and it holds.",
+    "assertions": [
+      "BF-1 P(first digit = 1) = 0.301 matches log10(2) = 0.30103 to three decimals — PASS",
+      "BF-2 the first-digit table is a probability vector — PASS",
+      "BF-3 a leading 1 is more than six times as likely as a leading 9 — PASS",
+      "BF-4 the population taught as 'accept' has total-variation distance in [0, 0.05] — PASS",
+      "BF-5 the employee-ID population taught as 'not suitable' has TVD in [0.5, 1] — PASS"
+    ],
+    "note": "BF-4 and BF-5 are the interesting ones: they check that the AUDIT CALL the game teaches is actually supported by the numbers the game shows. A content read-through cannot do that; it would have to recompute the divergence for all five populations."
+  },
+  "expressiveRangeContributed": [
+    "The sandbox interaction: a seeded log-uniform generator with a declared algorithm (lcg-park-miller), batch size and statistic. The spec carries the generator, not the output, so the emitter reproduces the same convergence.",
+    "Two chart widgets under the escape hatch, each with a narrative fallback that renders the underlying table — the rule that a widget may hide how it draws but never what it assesses.",
+    "The knowledge.artifacts illustrativeNumbers flag. The five sample ledger records per case are decorative; the flag makes that exemption from check N2 a visible declaration rather than a silent gap."
+  ]
+}

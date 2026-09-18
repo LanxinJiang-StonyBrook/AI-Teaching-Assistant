@@ -115,17 +115,37 @@ export const checks = [
   },
 },
 {
-  id: 'P6', name: 'chance-score-budget', family: 'pedagogy', reads: ['objectives', 'flow.steps'],
+  id: 'P6', name: 'chance-score-budget', family: 'pedagogy', reads: ['objectives', 'flow.steps', 'scenario.personas'],
+  // Computed PER PERSONA where personas are replay perspectives. A game whose
+  // four roles are four separate runs does not get to multiply its guessing
+  // odds across roles a student will never all play: the honest number is the
+  // worst single run.
   run(spec, ctx, r) {
     const map = deriveAssessedBy(spec);
+    const personas = spec.scenario?.personas ?? [];
+    const replay = personas.filter((p) => p.selectionEffect === 'replay-perspective').map((p) => p.id);
+    const scopeOf = (st) => ctx.segments[st.segmentId]?.personaScope ?? [];
+
     for (const o of spec.objectives ?? []) {
       const steps = (map[o.id] ?? []).map((id) => ctx.byId[id]).filter(Boolean);
       if (!steps.length) continue;
-      const chance = steps.reduce((acc, s) => acc * chanceOf(s), 1);
       const budget = o.maxChanceScore ?? 0.34;
-      if (chance > budget)
+
+      const runs = replay.length
+        ? replay.map((pid) => ({ pid, steps: steps.filter((s) => { const sc = scopeOf(s); return !sc.length || sc.includes(pid); }) }))
+        : [{ pid: null, steps }];
+
+      let worst = { chance: -1, pid: null, n: 0 };
+      for (const run of runs) {
+        if (!run.steps.length) continue;
+        const chance = run.steps.reduce((acc, s) => acc * chanceOf(s), 1);
+        if (chance > worst.chance) worst = { chance, pid: run.pid, n: run.steps.length };
+      }
+      if (worst.chance > budget)
         r.error('P6 chance-score-budget', `objectives/${o.id}`,
-          `uniform guessing earns this objective with probability ${(chance * 100).toFixed(0)}%, over the declared budget of ${(budget * 100).toFixed(0)}% — add an item or widen the option set`);
+          `uniform guessing earns this objective with probability ${(worst.chance * 100).toFixed(0)}%` +
+          (worst.pid ? ` on the '${worst.pid}' run (${worst.n} item(s) a single player actually sees)` : '') +
+          `, over the declared budget of ${(budget * 100).toFixed(0)}% — add an item or widen the option set`);
     }
   },
 },

@@ -631,6 +631,11 @@
               "transcription": {
                 "type": "object",
                 "description": "machine-readable content of a data-bearing exhibit-image"
+              },
+              "illustrativeNumbers": {
+                "type": "boolean",
+                "default": false,
+                "description": "Declares that the figures in this artifact are illustrative samples, not values the answer key is derived from. Exempts it from check N2. Must be declared, never assumed — the point is that the exemption is visible in the spec."
               }
             }
           }
