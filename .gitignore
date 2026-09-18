@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Claude Code local machine settings (not shared)
 .claude/settings.local.json
+
+# generated GameSpec preview builds (not published)
+.gamespec-preview/

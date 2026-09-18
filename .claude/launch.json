@@ -1,0 +1,22 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "screenshot-bootstrap",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "-e",
+        "require('http').createServer((q,r)=>{r.setHeader('content-type','text/html');r.end('<!doctype html><title>bootstrap</title><body>ready');}).listen(4173,()=>console.log('listening on 4173'))"
+      ],
+      "port": 4173
+    },
+    {
+      "name": "gamespec-preview",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "scripts/static-server.mjs"
+      ],
+      "port": 4173
+    }
+  ]
+}
